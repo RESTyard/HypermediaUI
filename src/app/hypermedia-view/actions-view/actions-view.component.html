@@ -1,0 +1,16 @@
+<div class="container">
+  <ng-container *ngFor="let action of actions">
+
+    <div class="actionContainer" *ngIf="action.isParameterLess; else parameterActionTemplate">
+      <app-parameterless-action-view [action]=action></app-parameterless-action-view>
+    </div>
+
+    <ng-template #parameterActionTemplate>
+      <div class="actionContainer">
+        <app-parameter-action [action]=action></app-parameter-action>
+      </div>
+    </ng-template>
+
+  </ng-container>
+
+</div>

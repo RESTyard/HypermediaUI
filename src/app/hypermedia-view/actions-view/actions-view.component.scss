@@ -1,0 +1,10 @@
+@import '../../../defaults.scss';
+
+.container {
+  margin-top: $defaultContainerSpacing;
+  padding: 0;
+}
+
+.actionContainer {
+  margin: $defaultSpacing 0;
+}

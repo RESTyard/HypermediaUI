@@ -1,0 +1,26 @@
+<mat-toolbar color="primary">
+  <span>Hypermedia UI</span>
+</mat-toolbar>
+
+<div class="mainGrid">
+  <div class="spacer"></div>
+
+  <form class="containerForm">
+    <mat-form-field class="apiEntryFormField">
+      <input matInput type="url" placeholder="Enter API entry URL" name="apiEntryPointInput" [formControl]="urlFormControl"
+      />
+      <mat-error *ngIf="urlFormControl.hasError('pattern')">
+        Check your URL
+      </mat-error>
+
+      <button mat-button *ngIf="apiEntryPoint" matSuffix mat-icon-button aria-label="Clear" (click)="apiEntryPoint=''">
+        <mat-icon class="icon">close</mat-icon>
+      </button>
+    </mat-form-field>
+  </form>
+
+  <button class="navigateButton" mat-button *ngIf="apiEntryPoint" matSuffix mat-raised-button (click)="navigate()" color="primary">
+    <mat-icon>explore</mat-icon>
+    <span>Enter API</span>
+  </button>
+</div>

@@ -1,0 +1,43 @@
+<div class="container">
+  <div class="itemsHeader">
+    <span class="spacer"></span>
+    <span class="itemsLabel">{{embeddedEntities?.length + embeddedLinkEntities?.length}} items</span>
+  </div>
+
+  <ng-container *ngFor="let embeddedEntity of embeddedEntities; let idx = index">
+    <mat-expansion-panel  class="entityExpander">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          {{idx + 1}}: {{embeddedEntity.relations.join(",")}}
+        </mat-panel-title>
+        <mat-panel-description>
+          Classes: {{embeddedEntity.classes.join(",")}}
+        </mat-panel-description>
+      </mat-expansion-panel-header>
+
+      <app-entity-view [entity]="embeddedEntity"></app-entity-view>
+
+    </mat-expansion-panel>
+  </ng-container>
+
+  <ng-container *ngFor="let embeddedLinkEntity of embeddedLinkEntities; let idx = index">
+     <mat-card  class="embeddedLinkEntityCard" >
+        <span>
+          {{idx + 1 + embeddedEntities?.length}}: {{embeddedLinkEntity.relations.join(",")}}
+        </span>
+        <span>
+          Classes: {{embeddedLinkEntity.classes.join(",")}}
+        </span>
+
+        <button mat-icon-button class="CopyToClipboardButton" (click)="copyToClipBoard(embeddedLinkEntity.href)" matTooltip="Copy to clipboard" color="primary">
+            <mat-icon>assignment</mat-icon>
+        </button>
+
+        <button class="entityLinkButton" mat-raised-button (click)="navigateHref(embeddedLinkEntity.href)" matTooltip="{{embeddedLinkEntity.href}}" color="primary">
+            <mat-icon>play_arrow</mat-icon>
+        </button>
+
+
+    </mat-card>
+  </ng-container>
+</div>

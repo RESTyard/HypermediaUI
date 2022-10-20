@@ -1,0 +1,41 @@
+<div *ngIf="configuration.showEmptyProperties || propertyContainer?.length > 0">
+  <mat-list>
+    <ng-container *ngFor="let property of propertyContainer">
+      <div [ngSwitch]="property.type" class="propertyGrid">
+        <ng-container *ngSwitchCase="propertyTypes.number">
+          <div class="propertyLable">{{property.name}}:</div>
+          <div class="propertyValue">{{property.value}}</div>
+        </ng-container>
+
+        <ng-container class="propertyItem" *ngSwitchCase="propertyTypes.string">
+          <div class="propertyLable">{{property.name}}:</div>
+          <div class="propertyValue">{{property.value}}</div>
+        </ng-container>
+
+        <ng-container class="propertyItem" *ngSwitchCase="propertyTypes.boolean">
+          <div class="propertyLable">{{property.name}}:</div>
+          <mat-checkbox [checked]="property.value" [disabled]="true"></mat-checkbox>
+        </ng-container>
+
+        <ng-container class="propertyItem" *ngSwitchCase="propertyTypes.nullvalue">
+          <ng-container *ngIf="configuration.showNullProperties">
+            <div class="propertyLable">{{property.name}}:</div>
+            <div class="propertyValue">null</div>
+          </ng-container>
+        </ng-container>
+
+        <ng-container class="propertyItem" *ngSwitchCase="propertyTypes.array">
+          <div class="propertyLable">{{property.name}}:</div>
+
+          <app-property-grid *ngIf="!IsPrimitiveArray(property.value)" class="nestedObject" [propertyContainer]=GetObjectPropertyInfos(property.value) [configuration]="configuration"></app-property-grid>
+          <div *ngIf="IsPrimitiveArray(property.value)"  class="propertyValue">{{property.value}}</div>
+        </ng-container>
+
+        <ng-container class="propertyItem" *ngSwitchCase="propertyTypes.object">
+          <div class="propertyLable">{{property.name}}:</div>
+          <app-property-grid  class="nestedObject" [propertyContainer]=GetObjectPropertyInfos(property.value) [configuration]="configuration"></app-property-grid>
+        </ng-container>
+      </div>
+    </ng-container>
+  </mat-list>
+</div>

@@ -1,0 +1,19 @@
+<div class="container">
+  <span *ngFor="let link of links">
+
+    <span class="buttonContainer">
+      <button mat-raised-button (click)="navigateLink(link)" matTooltip="{{link.url}}" color="primary">
+        <mat-icon>play_arrow</mat-icon>
+        <span>
+          {{link.relations.join(',')}}
+        </span>
+
+      </button>
+      <button mat-icon-button class="CopyToClipboardButton" (click)="copyToClipBoard(link)" matTooltip="Copy to clipboard" color="primary">
+          <mat-icon>assignment</mat-icon>
+      </button>
+
+   </span>
+
+  </span>
+</div>

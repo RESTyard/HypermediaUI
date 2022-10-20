@@ -1,0 +1,19 @@
+<div class="container">
+
+  <div class="entityTitle">
+    {{title}}
+  </div>
+
+  <div *ngIf="configuration.showClasses">Classes: {{classes}}</div>
+
+  <app-property-grid [propertyContainer]="properties" [configuration]="configuration"></app-property-grid>
+
+  <app-link-view [links]="links" *ngIf="configuration.showEmptyLinks || links?.length > 0"></app-link-view>
+
+  <app-embedded-entity-view [embeddedEntities]="embeddedEntities" [embeddedLinkEntities]="embeddedLinkEntities" *ngIf="configuration.showEmptyEntities || embeddedEntities?.length > 0 || embeddedLinkEntities?.length > 0"></app-embedded-entity-view>
+
+  <app-actions-view [actions]="actions" *ngIf="configuration.showEmptyActions || actions?.length > 0"></app-actions-view>
+
+
+
+</div>

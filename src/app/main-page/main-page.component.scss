@@ -1,0 +1,31 @@
+@import '../../defaults.scss';
+
+.mainGrid {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr 1fr auto;
+    padding: $defaultSpacing;
+    height: 100%;
+}
+
+.apiEntryFormField {
+  width: 400px;
+}
+
+mat-error {
+  color: orange;
+}
+
+.spacer{
+  grid-row: 1;
+}
+.containerForm{
+  justify-self: center;
+  grid-row: 2;
+}
+
+.navigateButton{
+  justify-self: center;
+  grid-row: 3;
+}
+

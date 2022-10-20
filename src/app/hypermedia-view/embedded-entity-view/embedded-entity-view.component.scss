@@ -1,0 +1,44 @@
+@import '../../../defaults.scss';
+
+.container {
+  margin-top: $defaultContainerSpacing;
+  padding: 0;
+}
+
+.itemsHeader {
+  display: flex;
+  justify-content: space-between;
+}
+
+.spacer {
+  flex: auto auto;
+}
+
+.itemsLabel {
+  font-size: 12px;
+  color: grey;
+}
+
+.entityExpander {
+  margin: $defaultSpacing 0;
+}
+
+.embeddedLinkEntityCard {
+  margin: $defaultSpacing 0;
+  padding-top: $defaultSpacing;
+  padding-bottom: $defaultSpacing;
+  display: grid;
+  grid-template-columns: 1fr 1fr auto auto;
+  align-items: center;
+}
+
+.entityLinkButton {
+  justify-self: end;
+}
+.CopyToClipboardButton{
+  justify-self: end;
+}
+
+::ng-deep div.mat-expansion-panel-body {
+  padding: $defaultSpacing;
+}

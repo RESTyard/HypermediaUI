@@ -1,0 +1,23 @@
+@import '../../../defaults.scss';
+
+.container {
+  margin-top: $defaultContainerSpacing;
+  padding: 0;
+}
+
+.buttonContainer:hover .CopyToClipboardButton {
+  display: inline;
+}
+.buttonContainer .CopyToClipboardButton {
+  display: none;
+}
+
+.CopyToClipboardButton{
+   padding: 0px;
+   margin: 0px;
+   max-height: 24px;
+}
+
+::ng-deep .mat-icon-button {
+  font-size: 10px;
+}

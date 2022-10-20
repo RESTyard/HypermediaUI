@@ -1,0 +1,18 @@
+<div class="closable backdrop"></div>
+
+  <div class="closable message-dialog">
+    <mat-card>
+      <mat-card-title>{{ title }}</mat-card-title>
+      <mat-card-content>{{ message }}</mat-card-content>
+      <mat-card-content>
+        <button
+          (click)="close.emit()"
+          mat-raised-button
+          [color]="color"
+          i18n="errorDialog.closeButton|The text of the close button in the error dialog@@errorDialogCloseButton">
+          Restart application
+        </button>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
