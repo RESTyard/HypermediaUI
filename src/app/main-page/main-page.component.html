@@ -5,22 +5,29 @@
 <div class="mainGrid">
   <div class="spacer"></div>
 
-  <form class="containerForm">
-    <mat-form-field class="apiEntryFormField">
-      <input matInput type="url" placeholder="Enter API entry URL" name="apiEntryPointInput" [formControl]="urlFormControl"
-      />
-      <mat-error *ngIf="urlFormControl.hasError('pattern')">
-        Check your URL
-      </mat-error>
+  <div class="containerForm">
+    <form>
+      <mat-form-field class="apiEntryFormField">
+        <input matInput type="url" placeholder="Enter API entry URL" name="apiEntryPointInput"
+               [formControl]="urlFormControl"
+        />
+        <mat-error *ngIf="urlFormControl.hasError('pattern')">
+          Check your URL
+        </mat-error>
 
-      <button mat-button *ngIf="apiEntryPoint" matSuffix mat-icon-button aria-label="Clear" (click)="apiEntryPoint=''">
-        <mat-icon class="icon">close</mat-icon>
-      </button>
-    </mat-form-field>
-  </form>
+        <button mat-button type="reset" *ngIf="apiEntryPoint" matSuffix mat-icon-button aria-label="Clear"
+                (click)="urlFormControl.reset()">
+          <mat-icon class="icon">close</mat-icon>
+        </button>
+      </mat-form-field>
+      <div class="containerSubmit">
+        <button class="navigateButton" mat-button *ngIf="apiEntryPoint" matSuffix mat-raised-button (click)="navigate()"
+                color="primary">
+          <mat-icon>explore</mat-icon>
+          <span>Enter API</span>
+        </button>
+      </div>
+    </form>
+  </div>
 
-  <button class="navigateButton" mat-button *ngIf="apiEntryPoint" matSuffix mat-raised-button (click)="navigate()" color="primary">
-    <mat-icon>explore</mat-icon>
-    <span>Enter API</span>
-  </button>
 </div>
