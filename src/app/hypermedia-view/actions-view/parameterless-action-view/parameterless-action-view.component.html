@@ -1,6 +1,12 @@
-<button mat-raised-button (click)="executeAction()" matTooltip="{{action.title}}">
-    <mat-icon class="icon" color="primary">play_circle_outline</mat-icon>
-    <span>{{action.name}}</span>
-</button>
-<span>{{actionMessage}}</span>
-<div>{{actionMessage}}</div>
+<div class="action-container">
+  <button mat-raised-button (click)="executeAction()" matTooltip="{{action.title}}">
+      <mat-icon class="icon" color="primary">play_circle_outline</mat-icon>
+      <span>{{action.name}}</span>
+  </button>
+  <span>
+    {{action.title}}
+  </span>
+</div>
+
+
+
