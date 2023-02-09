@@ -1,11 +1,11 @@
 <div class="action-container">
-  <button style="width: 100%" mat-raised-button (click)="executeAction()" matTooltip="{{action.title}}">
-    <mat-list fxLayout="row">
-      <mat-list-item>
+  <button style="width: 100%; padding-left: 8px;  " mat-raised-button (click)="executeAction()" matTooltip="{{action.title}}">
+    <mat-list fxLayout="row" style="height: 46px; margin-bottom: 4px;">
+      <mat-list-item style="height: auto;">
         <mat-icon class="icon" color="primary">play_circle_outline</mat-icon>
         <span>{{action.name}}</span>
       </mat-list-item>
-      <mat-list-item>
+      <mat-list-item style="height: auto;">
         <mat-panel-description>
           <span style="overflow: hidden; text-overflow: ellipsis; max-width: 400px">{{action.title}}</span>
         </mat-panel-description>
