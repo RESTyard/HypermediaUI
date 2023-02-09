@@ -29,16 +29,17 @@
           },
           "configurations": {
             "production": {
+              "outputPath": "dist/prod",
               "budgets": [
                 {
                   "type": "initial",
                   "maximumWarning": "1mb",
-                  "maximumError": "4mb"
+                  "maximumError": "2mb"
                 },
                 {
                   "type": "anyComponentStyle",
                   "maximumWarning": "2kb",
-                  "maximumError": "4kb"
+                  "maximumError": "8kb"
                 }
               ],
               "fileReplacements": [
@@ -50,16 +51,18 @@
               "outputHashing": "all"
             },
             "dev": {
+              "outputPath": "dist/dev",
+              "vendorChunk": true,
               "budgets": [
                 {
                   "type": "initial",
                   "maximumWarning": "1mb",
-                  "maximumError": "4mb"
+                  "maximumError": "2mb"
                 },
                 {
                   "type": "anyComponentStyle",
                   "maximumWarning": "2kb",
-                  "maximumError": "4kb"
+                  "maximumError": "8kb"
                 }
               ],
               "fileReplacements": [
@@ -71,16 +74,18 @@
               "outputHashing": "all"
             },
             "staging": {
+              "outputPath": "dist/staging",
+              "vendorChunk": true,
               "budgets": [
                 {
                   "type": "initial",
                   "maximumWarning": "1mb",
-                  "maximumError": "4mb"
+                  "maximumError": "2mb"
                 },
                 {
                   "type": "anyComponentStyle",
                   "maximumWarning": "2kb",
-                  "maximumError": "4kb"
+                  "maximumError": "8kb"
                 }
               ],
               "fileReplacements": [
