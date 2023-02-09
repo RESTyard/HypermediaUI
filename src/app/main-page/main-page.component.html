@@ -8,21 +8,26 @@
   <div class="containerForm">
     <form>
       <mat-form-field class="apiEntryFormField">
-        <input matInput type="url" placeholder="Enter API entry URL" name="apiEntryPointInput"
+        <input matInput type="url"
+               placeholder="Enter API entrypoint URL"
+               name="apiEntryPointInput"
                [formControl]="urlFormControl"
-        />
+               [(ngModel)]="apiEntryPoint" 
+               />
+        <mat-hint >Example: http://localhost/api/EntryPoint</mat-hint>
         <mat-error *ngIf="urlFormControl.hasError('pattern')">
           Check your URL
         </mat-error>
 
-        <button mat-button type="reset" *ngIf="apiEntryPoint" matSuffix mat-icon-button aria-label="Clear"
+        <button mat-button type="reset" [disabled]="!apiEntryPoint" matSuffix mat-icon-button aria-label="Clear"
                 (click)="urlFormControl.reset()">
           <mat-icon class="icon">close</mat-icon>
         </button>
       </mat-form-field>
-      <div class="containerSubmit">
-        <button class="navigateButton" mat-button *ngIf="apiEntryPoint" matSuffix mat-raised-button (click)="navigate()"
-                color="primary">
+      <div class="containerSubmit" style="margin-top: 12px">
+        <button class="navigateButton" [disabled]="!apiEntryPoint" mat-button matSuffix mat-raised-button
+                (click)="navigate()" color="primary">
+
           <mat-icon>explore</mat-icon>
           <span>Enter API</span>
         </button>

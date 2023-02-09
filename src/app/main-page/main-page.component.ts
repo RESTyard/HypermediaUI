@@ -13,10 +13,9 @@ export class MainPageComponent implements OnInit {
 
   public urlFormControl: FormControl;
 
-  @Input() apiEntryPoint: string = null;
+  @Input() apiEntryPoint: string = "";
 
   constructor(private hypermediaClientService: HypermediaClientService ) {
-    this.apiEntryPoint = 'http://localhost/api/EntryPoint';
 
     this.urlFormControl = new FormControl(this.apiEntryPoint, [
       Validators.required,

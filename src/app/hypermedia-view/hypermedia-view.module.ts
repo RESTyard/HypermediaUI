@@ -32,7 +32,7 @@ import {MatSelectModule} from "@angular/material/select";
 import {MatToolbarModule} from "@angular/material/toolbar";
 import {MatInputModule} from "@angular/material/input";
 import {FlexLayoutModule} from "@angular/flex-layout";
-import {MaterialDesignFramework, MaterialDesignFrameworkModule} from "@ajsf/material";
+import {MaterialDesignFrameworkModule} from "@ajsf/material";
 import { JsonSchemaFormModule, JsonSchemaFormService, WidgetLibraryService, FrameworkLibraryService, Framework } from"@ajsf/core"
 import {FormsModule} from "@angular/forms";
 
@@ -64,7 +64,7 @@ import {FormsModule} from "@angular/forms";
                 JsonSchemaFormService,
                 FrameworkLibraryService,
                 WidgetLibraryService,
-                {provide: Framework, useClass: MaterialDesignFramework, multi: true}
+                {provide: Framework, multi: true}
             ]
         },
         PrettyJsonModule,
