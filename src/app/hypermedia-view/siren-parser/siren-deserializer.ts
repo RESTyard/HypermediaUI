@@ -241,6 +241,9 @@ export class SirenDeserializer {
     }
     hypermediaAction.waheActionParameterName = action.fields[0].name;
 
+    //Map default values if exist
+    hypermediaAction.defaultValues = action.fields[0]?.value;
+
     this.getActionParameterJsonSchema(hypermediaAction.waheActionParameterClasses[0], hypermediaAction);
   }
 

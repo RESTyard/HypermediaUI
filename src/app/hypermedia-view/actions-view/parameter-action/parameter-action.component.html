@@ -13,7 +13,7 @@
   <!-- <div>schema: {{action.waheActionParameterJsonSchema | async}}</div> -->
 
   <!-- todo if contains body show it / navigate to it -->
-  <json-schema-form [schema]="action.waheActionParameterJsonSchema | async" (onSubmit)="onActionSubmitted($event)"></json-schema-form>
+  <json-schema-form [(data)]="action.defaultValues" [schema]="action.waheActionParameterJsonSchema | async" (onSubmit)="onActionSubmitted($event)"></json-schema-form>
   <br>
   <button *ngIf="actionResultLocation !== null" mat-raised-button (click)="navigateLocation(actionResultLocation)" matTooltip="{{actionResultLocation}}">
     Action result
