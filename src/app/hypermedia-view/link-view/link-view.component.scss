@@ -6,10 +6,10 @@
 }
 
 .buttonContainer:hover .CopyToClipboardButton {
-  display: inline;
+  opacity: 1;
 }
 .buttonContainer .CopyToClipboardButton {
-  display: none;
+  opacity: 0;
 }
 
 .CopyToClipboardButton{
