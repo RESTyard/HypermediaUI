@@ -5,6 +5,9 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
+    "build:prod": "ng build --configuration production --progress",
+    "build:staging": "ng build --configuration staging --progress",
+    "build:dev": "ng build --configuration dev --progress",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
   },
