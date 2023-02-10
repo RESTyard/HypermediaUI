@@ -23,11 +23,11 @@ export class ParameterActionComponent implements OnInit {
   public onActionSubmitted(formParameters: any) {
     this.action.parameters = formParameters;
 
-    this.hypermediaClientService.executeAction(this.action, (result: ActionResults, resultLocation: string, content: string, message?: string) => {
+    this.hypermediaClientService.executeAction(this.action, (result: ActionResults, resultLocation: string | null, content: string, statusCodeMessage: string) => {
       this.actionResult = result;
 
-      if (message) {
-        this.actionMessage = message;
+      if (statusCodeMessage) {
+        this.actionMessage = statusCodeMessage;
       } else {
         this.actionMessage = '';
       }

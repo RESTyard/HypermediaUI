@@ -19,15 +19,19 @@ export class ParameterlessActionViewComponent implements OnInit {
   }
 
   public executeAction() {
-    this.hypermediaClientService.executeParameterlessAction(this.action, (result: ActionResults, message?: string) => {
-      this.actionResult = result;
-      if (message) {
-        this.actionMessage = message;
-        console.log(typeof message);
-      } else {
-        this.actionMessage = '';
-      }
-    });
+    this.hypermediaClientService.executeAction(this.action,
+      (actionResults: ActionResults,
+        resultLocation: string | null,
+        content: any,
+        statusCodeString: string) => {
+        this.actionResult = actionResults;
+        if (statusCodeString) {
+          this.actionMessage = statusCodeString;
+          console.log(typeof statusCodeString);
+        } else {
+          this.actionMessage = '';
+        }
+      });
   }
 
 }

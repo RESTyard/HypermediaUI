@@ -29,8 +29,8 @@ export class HypermediaClientService {
   private currentNavPaths$: BehaviorSubject<Array<string>> = new BehaviorSubject<Array<string>>(new Array<string>());
   private apiPath: ApiPath = new ApiPath();
 
-  private sirenMediaType = 'application/vnd.siren+json';
-  private jsonMediaType = 'application/json';
+  private static sirenMediaType = 'application/vnd.siren+json';
+  private static jsonMediaType = 'application/json';
 
   constructor(private httpClient: HttpClient, private schemaCache: ObservableLruCache<object>, private sirenDeserializer: SirenDeserializer, private router: Router, private hypermediaConfiguration: HypermediaVieConfiguration) {
   }
@@ -63,7 +63,7 @@ export class HypermediaClientService {
   Navigate(url: string) {
     this.apiPath.addStep(url);
 
-    const headers = new HttpHeaders().set('Accept', this.sirenMediaType);
+    const headers = new HttpHeaders().set('Accept', HypermediaClientService.sirenMediaType);
 
     this.httpClient
       .get(url, {
@@ -89,37 +89,36 @@ export class HypermediaClientService {
     this.router.navigate([''], {});
   }
 
-  executeParameterlessAction(action: HypermediaAction, actionResult: (ActionResults, string?) => void): any {
+  createHeaders(withContentType: string | null = null): HttpHeaders {
     const headers = new HttpHeaders();
-    headers.set('Accept', this.sirenMediaType);
 
-    this.httpClient.request(
+    if (withContentType) {
+      headers.set('Content-Type', withContentType);
+    }
+    headers.set('Accept', HypermediaClientService.sirenMediaType);
+
+    return headers;
+  }
+
+  private OnActionResponse(response: HttpResponse<any>, actionResult: (actionResults: ActionResults, resultLocation: string | null, content: any, statusCodeString: string) => void) {
+    const location = response.headers.get('Location');
+    if (!response.headers || location === null) {
+      console.log('No location header was in response for action.');
+      actionResult(ActionResults.ok, null, response.body, this.getStatusMessage(response.status));
+    }
+
+    actionResult(ActionResults.ok, location, response.body, this.getStatusMessage(response.status));
+  }
+
+  private ExecuteRequest(action: HypermediaAction, headers: any, body: any | null) {
+    return this.httpClient.request(
       action.method,
       action.href,
       {
+        observe: "response",
         headers: headers,
-        observe: "response"
-      })
-      .pipe(
-        map((response: HttpResponse<any>) => {
-          console.log(response.headers.get("location"));
-          return response;
-        })
-      )
-      .subscribe({
-        next: response => {
-          actionResult(ActionResults.ok, this.getStatusMessage((<HttpResponseBase>response).status));
-        },
-        error: error => {
-          console.log("Execution of parameterless action lead to an error." + error);
-          actionResult(ActionResults.error, this.getStatusMessage((<HttpResponseBase>error).status)); 
-          // TODO process ProblemJson, SirenProblem https://github.com/kevinswiber/siren/issues/5
-          // throw new Error('HypermediaClientService: Error in request: ' + (<HttpErrorResponse>error).message);
-        },
-        complete: () => {
-          actionResult(ActionResults.ok);
-        }
-      }); // TODO on complete reload current entity?
+        body: body
+      });
   }
 
   createWaheStyleActionParameters(action: HypermediaAction): any {
@@ -135,55 +134,43 @@ export class HypermediaClientService {
     return parameters;
   }
 
-  executeAction(action: HypermediaAction, actionResult: (actionResults: ActionResults, resultLocation, content, string?) => void): any {
-    let parameters;
-    if (this.hypermediaConfiguration.useEmbeddingPropertyForActionParameters) {
-      parameters = this.createWaheStyleActionParameters(action);
-    } else {
-      parameters = action.parameters;
+  executeAction(action: HypermediaAction, actionResult: (actionResults: ActionResults, resultLocation: string | null, content: any, statusCodeString: string) => void): any {
+    let parameters = null;
+    let parameterMediaType = null;
+    if (!action.isParameterLess) {
+      parameterMediaType = HypermediaClientService.jsonMediaType;
+
+      if (this.hypermediaConfiguration.useEmbeddingPropertyForActionParameters) {
+        parameters = this.createWaheStyleActionParameters(action);
+      } else {
+        parameters = action.parameters;
+      }
     }
 
-    const headers = new HttpHeaders();
-    headers.set('Content-Type', this.jsonMediaType);
-    headers.set('Accept', this.sirenMediaType);
+    const headers = this.createHeaders(parameterMediaType)
 
     // todo if action responds with a action resource, process body
-    this.httpClient.request(
-      action.method,
-      action.href,
-      {
-        // can not use std http client due to bug: https://github.com/angular/angular/issues/18680
-        // 'Location' header will not be contained
-        observe: 'response',
-        headers: headers,
-        body: parameters,
-      })
+    this.ExecuteRequest(action, headers, parameters)
       .subscribe({
-        next: (response: HttpResponse<any>) => {
-          const location = response.headers.get('Location');
-          if (!response.headers || location === null) {
-            console.log('No location header was in response for action.');
-            actionResult(ActionResults.ok, null, response.body, this.getStatusMessage(response.status));
-          }
-
-          actionResult(ActionResults.ok, location, response.body, this.getStatusMessage(response.status));
-        },
-        error: (errorResponse: HttpErrorResponse) => {
-          let errorMessage = '';
-          if (errorResponse.error instanceof Error) {
-            // A client-side or network error occurred
-            console.log('An error occurred:', errorResponse.error.message);
-            errorMessage = this.getStatusMessage(-1);
-          } else {
-            console.log('Server error', errorResponse);
-            errorMessage = this.getStatusMessage(errorResponse.status);
-          }
-
-          actionResult(ActionResults.error, null, errorResponse.error, errorMessage); // TODO process ProblemJson in body
-        }
+        next: (response: HttpResponse<any>) => this.OnActionResponse(response, actionResult),
+        error: (errorResponse: HttpErrorResponse) => this.HandleActionError(errorResponse, actionResult)
       });
   }
 
+  private HandleActionError(errorResponse: HttpErrorResponse, actionResult: (actionResults: ActionResults, resultLocation: string | null, content: any, statusCodeString: string) => void) {
+    let errorMessage = '';
+    if (errorResponse.error instanceof Error) {
+      // A client-side or network error occurred
+      console.log('An error occurred:', errorResponse.error.message);
+      errorMessage = this.getStatusMessage(-1);
+    } else {
+      console.log('Server error', errorResponse);
+      errorMessage = this.getStatusMessage(errorResponse.status);
+    }
+
+    // TODO process ProblemJson in body, SirenProblem https://github.com/kevinswiber/siren/issues/5
+    actionResult(ActionResults.error, null, errorResponse.error, errorMessage);
+  }
 
   getStatusMessage(statusCode: number): any {
     let message;
