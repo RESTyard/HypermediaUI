@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-import {  ActionResults, HypermediaClientService } from '../../hypermedia-client.service';
+import { ActionResults, HypermediaClientService } from '../../hypermedia-client.service';
 import { HypermediaAction } from '../../siren-parser/hypermedia-action';
 
 @Component({
@@ -10,10 +10,12 @@ import { HypermediaAction } from '../../siren-parser/hypermedia-action';
 export class ParameterActionComponent implements OnInit {
   @Input() action: HypermediaAction;
 
+  ActionResultsEnum = ActionResults;
+
   actionResult: ActionResults;
-  actionMessage: string;
-  actionResultLocation: string = null;
-  actionResultBody: string;
+  actionResultLocation: string | null = null;
+  actionMessage: string = "";
+  executed: boolean = false; // TODO show multiple executions as list
 
   constructor(private hypermediaClientService: HypermediaClientService) { }
 
@@ -23,20 +25,24 @@ export class ParameterActionComponent implements OnInit {
   public onActionSubmitted(formParameters: any) {
     this.action.parameters = formParameters;
 
-    this.hypermediaClientService.executeAction(this.action, (result: ActionResults, resultLocation: string | null, content: string, statusCodeMessage: string) => {
-      this.actionResult = result;
+    this.hypermediaClientService.executeAction(this.action,
+      (result: ActionResults,
+        resultLocation: string | null,
+        content: string,
+        statusCodeMessage: string) => {
 
-      if (statusCodeMessage) {
-        this.actionMessage = statusCodeMessage;
-      } else {
-        this.actionMessage = '';
-      }
+        this.actionResult = result;
 
-      // todo handle if has content AND location
-      this.actionResultLocation = resultLocation;
-      this.actionResultBody = resultLocation;
+        if (statusCodeMessage) {
+          this.actionMessage = statusCodeMessage;
+        } else {
+          this.actionMessage = '';
+        }
 
-    });
+        // todo handle if has content AND location
+        this.actionResultLocation = resultLocation;
+        this.executed = true;
+      });
   }
 
   navigateLocation(location: string) {

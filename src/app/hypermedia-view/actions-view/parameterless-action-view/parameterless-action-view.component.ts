@@ -10,8 +10,12 @@ import { HypermediaAction } from '../../siren-parser/hypermedia-action';
 export class ParameterlessActionViewComponent implements OnInit {
   @Input() action: HypermediaAction;
 
+  ActionResultsEnum = ActionResults;
+
   actionResult: ActionResults;
-  actionMessage: string = '';  // TODO: Needs to be updated
+  actionResultLocation: string | null = null;
+  actionMessage: string = "";  // TODO: Needs to be updated
+  executed: boolean = false; // TODO show multiple executions as list
 
   constructor(private hypermediaClientService: HypermediaClientService) { }
 
@@ -24,14 +28,23 @@ export class ParameterlessActionViewComponent implements OnInit {
         resultLocation: string | null,
         content: any,
         statusCodeString: string) => {
+        
         this.actionResult = actionResults;
+        
         if (statusCodeString) {
           this.actionMessage = statusCodeString;
           console.log(typeof statusCodeString);
         } else {
           this.actionMessage = '';
         }
+
+        this.actionResultLocation = resultLocation;
+        this.executed = true;
       });
+  }
+
+  navigateLocation(location: string) {
+    this.hypermediaClientService.Navigate(location);
   }
 
 }

@@ -19,7 +19,7 @@ export class MainPageComponent implements OnInit {
 
   constructor(private hypermediaClientService: HypermediaClientService, private apiKeyService: ApiKeyService) {
 
-    this.urlFormControl = new FormControl(this.apiEntryPoint, [
+    this.urlFormControl = new FormControl("", [
       Validators.required,
       Validators.pattern(this.URL_REGEX)
     ]);
@@ -29,6 +29,7 @@ export class MainPageComponent implements OnInit {
   }
 
   navigate() {
+    this.hypermediaClientService.Navigate(this.urlFormControl.value);
     if (this.apiKey) {
       this.apiKeyService.apiKey = this.apiKey;
     }

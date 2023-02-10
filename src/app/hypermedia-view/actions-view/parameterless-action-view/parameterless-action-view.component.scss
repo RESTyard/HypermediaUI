@@ -1,9 +1,33 @@
 @import '../../../../defaults.scss';
 
-mat-panel-title {
+.action-container {
+
+  height: $defaultRowHeigth;
+  margin: 0;
+  padding: 0;
+}
+
+.executeButton {
+  padding-left: 24px;
+}
+
+
+.containerElement {
+  margin-right: $defaultSpacing;
+}
+
+.resultIconContainer {
+  display: flex;
+  align-items: center;
+
+  height: $defaultRowHeigth;
+  margin: 0;
+  padding: 0;
   align-items: center;
 }
 
-.icon {
-  margin-right: $defaultSpacing;
+.contentRow {
+  height: $defaultRowHeigth;
+  margin: 0;
+  padding: 0;
 }

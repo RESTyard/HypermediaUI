@@ -13,12 +13,40 @@
   <!-- <div>schema: {{action.waheActionParameterJsonSchema | async}}</div> -->
 
   <!-- todo if contains body show it / navigate to it -->
-  <json-schema-form [(data)]="action.defaultValues" [schema]="action.waheActionParameterJsonSchema | async" (onSubmit)="onActionSubmitted($event)"></json-schema-form>
-  <br>
-  <button *ngIf="actionResultLocation !== null" mat-raised-button (click)="navigateLocation(actionResultLocation)" matTooltip="{{actionResultLocation}}">
+  <json-schema-form [(data)]="action.defaultValues" [schema]="action.waheActionParameterJsonSchema | async"
+                    (onSubmit)="onActionSubmitted($event)"></json-schema-form>
+
+
+  <!-- <button *ngIf="actionResultLocation !== null" mat-raised-button (click)="navigateLocation(actionResultLocation)" matTooltip="{{actionResultLocation}}">
     Action result
   </button>
-  <span>{{actionMessage}}</span>
+  <span>{{actionMessage}}</span> -->
 
   <!-- <app-raw-view [rawObject]="action.waheActionParameterJsonSchema | async"></app-raw-view> -->
+
+  <div class="resultContainer" fxLayout="row" fxLayoutAlign="start center">
+
+    <!-- result icon -->
+    <div class="resultIconContainer" [ngSwitch]="actionResult" *ngIf="executed">
+      <mat-icon *ngSwitchCase="ActionResultsEnum.ok" class="containerElement" color="primary"
+                matTooltip={{actionMessage}}>done</mat-icon>
+      <mat-icon *ngSwitchCase="ActionResultsEnum.error" class="containerElement" color="primary"
+                matTooltip={{actionMessage}}>error</mat-icon>
+      <mat-icon *ngSwitchCase="ActionResultsEnum.pending" class="containerElement" color="primary"
+                matTooltip={{actionMessage}}>schedule</mat-icon>
+      <mat-icon *ngSwitchCase="ActionResultsEnum.undefined" class="containerElement" color="primary"
+                matTooltip={{actionMessage}}>question_mark</mat-icon>
+    </div>
+
+    <!-- result button -->
+    <button *ngIf="actionResultLocation !== null"
+            class="containerElement"
+            mat-raised-button
+            (click)="navigateLocation(actionResultLocation)"
+            color="accent"
+            matTooltip="Go to result: {{actionResultLocation}}">
+      <mat-icon class="icon" color="primary">start</mat-icon>
+    </button>
+  </div>
+
 </mat-expansion-panel>
