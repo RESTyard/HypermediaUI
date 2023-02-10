@@ -1,6 +1,6 @@
-import {HypermediaVieConfiguration} from './hypermedia-view-configuration';
-import {HypermediaLink} from './siren-parser/hypermedia-link';
-import {Injectable} from '@angular/core';
+import { HypermediaVieConfiguration } from './hypermedia-view-configuration';
+import { HypermediaLink } from './siren-parser/hypermedia-link';
+import { Injectable } from '@angular/core';
 import {
   HttpClient,
   HttpErrorResponse,
@@ -9,18 +9,18 @@ import {
   HttpHeaders,
   HttpEvent
 } from '@angular/common/http';
-import {Router} from '@angular/router';
+import { Router } from '@angular/router';
 
-import {Observable, BehaviorSubject, map} from 'rxjs';
+import { Observable, BehaviorSubject, map } from 'rxjs';
 
 
-import {SirenDeserializer} from './siren-parser/siren-deserializer';
-import {MockResponses} from './mockResponses';
-import {ObservableLruCache} from './api-access/observable-lru-cache';
-import {SirenClientObject} from './siren-parser/siren-client-object';
-import {HypermediaAction, HttpMethodTyes} from './siren-parser/hypermedia-action';
-import {SirenHelpers} from './SirenHelpers';
-import {ApiPath} from './api-path';
+import { SirenDeserializer } from './siren-parser/siren-deserializer';
+import { MockResponses } from './mockResponses';
+import { ObservableLruCache } from './api-access/observable-lru-cache';
+import { SirenClientObject } from './siren-parser/siren-client-object';
+import { HypermediaAction, HttpMethodTypes } from './siren-parser/hypermedia-action';
+import { SirenHelpers } from './SirenHelpers';
+import { ApiPath } from './api-path';
 
 @Injectable()
 export class HypermediaClientService {
@@ -93,40 +93,33 @@ export class HypermediaClientService {
     const headers = new HttpHeaders();
     headers.set('Accept', this.sirenMediaType);
 
-    switch (action.method) {
-      case HttpMethodTyes.POST:
-        this.httpClient
-          .post(action.href, null,{
-            headers: headers,
-            observe: "response"
-          })
-          .pipe(
-            map((response: HttpResponse<null>) => {
-              console.log(response.headers.get("location"));
-              return response;
-            })
-          )
-          .subscribe({
-            next: response => {
-              actionResult(ActionResults.ok, this.getStatusMessage((<HttpResponseBase>response).status));
-            },
-            error: error => {
-              console.log("error");
-              actionResult(ActionResults.error, this.getStatusMessage((<HttpResponseBase>error).status)); // TODO process ProblemJson, SirenProblem https://github.com/kevinswiber/siren/issues/5
-              // throw new Error('HypermediaClientService: Error in request: ' + (<HttpErrorResponse>error).message);
-            },
-            complete: () => {
-              actionResult(ActionResults.ok);
-            }
-          }); // TODO on complete reload current entity?
-        break;
-
-      default: {
-        // TODO implement other methods
-        throw Error('Unsupported method used for execution action');
-      }
-
-    }
+    this.httpClient.request(
+      action.method,
+      action.href,
+      {
+        headers: headers,
+        observe: "response"
+      })
+      .pipe(
+        map((response: HttpResponse<any>) => {
+          console.log(response.headers.get("location"));
+          return response;
+        })
+      )
+      .subscribe({
+        next: response => {
+          actionResult(ActionResults.ok, this.getStatusMessage((<HttpResponseBase>response).status));
+        },
+        error: error => {
+          console.log("Execution of parameterless action lead to an error." + error);
+          actionResult(ActionResults.error, this.getStatusMessage((<HttpResponseBase>error).status)); 
+          // TODO process ProblemJson, SirenProblem https://github.com/kevinswiber/siren/issues/5
+          // throw new Error('HypermediaClientService: Error in request: ' + (<HttpErrorResponse>error).message);
+        },
+        complete: () => {
+          actionResult(ActionResults.ok);
+        }
+      }); // TODO on complete reload current entity?
   }
 
   createWaheStyleActionParameters(action: HypermediaAction): any {
@@ -155,51 +148,40 @@ export class HypermediaClientService {
     headers.set('Accept', this.sirenMediaType);
 
     // todo if action responds with a action resource, process body
-    switch (action.method) {
-      case HttpMethodTyes.POST:
+    this.httpClient.request(
+      action.method,
+      action.href,
+      {
+        // can not use std http client due to bug: https://github.com/angular/angular/issues/18680
+        // 'Location' header will not be contained
+        observe: 'response',
+        headers: headers,
+        body: parameters,
+      })
+      .subscribe({
+        next: (response: HttpResponse<any>) => {
+          const location = response.headers.get('Location');
+          if (!response.headers || location === null) {
+            console.log('No location header was in response for action.');
+            actionResult(ActionResults.ok, null, response.body, this.getStatusMessage(response.status));
+          }
 
-        this.httpClient
-          .post(
-            action.href,
-            parameters,
-            {
-              // can not use std http client due to bug: https://github.com/angular/angular/issues/18680
-              // 'Location' header will not be contained
-              observe: 'response',
-              headers: headers
-            })
-          .subscribe({
-            next: (response: HttpResponse<any>) => {
-              const location = response.headers.get('Location');
-              if (!response.headers || location === null) {
-                console.log('No location header was in response for action.');
-                actionResult(ActionResults.ok, null, response.body, this.getStatusMessage(response.status));
-              }
+          actionResult(ActionResults.ok, location, response.body, this.getStatusMessage(response.status));
+        },
+        error: (errorResponse: HttpErrorResponse) => {
+          let errorMessage = '';
+          if (errorResponse.error instanceof Error) {
+            // A client-side or network error occurred
+            console.log('An error occurred:', errorResponse.error.message);
+            errorMessage = this.getStatusMessage(-1);
+          } else {
+            console.log('Server error', errorResponse);
+            errorMessage = this.getStatusMessage(errorResponse.status);
+          }
 
-              actionResult(ActionResults.ok, location, response.body, this.getStatusMessage(response.status));
-            },
-            error: (errorResponse: HttpErrorResponse) => {
-              let errorMessage = '';
-              if (errorResponse.error instanceof Error) {
-                // A client-side or network error occurred
-                console.log('An error occurred:', errorResponse.error.message);
-                errorMessage = this.getStatusMessage(-1);
-              } else {
-                console.log('Server error', errorResponse);
-                errorMessage = this.getStatusMessage(errorResponse.status);
-              }
-
-              actionResult(ActionResults.error, null, errorResponse.error, errorMessage); // TODO process ProblemJson in body
-            }
-          });
-        break;
-
-      default: {
-        // TODO implement other methods
-        throw Error('Unsupported method used for execution action');
-      }
-
-    }
+          actionResult(ActionResults.error, null, errorResponse.error, errorMessage); // TODO process ProblemJson in body
+        }
+      });
   }
 
 

@@ -1,5 +1,5 @@
 import { PropertyTypes, PropertyInfo } from './property-info';
-import { HypermediaAction, HttpMethodTyes } from './hypermedia-action';
+import { HypermediaAction, HttpMethodTypes } from './hypermedia-action';
 import { HypermediaLink } from './hypermedia-link';
 import { EmbeddedLinkEntity } from './embedded-link-entity';
 import { EmbeddedEntity } from './embedded-entity';

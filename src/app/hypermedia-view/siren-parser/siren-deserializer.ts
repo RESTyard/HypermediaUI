@@ -2,7 +2,7 @@ import { HttpClient, HttpErrorResponse, HttpResponseBase, HttpResponse, HttpHead
 import { SirenClientObject } from './siren-client-object';
 import { HypermediaLink } from './hypermedia-link';
 import { PropertyInfo, PropertyTypes } from './property-info';
-import { HypermediaAction, HttpMethodTyes } from './hypermedia-action';
+import { HypermediaAction, HttpMethodTypes } from './hypermedia-action';
 import { ReflectionHelpers } from './reflection-helpers';
 import { SchemaSimplifier } from './schema-simplifier';
 import { EmbeddedLinkEntity } from './embedded-link-entity';
@@ -163,12 +163,12 @@ export class SirenDeserializer {
     }
   }
 
-  private getMethod(action: any): HttpMethodTyes {
-    let method = HttpMethodTyes[<string>action.method];
+  private getMethod(action: any): HttpMethodTypes {
+    let method = HttpMethodTypes[<string>action.method];
 
     // default value for siren is GET
     if (!method) {
-      method = HttpMethodTyes.GET;
+      method = HttpMethodTypes.GET;
     }
 
     return method;

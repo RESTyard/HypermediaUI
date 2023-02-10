@@ -3,9 +3,9 @@ import { Observable } from 'rxjs';
 export class HypermediaAction {
   public name: string | undefined;
   public classes: string[] = new Array<string>();
-  public method: HttpMethodTyes | undefined;
-  public href: string | undefined;
-  public title: string | undefined;
+  public method: HttpMethodTypes = HttpMethodTypes.GET;
+  public href: string = "";
+  public title: string  = "";
   public type: string | undefined;
 
   public isParameterLess: boolean | undefined;
@@ -18,7 +18,7 @@ export class HypermediaAction {
   constructor() { }
 }
 
-export enum HttpMethodTyes {
+export enum HttpMethodTypes {
   GET = 'GET',
   POST = 'POST',
   PUT = 'PUT',
