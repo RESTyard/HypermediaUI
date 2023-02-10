@@ -19,6 +19,7 @@ import { AppComponent } from './app.component';
 import { LinkViewComponent } from './hypermedia-view/link-view/link-view.component';
 import { EmptyResponseBodyErrorInterceptor } from './HttpInterceptorWorkaround';
 import { MainPageComponent } from './main-page/main-page.component';
+import {ApiKeyInterceptor} from './api-key.interceptor';
 
 const appRoutes: Routes = [
   {
@@ -58,6 +59,11 @@ const appRoutes: Routes = [
     ErrorDialogModule,
     HypermediaViewModule,
   ],
+  providers: [{
+    provide: HTTP_INTERCEPTORS,
+    useClass: ApiKeyInterceptor,
+    multi: true
+  }],
   // providers: [{
   //   provide: HTTP_INTERCEPTORS,
   //   useClass: EmptyResponseBodyErrorInterceptor,
