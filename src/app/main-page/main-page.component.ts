@@ -29,11 +29,10 @@ export class MainPageComponent implements OnInit {
   }
 
   navigate() {
-    this.hypermediaClientService.Navigate(this.urlFormControl.value);
     if (this.apiKey) {
       this.apiKeyService.apiKey = this.apiKey;
     }
-    this.hypermediaClientService.Navigate(this.apiEntryPoint);
+    this.hypermediaClientService.Navigate(this.urlFormControl.value);
   }
 
 }
