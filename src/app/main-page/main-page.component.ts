@@ -1,6 +1,8 @@
 import { HypermediaClientService } from '../hypermedia-view/hypermedia-client.service';
 import { Component, OnInit, Input } from '@angular/core';
 import {FormControl, Validators} from '@angular/forms';
+import {MatDialog} from '@angular/material/dialog';
+import {SettingsDialogComponent} from '../settings/settings-dialog/settings-dialog.component';
 
 @Component({
   selector: 'app-main-page',
@@ -15,7 +17,7 @@ export class MainPageComponent implements OnInit {
 
   @Input() apiEntryPoint: string = "";
 
-  constructor(private hypermediaClientService: HypermediaClientService ) {
+  constructor(private hypermediaClientService: HypermediaClientService, public dialog: MatDialog) {
 
     this.urlFormControl = new FormControl(this.apiEntryPoint, [
       Validators.required,
@@ -24,6 +26,16 @@ export class MainPageComponent implements OnInit {
   }
 
   ngOnInit() {
+  }
+
+  openSettings(): void {
+    const dialogRef = this.dialog.open(SettingsDialogComponent, {
+      data: {},
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      console.log('The dialog was closed');
+    });
   }
 
   navigate() {

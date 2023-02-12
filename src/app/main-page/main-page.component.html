@@ -1,5 +1,7 @@
 <mat-toolbar color="primary">
   <span>Hypermedia UI</span>
+  <span style="flex: 1 1 auto"></span>
+  <button (click)="openSettings()" mat-raised-button>Settings</button>
 </mat-toolbar>
 
 <div class="mainGrid">
@@ -12,7 +14,7 @@
                placeholder="Enter API entrypoint URL"
                name="apiEntryPointInput"
                [formControl]="urlFormControl"
-               [(ngModel)]="apiEntryPoint" 
+               [(ngModel)]="apiEntryPoint"
                />
         <mat-hint >Example: http://localhost/api/EntryPoint</mat-hint>
         <mat-error *ngIf="urlFormControl.hasError('pattern')">

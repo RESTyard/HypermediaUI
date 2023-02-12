@@ -21,6 +21,7 @@ import {SirenClientObject} from './siren-parser/siren-client-object';
 import {HypermediaAction, HttpMethodTyes} from './siren-parser/hypermedia-action';
 import {SirenHelpers} from './SirenHelpers';
 import {ApiPath} from './api-path';
+import {SettingsService} from '../settings/settings.service';
 
 @Injectable()
 export class HypermediaClientService {
@@ -32,7 +33,7 @@ export class HypermediaClientService {
   private sirenMediaType = 'application/vnd.siren+json';
   private jsonMediaType = 'application/json';
 
-  constructor(private httpClient: HttpClient, private schemaCache: ObservableLruCache<object>, private sirenDeserializer: SirenDeserializer, private router: Router, private hypermediaConfiguration: HypermediaVieConfiguration) {
+  constructor(private httpClient: HttpClient, private schemaCache: ObservableLruCache<object>, private sirenDeserializer: SirenDeserializer, private router: Router, private hypermediaConfiguration: HypermediaVieConfiguration, private settingsService: SettingsService) {
   }
 
   getHypermediaObjectStream(): BehaviorSubject<SirenClientObject> {
@@ -63,7 +64,10 @@ export class HypermediaClientService {
   Navigate(url: string) {
     this.apiPath.addStep(url);
 
-    const headers = new HttpHeaders().set('Accept', this.sirenMediaType);
+    let headers = new HttpHeaders().set('Accept', this.sirenMediaType);
+    this.settingsService.getHeaders().forEach(x => {
+      headers = headers.set(x.key, x.value);
+    });
 
     this.httpClient
       .get(url, {
@@ -90,8 +94,10 @@ export class HypermediaClientService {
   }
 
   executeParameterlessAction(action: HypermediaAction, actionResult: (ActionResults, string?) => void): any {
-    const headers = new HttpHeaders();
-    headers.set('Accept', this.sirenMediaType);
+    let headers = new HttpHeaders().set('Accept', this.sirenMediaType);
+    this.settingsService.getHeaders().forEach(x => {
+      headers = headers.set(x.key, x.value);
+    });
 
     switch (action.method) {
       case HttpMethodTyes.POST:
@@ -150,9 +156,13 @@ export class HypermediaClientService {
       parameters = action.parameters;
     }
 
-    const headers = new HttpHeaders();
-    headers.set('Content-Type', this.jsonMediaType);
-    headers.set('Accept', this.sirenMediaType);
+    let headers = new HttpHeaders()
+    .set('Content-Type', this.jsonMediaType)
+    .set('Accept', this.sirenMediaType);
+
+    this.settingsService.getHeaders().forEach(x => {
+      headers = headers.set(x.key, x.value);
+    });
 
     // todo if action responds with a action resource, process body
     switch (action.method) {

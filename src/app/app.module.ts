@@ -20,6 +20,11 @@ import { LinkViewComponent } from './hypermedia-view/link-view/link-view.compone
 import { EmptyResponseBodyErrorInterceptor } from './HttpInterceptorWorkaround';
 import { MainPageComponent } from './main-page/main-page.component';
 
+import {MatDialog, MatDialogModule} from '@angular/material/dialog';
+import {MatCardModule} from '@angular/material/card';
+import {MatSelectModule} from '@angular/material/select';
+import {SettingsModule} from './settings/settings.module';
+
 const appRoutes: Routes = [
   {
     path: 'hui',
@@ -44,7 +49,7 @@ const appRoutes: Routes = [
       appRoutes
       // ,{ enableTracing: true } // for debugging output
     ),
-
+    SettingsModule,
     BrowserModule,
     BrowserAnimationsModule,
     MatInputModule,
@@ -54,9 +59,11 @@ const appRoutes: Routes = [
     ReactiveFormsModule,
     MatButtonModule,
     ClipboardModule,
-
+    MatDialogModule,
     ErrorDialogModule,
     HypermediaViewModule,
+    MatCardModule,
+    MatSelectModule,
   ],
   // providers: [{
   //   provide: HTTP_INTERCEPTORS,
