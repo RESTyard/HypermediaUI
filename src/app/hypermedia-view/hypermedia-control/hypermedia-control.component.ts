@@ -5,8 +5,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { PlatformLocation } from '@angular/common';
 import { ApiPath } from '../api-path';
 import { HypermediaVieConfiguration } from '../hypermedia-view-configuration';
-import {SettingsDialogComponent} from '../../settings/settings-dialog/settings-dialog.component';
-import {MatDialog} from '@angular/material/dialog';
 
 
 @Component({
@@ -19,7 +17,7 @@ export class HypermediaControlComponent implements OnInit {
   public hto: SirenClientObject;
   public navPaths: string[];
 
-  constructor(private hypermediaClient: HypermediaClientService, private route: ActivatedRoute, private router: Router, location: PlatformLocation, public configuration: HypermediaVieConfiguration, private dialog: MatDialog) {
+  constructor(private hypermediaClient: HypermediaClientService, private route: ActivatedRoute, private router: Router, location: PlatformLocation, public configuration: HypermediaVieConfiguration) {
   }
 
   ngOnInit() {
@@ -73,13 +71,4 @@ export class HypermediaControlComponent implements OnInit {
     this.hypermediaClient.navigateToMainPage();
   }
 
-  openSettings(): void {
-    const dialogRef = this.dialog.open(SettingsDialogComponent, {
-      data: {},
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
-      console.log('The dialog was closed');
-    });
-  }
 }

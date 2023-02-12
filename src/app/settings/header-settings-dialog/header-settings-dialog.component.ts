@@ -6,23 +6,20 @@ import {MatSnackBar} from '@angular/material/snack-bar';
 import {MatDialogRef} from '@angular/material/dialog';
 
 @Component({
-  selector: 'app-settings-dialog',
-  templateUrl: './settings-dialog.component.html',
-  styleUrls: ['./settings-dialog.component.css']
+  selector: 'app-header-settings-dialog',
+  templateUrl: './header-settings-dialog.component.html',
+  styleUrls: ['./header-settings-dialog.component.css']
 })
-export class SettingsDialogComponent implements OnInit {
+export class HeaderSettingsDialogComponent implements OnInit {
 
   public headers: Header[];
 
   headerFormGroups: FormGroup[] = [];
 
-  // headersForm: FormControl = new FormControl('');
-  constructor(private formBuilder: FormBuilder, private settingsService: SettingsService, private snackBar: MatSnackBar, private dialogRef: MatDialogRef<any>) {
-
-  }
+  constructor(private formBuilder: FormBuilder, private settingsService: SettingsService, private snackBar: MatSnackBar, private dialogRef: MatDialogRef<any>) {}
 
   ngOnInit(): void {
-    this.dialogRef.updateSize('60%', '60%');
+    this.dialogRef.updateSize('55%', '60%');
     const headers = this.settingsService.getHeaders();
     headers.forEach(x => {
       this.headerFormGroups.push(this.formBuilder.group({

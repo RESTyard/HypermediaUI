@@ -1,4 +1,5 @@
 mat-dialog-content .scrollable {
+  padding: inherit;
   border: 3px solid gray;
   height: 200px;
   width: fit-content;

@@ -35,6 +35,7 @@ import {FlexLayoutModule} from "@angular/flex-layout";
 import {MaterialDesignFrameworkModule} from "@ajsf/material";
 import { JsonSchemaFormModule, JsonSchemaFormService, WidgetLibraryService, FrameworkLibraryService, Framework } from"@ajsf/core"
 import {FormsModule} from "@angular/forms";
+import {SettingsModule} from '../settings/settings.module';
 
 
 
@@ -70,6 +71,7 @@ import {FormsModule} from "@angular/forms";
         PrettyJsonModule,
         ClipboardModule,
         FormsModule,
+        SettingsModule,
     ],
   exports: [
     HypermediaControlComponent

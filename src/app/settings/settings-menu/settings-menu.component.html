@@ -1,0 +1,17 @@
+<div class="sm:hidden flex grow justify-end">
+  <button mat-icon-button class="text-white" [matMenuTriggerFor]="settingsMenu">
+    <mat-icon>menu</mat-icon>
+  </button>
+</div>
+
+<mat-menu #settingsMenu="matMenu" yPosition="below" xPosition="before">
+  <ng-container>
+    <mat-divider></mat-divider>
+    <button (click)="openHeaderSettings()" mat-menu-item>Headers</button>
+    <mat-divider></mat-divider>
+    <button (click)="openHeaderSettings()" mat-menu-item>Setting2</button>
+    <mat-divider></mat-divider>
+    <button (click)="openHeaderSettings()" mat-menu-item>Setting3</button>
+    <mat-divider></mat-divider>
+  </ng-container>
+</mat-menu>

@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { SettingsDialogComponent } from './settings-dialog/settings-dialog.component';
+import { HeaderSettingsDialogComponent } from './header-settings-dialog/header-settings-dialog.component';
 import {MatCardModule} from '@angular/material/card';
 import {MatSelectModule} from '@angular/material/select';
 import {MatInputModule} from '@angular/material/input';
@@ -11,10 +11,14 @@ import {SettingsService} from './settings.service';
 import {MatIconModule} from '@angular/material/icon';
 import {MatDialogModule} from '@angular/material/dialog';
 import {MAT_SNACK_BAR_DEFAULT_OPTIONS, MatSnackBarModule} from '@angular/material/snack-bar';
+import { SettingsMenuComponent } from './settings-menu/settings-menu.component';
+import {MatMenuModule} from '@angular/material/menu';
+import {MatDividerModule} from '@angular/material/divider';
 
 @NgModule({
   declarations: [
-    SettingsDialogComponent
+    HeaderSettingsDialogComponent,
+    SettingsMenuComponent
   ],
   imports: [
     CommonModule,
@@ -26,7 +30,12 @@ import {MAT_SNACK_BAR_DEFAULT_OPTIONS, MatSnackBarModule} from '@angular/materia
     ReactiveFormsModule,
     MatIconModule,
     MatDialogModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    MatMenuModule,
+    MatDividerModule
+  ],
+  exports: [
+    SettingsMenuComponent
   ],
   providers: [
     SettingsService,
