@@ -3,6 +3,7 @@ import {Header} from '../interface/headers';
 import {FormBuilder, FormControl, FormGroup} from '@angular/forms';
 import {SettingsService} from '../settings.service';
 import {MatSnackBar} from '@angular/material/snack-bar';
+import {MatDialogRef} from '@angular/material/dialog';
 
 @Component({
   selector: 'app-settings-dialog',
@@ -16,11 +17,12 @@ export class SettingsDialogComponent implements OnInit {
   headerFormGroups: FormGroup[] = [];
 
   // headersForm: FormControl = new FormControl('');
-  constructor(private formBuilder: FormBuilder, private settingsService: SettingsService, private snackBar: MatSnackBar) {
+  constructor(private formBuilder: FormBuilder, private settingsService: SettingsService, private snackBar: MatSnackBar, private dialogRef: MatDialogRef<any>) {
 
   }
 
   ngOnInit(): void {
+    this.dialogRef.updateSize('60%', '60%');
     const headers = this.settingsService.getHeaders();
     headers.forEach(x => {
       this.headerFormGroups.push(this.formBuilder.group({
@@ -37,17 +39,15 @@ export class SettingsDialogComponent implements OnInit {
   }
 
   updateHeaders(): void {
-    // this.settingsService.setHeaders(this.headerFormGroups[0].value);
     let headers = {};
     this.headerFormGroups.forEach(x => {
       if(x.get('key').value == '' || x.get('value').value == ''){
         return;
       }
-      headers[x.get('key').value] = x.get('value').value
+      headers[x.get('key').value] = x.get('value').value;
     });
     this.settingsService.setHeaders(headers);
-    this.snackBar.open("Headers updated.")
-    console.log(this.settingsService.getHeaders());
+    this.snackBar.open("Headers updated.");
   }
 
   addHeader(): void {
@@ -59,5 +59,8 @@ export class SettingsDialogComponent implements OnInit {
 
   removeHeader(index: number) {
     this.headerFormGroups.splice(index, 1);
+    if(this.headerFormGroups.length == 0) {
+      this.addHeader();
+    }
   }
 }

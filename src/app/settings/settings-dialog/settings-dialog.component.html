@@ -1,8 +1,14 @@
-<h3 mat-dialog-title>
-    Headers
-    <span><mat-icon (click)="addHeader()">add_circle_outline</mat-icon></span>
-</h3>
+<div mat-dialog-title class="dialog-title">
+  <h3>Headers
+  <span><mat-icon (click)="addHeader()">add_circle_outline</mat-icon></span>
+  </h3>
+  <button mat-icon-button aria-label="close dialog" mat-dialog-close>
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
+
 <mat-dialog-content>
+  <div class="scrollable">
     <ng-container *ngFor="let headerFormGroup of headerFormGroups; let i = index;">
       <div [formGroup]="headerFormGroup">
         <span>{{i + 1}}. &nbsp;&nbsp;</span>
@@ -17,6 +23,10 @@
         <mat-icon (click)="removeHeader(i)">remove_circle_outline</mat-icon>
       </div>
     </ng-container>
-  <button mat-raised-button color="primary" type="button" (click)="updateHeaders()">Update</button>
+  </div>
+  <br/>
+  <div>
+      <button mat-raised-button color="primary" type="button" (click)="updateHeaders()">Update</button>
+  </div>
 </mat-dialog-content>
 
