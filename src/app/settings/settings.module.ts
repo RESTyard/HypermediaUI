@@ -14,6 +14,7 @@ import {MAT_SNACK_BAR_DEFAULT_OPTIONS, MatSnackBarModule} from '@angular/materia
 import { SettingsMenuComponent } from './settings-menu/settings-menu.component';
 import {MatMenuModule} from '@angular/material/menu';
 import {MatDividerModule} from '@angular/material/divider';
+import {EncryptionService} from './encryption.service';
 
 @NgModule({
   declarations: [
@@ -38,6 +39,7 @@ import {MatDividerModule} from '@angular/material/divider';
     SettingsMenuComponent
   ],
   providers: [
+    EncryptionService,
     SettingsService,
     {provide: MAT_SNACK_BAR_DEFAULT_OPTIONS, useValue: {duration: 2000}},
   ]
