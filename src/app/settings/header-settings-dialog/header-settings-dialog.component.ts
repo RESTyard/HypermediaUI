@@ -19,7 +19,6 @@ export class HeaderSettingsDialogComponent implements OnInit {
   constructor(private formBuilder: FormBuilder, private settingsService: SettingsService, private snackBar: MatSnackBar, private dialogRef: MatDialogRef<any>) {}
 
   ngOnInit(): void {
-    this.dialogRef.updateSize('46%', '60%');
     const headers = this.settingsService.getHeaders();
     headers.forEach(x => {
       this.headerFormGroups.push(this.formBuilder.group({

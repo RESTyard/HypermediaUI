@@ -1,7 +1,7 @@
 mat-dialog-content .scrollable {
   padding: inherit;
   border: 3px solid gray;
-  height: 200px;
+  height: 300px;
   width: 90%;
   overflow-y: scroll;
 }
@@ -10,4 +10,8 @@ mat-dialog-content .scrollable {
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+.headers-list * {
+  padding-left: 1%;
 }

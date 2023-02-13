@@ -15,6 +15,11 @@ export class SettingsMenuComponent implements OnInit {
   }
 
   openHeaderSettings() {
-    this.dialog.open(HeaderSettingsDialogComponent);
+    this.dialog.open(HeaderSettingsDialogComponent, {
+      maxHeight: '100%',
+      maxWidth: '100%',
+      height: '100%',
+      width: '100%'
+    });
   }
 }

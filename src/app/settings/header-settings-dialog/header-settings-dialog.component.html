@@ -10,13 +10,13 @@
 <mat-dialog-content>
   <div class="scrollable">
     <ng-container *ngFor="let headerFormGroup of headerFormGroups; let i = index;">
-      <div [formGroup]="headerFormGroup">
-        <span>{{i + 1}}. &nbsp;&nbsp;</span>
-        <mat-form-field>
+      <div [formGroup]="headerFormGroup" class="headers-list">
+        <span>{{i + 1}}.</span>
+        <mat-form-field [style.width.%]="30">
           <mat-label>Key</mat-label>
           <input type="text" matInput formControlName="key">
         </mat-form-field>
-        <mat-form-field>
+        <mat-form-field [style.width.%]="60">
           <mat-label>Value</mat-label>
           <input type="text" matInput formControlName="value">
         </mat-form-field>
