@@ -19,7 +19,7 @@ export class HeaderSettingsDialogComponent implements OnInit {
   constructor(private formBuilder: FormBuilder, private settingsService: SettingsService, private snackBar: MatSnackBar, private dialogRef: MatDialogRef<any>) {}
 
   ngOnInit(): void {
-    this.dialogRef.updateSize('55%', '60%');
+    this.dialogRef.updateSize('46%', '60%');
     const headers = this.settingsService.getHeaders();
     headers.forEach(x => {
       this.headerFormGroups.push(this.formBuilder.group({
@@ -38,7 +38,7 @@ export class HeaderSettingsDialogComponent implements OnInit {
   updateHeaders(): void {
     let headers = {};
     this.headerFormGroups.forEach(x => {
-      if(x.get('key').value == '' || x.get('value').value == ''){
+      if(x.get('key').value.trim() == '' || x.get('value').value.trim() == ''){
         return;
       }
       headers[x.get('key').value] = x.get('value').value;

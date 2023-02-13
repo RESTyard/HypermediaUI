@@ -11,7 +11,9 @@ export class SettingsService {
     try{
       const headersRaw = JSON.parse(localStorage.getItem(SettingsService.HEADERS));
       let keys = Object.keys(headersRaw);
-      headers = keys.map(x => ({
+      headers = keys
+        .filter(x => x.trim() != '' && headersRaw[x].trim() != '')
+        .map(x => ({
         key: x, value: headersRaw[x]
       } as Header));
     } catch (e){
