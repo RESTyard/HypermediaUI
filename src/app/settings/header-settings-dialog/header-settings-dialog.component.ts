@@ -15,7 +15,6 @@ export class HeaderSettingsDialogComponent implements OnInit {
   public headers: Header[];
 
   headerFormGroups: FormGroup[] = [];
-  siteFormControls: FormControl[] = [];
 
   sites: string[] = [];
   siteFormControl: FormControl = new FormControl('');
@@ -24,10 +23,10 @@ export class HeaderSettingsDialogComponent implements OnInit {
 
   ngOnInit(): void {
     this.initHeaders();
-    this.initSites();
   }
 
   initHeaders(){
+    this.sites = this.settingsService.getSites();
     this.headerFormGroups = [];
     const headers = this.siteFormControl.value === '' ?
       this.settingsService.getHeaders() : this.settingsService.getHeaders(this.siteFormControl.value) ;
@@ -73,41 +72,6 @@ export class HeaderSettingsDialogComponent implements OnInit {
     this.headerFormGroups.splice(index, 1);
     if(this.headerFormGroups.length == 0) {
       this.addHeader();
-    }
-  }
-
-  initSites(){
-    this.siteFormControls = [];
-    const sites = this.settingsService.getSites();
-    this.sites = sites;
-    sites.forEach(x => {
-      const control = new FormControl(x);
-      control.disable();
-      this.siteFormControls.push(control);
-    });
-    if(sites.length == 0){
-      this.siteFormControls.push(new FormControl(''));
-    }
-  }
-
-  saveSites(): void {
-    let sites = this.siteFormControls
-      .filter(x => x.getRawValue().trim() != '')
-      .map(x => x.getRawValue());
-    this.settingsService.setSites(sites);
-    this.initSites();
-    this.initHeaders();
-    this.snackBar.open("Sites saved.");
-  }
-
-  addSite(): void {
-    this.siteFormControls.push(new FormControl(''));
-  }
-
-  removeSite(index: number): void {
-    this.siteFormControls.splice(index, 1);
-    if(this.siteFormControls.length == 0) {
-      this.addSite();
     }
   }
 }

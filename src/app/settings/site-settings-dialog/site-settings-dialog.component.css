@@ -1,4 +1,4 @@
-.headers-container {
+.sites-container {
   padding: inherit;
   border: 3px solid gray;
   width: 90%;
@@ -12,6 +12,6 @@
   align-items: center;
 }
 
-.headers *{
+.sites * {
   padding-left: 1%;
 }

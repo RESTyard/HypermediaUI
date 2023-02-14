@@ -37,26 +37,5 @@
     </ng-container>
   </div>
   <br/>
-
-  <div mat-dialog-title class="dialog-title">
-    <div class="dialog-title">
-      <h3>Sites
-        <span><mat-icon (click)="addSite()">add_circle_outline</mat-icon></span>
-      </h3>
-      <button mat-raised-button color="primary" type="button" (click)="saveSites()">Save</button>
-    </div>
-  </div>
-  <div class="sites-container">
-    <ng-container *ngFor="let siteFormControl of siteFormControls; let i = index;">
-      <div class="sites">
-        <span>{{i + 1}}.</span>
-        <mat-form-field [style.width.%]="60">
-          <mat-label>Site</mat-label>
-          <input type="text" matInput [formControl]="siteFormControl">
-        </mat-form-field>
-        <mat-icon (click)="removeSite(i)">remove_circle_outline</mat-icon>
-      </div>
-    </ng-container>
-  </div>
 </mat-dialog-content>
 
