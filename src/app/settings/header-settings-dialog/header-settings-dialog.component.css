@@ -1,9 +1,16 @@
-mat-dialog-content .scrollable {
+.headers-container, .sites-container {
   padding: inherit;
   border: 3px solid gray;
-  height: 300px;
   width: 90%;
   overflow-y: scroll;
+}
+
+.headers-container {
+  height: 200px;
+}
+
+.sites-container {
+  height: 130px;
 }
 
 .dialog-title {
@@ -12,6 +19,6 @@ mat-dialog-content .scrollable {
   align-items: center;
 }
 
-.headers-list * {
+.headers *, .sites * {
   padding-left: 1%;
 }

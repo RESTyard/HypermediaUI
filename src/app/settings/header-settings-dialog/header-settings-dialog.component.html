@@ -1,16 +1,28 @@
 <div mat-dialog-title class="dialog-title">
-  <h3>Headers
-  <span><mat-icon (click)="addHeader()">add_circle_outline</mat-icon></span>
-  </h3>
+  <div class="dialog-title">
+    <h3>Headers
+      <span><mat-icon (click)="addHeader()">add_circle_outline</mat-icon></span>
+    </h3>
+    <button mat-raised-button color="primary" type="button" (click)="saveHeaders()">Save</button>
+  </div>
+    <mat-form-field appearance="legacy">
+      <mat-label>Sites</mat-label>
+      <mat-select [formControl]="siteFormControl" (selectionChange)="initHeaders()">
+        <mat-option value="">All</mat-option>
+        <mat-option *ngFor="let site of sites" [value]="site">
+          {{site}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
   <button mat-icon-button aria-label="close dialog" mat-dialog-close>
     <mat-icon>close</mat-icon>
   </button>
 </div>
 
 <mat-dialog-content>
-  <div class="scrollable">
+  <div class="headers-container">
     <ng-container *ngFor="let headerFormGroup of headerFormGroups; let i = index;">
-      <div [formGroup]="headerFormGroup" class="headers-list">
+      <div [formGroup]="headerFormGroup" class="headers">
         <span>{{i + 1}}.</span>
         <mat-form-field [style.width.%]="30">
           <mat-label>Key</mat-label>
@@ -25,8 +37,26 @@
     </ng-container>
   </div>
   <br/>
-  <div>
-      <button mat-raised-button color="primary" type="button" (click)="updateHeaders()">Update</button>
+
+  <div mat-dialog-title class="dialog-title">
+    <div class="dialog-title">
+      <h3>Sites
+        <span><mat-icon (click)="addSite()">add_circle_outline</mat-icon></span>
+      </h3>
+      <button mat-raised-button color="primary" type="button" (click)="saveSites()">Save</button>
+    </div>
+  </div>
+  <div class="sites-container">
+    <ng-container *ngFor="let siteFormControl of siteFormControls; let i = index;">
+      <div class="sites">
+        <span>{{i + 1}}.</span>
+        <mat-form-field [style.width.%]="60">
+          <mat-label>Site</mat-label>
+          <input type="text" matInput [formControl]="siteFormControl">
+        </mat-form-field>
+        <mat-icon (click)="removeSite(i)">remove_circle_outline</mat-icon>
+      </div>
+    </ng-container>
   </div>
 </mat-dialog-content>
 

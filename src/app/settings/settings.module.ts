@@ -7,14 +7,14 @@ import {MatInputModule} from '@angular/material/input';
 import {MatButtonModule} from '@angular/material/button';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {ReactiveFormsModule} from '@angular/forms';
-import {SettingsService} from './settings.service';
+import {SettingsService} from './services/settings.service';
 import {MatIconModule} from '@angular/material/icon';
 import {MatDialogModule} from '@angular/material/dialog';
 import {MAT_SNACK_BAR_DEFAULT_OPTIONS, MatSnackBarModule} from '@angular/material/snack-bar';
 import { SettingsMenuComponent } from './settings-menu/settings-menu.component';
 import {MatMenuModule} from '@angular/material/menu';
 import {MatDividerModule} from '@angular/material/divider';
-import {EncryptionService} from './encryption.service';
+import {EncryptionService} from './services/encryption.service';
 
 @NgModule({
   declarations: [

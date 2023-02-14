@@ -21,7 +21,8 @@ import {SirenClientObject} from './siren-parser/siren-client-object';
 import {HypermediaAction, HttpMethodTyes} from './siren-parser/hypermedia-action';
 import {SirenHelpers} from './SirenHelpers';
 import {ApiPath} from './api-path';
-import {SettingsService} from '../settings/settings.service';
+import {SettingsService} from '../settings/services/settings.service';
+import {generate} from 'rxjs/internal/observable/generate';
 
 @Injectable()
 export class HypermediaClientService {
@@ -65,9 +66,7 @@ export class HypermediaClientService {
     this.apiPath.addStep(url);
 
     let headers = new HttpHeaders().set('Accept', this.sirenMediaType);
-    this.settingsService.getHeaders().forEach(x => {
-      headers = headers.set(x.key, x.value);
-    });
+    headers = this.setHeaders(url, headers);
 
     this.httpClient
       .get(url, {
@@ -95,9 +94,7 @@ export class HypermediaClientService {
 
   executeParameterlessAction(action: HypermediaAction, actionResult: (ActionResults, string?) => void): any {
     let headers = new HttpHeaders().set('Accept', this.sirenMediaType);
-    this.settingsService.getHeaders().forEach(x => {
-      headers = headers.set(x.key, x.value);
-    });
+    headers = this.setHeaders(action.href, headers);
 
     switch (action.method) {
       case HttpMethodTyes.POST:
@@ -159,10 +156,7 @@ export class HypermediaClientService {
     let headers = new HttpHeaders()
     .set('Content-Type', this.jsonMediaType)
     .set('Accept', this.sirenMediaType);
-
-    this.settingsService.getHeaders().forEach(x => {
-      headers = headers.set(x.key, x.value);
-    });
+    headers = this.setHeaders(action.href, headers);
 
     // todo if action responds with a action resource, process body
     switch (action.method) {
@@ -243,6 +237,16 @@ export class HypermediaClientService {
   private MapResponse(response: any): SirenClientObject {
     const hco = this.sirenDeserializer.deserialize(response);
     return hco;
+  }
+
+  private setHeaders(url: string, headers: HttpHeaders): HttpHeaders {
+    this.settingsService.getHeaders().forEach(x => {
+      headers = headers.set(x.key, x.value);
+    });
+    this.settingsService.getHeaders(new URL(url).host).forEach(x => {
+      headers = headers.set(x.key, x.value);
+    });
+    return headers;
   }
 }
 
