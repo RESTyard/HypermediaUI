@@ -29,6 +29,7 @@ import {FlexModule} from '@angular/flex-layout';
 import {MatTableModule} from '@angular/material/table';
 import {MatAutocompleteModule} from '@angular/material/autocomplete';
 import {DragDropModule} from '@angular/cdk/drag-drop';
+import {CustomHeadersInterceptor} from './settings/custom-headers.interceptor';
 
 const appRoutes: Routes = [
   {
@@ -79,6 +80,11 @@ const appRoutes: Routes = [
   //   useClass: EmptyResponseBodyErrorInterceptor,
   //   multi: true,
   // }],
+  providers: [{
+    provide: HTTP_INTERCEPTORS,
+    useClass: CustomHeadersInterceptor,
+    multi: true
+  }],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

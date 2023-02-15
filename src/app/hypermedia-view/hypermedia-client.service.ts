@@ -64,9 +64,7 @@ export class HypermediaClientService {
 
   Navigate(url: string) {
     this.apiPath.addStep(url);
-
-    let headers = new HttpHeaders().set('Accept', this.sirenMediaType);
-    headers = this.setHeaders(url, headers);
+    const headers = new HttpHeaders().set('Accept', this.sirenMediaType);
 
     this.httpClient
       .get(url, {
@@ -95,8 +93,7 @@ export class HypermediaClientService {
   }
 
   executeParameterlessAction(action: HypermediaAction, actionResult: (ActionResults, string?) => void): any {
-    let headers = new HttpHeaders().set('Accept', this.sirenMediaType);
-    headers = this.setHeaders(action.href, headers);
+    const headers = new HttpHeaders().set('Accept', this.sirenMediaType);
 
     switch (action.method) {
       case HttpMethodTyes.POST:
@@ -155,10 +152,9 @@ export class HypermediaClientService {
       parameters = action.parameters;
     }
 
-    let headers = new HttpHeaders()
+    const headers = new HttpHeaders()
     .set('Content-Type', this.jsonMediaType)
     .set('Accept', this.sirenMediaType);
-    headers = this.setHeaders(action.href, headers);
 
     // todo if action responds with a action resource, process body
     switch (action.method) {
@@ -239,16 +235,6 @@ export class HypermediaClientService {
   private MapResponse(response: any): SirenClientObject {
     const hco = this.sirenDeserializer.deserialize(response);
     return hco;
-  }
-
-  private setHeaders(url: string, headers: HttpHeaders): HttpHeaders {
-    this.settingsService.getHeaders().forEach(x => {
-      headers = headers.set(x.key, x.value);
-    });
-    this.settingsService.getHeaders(new URL(url).host).forEach(x => {
-      headers = headers.set(x.key, x.value);
-    });
-    return headers;
   }
 }
 
