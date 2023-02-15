@@ -15,7 +15,19 @@
                name="apiEntryPointInput"
                [formControl]="urlFormControl"
                [(ngModel)]="apiEntryPoint"
+               [matAutocomplete]="auto"
                />
+
+        <mat-autocomplete #auto="matAutocomplete">
+          <ng-container *ngIf="(historySuggestionsFiltered | async)?.length <= 5">
+            <mat-option
+              *ngFor="let suggestion of historySuggestionsFiltered | async"
+              [value]="suggestion">
+              {{suggestion}}
+            </mat-option>
+          </ng-container>
+        </mat-autocomplete>
+
         <mat-hint >Example: http://localhost/api/EntryPoint</mat-hint>
         <mat-error *ngIf="urlFormControl.hasError('pattern')">
           Check your URL
@@ -36,5 +48,4 @@
       </div>
     </form>
   </div>
-
 </div>

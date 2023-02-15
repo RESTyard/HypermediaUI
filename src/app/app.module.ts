@@ -24,6 +24,10 @@ import {MatDialog, MatDialogModule} from '@angular/material/dialog';
 import {MatCardModule} from '@angular/material/card';
 import {MatSelectModule} from '@angular/material/select';
 import {SettingsModule} from './settings/settings.module';
+import {MatListModule} from '@angular/material/list';
+import {FlexModule} from '@angular/flex-layout';
+import {MatTableModule} from '@angular/material/table';
+import {MatAutocompleteModule} from '@angular/material/autocomplete';
 
 const appRoutes: Routes = [
   {
@@ -64,6 +68,10 @@ const appRoutes: Routes = [
     HypermediaViewModule,
     MatCardModule,
     MatSelectModule,
+    MatListModule,
+    FlexModule,
+    MatTableModule,
+    MatAutocompleteModule,
   ],
   // providers: [{
   //   provide: HTTP_INTERCEPTORS,

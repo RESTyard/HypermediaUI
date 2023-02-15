@@ -7,6 +7,7 @@ export class SettingsService {
 
   static readonly HEADERS = "headers";
   static readonly SITE_HEADERS = "siteHeaders";
+  static readonly ENTRY_POINTS = "entryPoints";
 
   constructor(private encryptionService: EncryptionService) {}
   public setHeaders(headers: {}, site: string | null = null) {
@@ -63,6 +64,29 @@ export class SettingsService {
     }
     console.log(sites)
     return sites;
+  }
+
+  saveEntryPoint(url: string) {
+    let recentEntryPoints = this.getEntryPoints();
+    try {
+      const index = recentEntryPoints.indexOf(url);
+      if(index != -1) {
+        recentEntryPoints.splice(index, 1);
+      }
+      if(recentEntryPoints.length >= 5) {
+        recentEntryPoints.shift();
+      }
+      recentEntryPoints.push(url);
+      localStorage.setItem(SettingsService.ENTRY_POINTS, JSON.stringify(recentEntryPoints));
+    } catch (e) {}
+  }
+
+  getEntryPoints(): string[] {
+    try {
+      return JSON.parse(localStorage.getItem(SettingsService.ENTRY_POINTS)) ?? [];
+    } catch (e) {
+      return [];
+    }
   }
 
 }
