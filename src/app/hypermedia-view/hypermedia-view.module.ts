@@ -36,7 +36,7 @@ import {MaterialDesignFrameworkModule} from "@ajsf/material";
 import { JsonSchemaFormModule, JsonSchemaFormService, WidgetLibraryService, FrameworkLibraryService, Framework } from"@ajsf/core"
 import {FormsModule} from "@angular/forms";
 
-
+import { NgxJsonViewerModule } from 'ngx-json-viewer';
 
 @NgModule({
     imports: [
@@ -56,6 +56,9 @@ import {FormsModule} from "@angular/forms";
         MatInputModule,
         MatSelectModule,
         MaterialDesignFrameworkModule,
+
+        NgxJsonViewerModule,
+
         // workaround for: https://github.com/dschnelldavis/angular2-json-schema-form/issues/189
         // JsonSchemaFormModule.forRoot(MaterialDesignFrameworkModule),
         {

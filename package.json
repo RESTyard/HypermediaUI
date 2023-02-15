@@ -26,6 +26,7 @@
     "@angular/router": "^14.2.0",
     "angular2-prettyjson": "^3.0.1",
     "ngx-clipboard": "^15.1.0",
+    "ngx-json-viewer": "^3.2.1",
     "normalize.css": "^8.0.1",
     "rxjs": "~7.5.0",
     "simple-object-query": "^1.6.1",
