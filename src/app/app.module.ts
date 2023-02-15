@@ -20,7 +20,7 @@ import { LinkViewComponent } from './hypermedia-view/link-view/link-view.compone
 import { EmptyResponseBodyErrorInterceptor } from './HttpInterceptorWorkaround';
 import { MainPageComponent } from './main-page/main-page.component';
 
-import {MatDialog, MatDialogModule} from '@angular/material/dialog';
+import {MatDialogModule} from '@angular/material/dialog';
 import {MatCardModule} from '@angular/material/card';
 import {MatSelectModule} from '@angular/material/select';
 import {SettingsModule} from './settings/settings.module';
@@ -28,6 +28,7 @@ import {MatListModule} from '@angular/material/list';
 import {FlexModule} from '@angular/flex-layout';
 import {MatTableModule} from '@angular/material/table';
 import {MatAutocompleteModule} from '@angular/material/autocomplete';
+import {DragDropModule} from '@angular/cdk/drag-drop';
 
 const appRoutes: Routes = [
   {

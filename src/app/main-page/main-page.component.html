@@ -16,12 +16,13 @@
                [formControl]="urlFormControl"
                [(ngModel)]="apiEntryPoint"
                [matAutocomplete]="auto"
+               (input)="filterSuggestions()"
                />
 
         <mat-autocomplete #auto="matAutocomplete">
-          <ng-container *ngIf="(historySuggestionsFiltered | async)?.length <= 5">
+          <ng-container *ngIf="(suggestionsFiltered)?.length <= 5">
             <mat-option
-              *ngFor="let suggestion of historySuggestionsFiltered | async"
+              *ngFor="let suggestion of suggestionsFiltered"
               [value]="suggestion">
               {{suggestion}}
             </mat-option>

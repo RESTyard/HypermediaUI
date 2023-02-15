@@ -5,6 +5,7 @@ import {SettingsService} from '../settings/services/settings.service';
 import {Observable} from 'rxjs/internal/Observable';
 import {startWith} from 'rxjs/internal/operators/startWith';
 import {map} from 'rxjs/internal/operators/map';
+import {of} from 'rxjs/internal/observable/of';
 
 @Component({
   selector: 'app-main-page',
@@ -19,8 +20,8 @@ export class MainPageComponent implements OnInit {
 
   @Input() apiEntryPoint: string = "";
 
-  historySuggestions: string[];
-  historySuggestionsFiltered: Observable<string[]>;
+  suggestions: string[];
+  suggestionsFiltered: string[];
 
   constructor(private hypermediaClientService: HypermediaClientService, private settingsService: SettingsService) {
     this.urlFormControl = new FormControl(this.apiEntryPoint, [
@@ -34,16 +35,15 @@ export class MainPageComponent implements OnInit {
   }
 
   initHistory() {
-    this.historySuggestions = this.settingsService.getEntryPoints().reverse();
-    this.historySuggestionsFiltered = this.urlFormControl.valueChanges
-      .pipe(
-        // startWith(this.urlFormControl.value),
-        map(value => value && value !== "" ? this.historySuggestions.filter(option => option.toLowerCase().includes(value.toLowerCase())) : [])
-      );
+    this.suggestions = this.settingsService.getEntryPoints().reverse();
+    this.suggestionsFiltered = this.suggestions;
   }
 
   navigate() {
     this.hypermediaClientService.Navigate(this.apiEntryPoint);
   }
 
+  filterSuggestions() {
+    this.suggestionsFiltered = this.suggestions.filter(option => option.toLowerCase().includes(this.urlFormControl.value.toLowerCase()));
+  }
 }
