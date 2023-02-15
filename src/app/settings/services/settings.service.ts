@@ -62,7 +62,6 @@ export class SettingsService {
     } catch (e){
       console.log("Invalid object.")
     }
-    console.log(sites)
     return sites;
   }
 
