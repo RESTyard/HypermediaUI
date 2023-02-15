@@ -20,9 +20,6 @@ export class MainPageComponent implements OnInit {
 
   @Input() apiEntryPoint: string = "";
 
-  suggestions: string[];
-  suggestionsFiltered: string[];
-
   constructor(private hypermediaClientService: HypermediaClientService, private settingsService: SettingsService) {
     this.urlFormControl = new FormControl(this.apiEntryPoint, [
       Validators.required,
@@ -30,20 +27,10 @@ export class MainPageComponent implements OnInit {
     ]);
   }
 
-  ngOnInit() {
-    this.initHistory();
-  }
-
-  initHistory() {
-    this.suggestions = this.settingsService.getEntryPoints().reverse();
-    this.suggestionsFiltered = this.suggestions;
-  }
+  ngOnInit() {}
 
   navigate() {
     this.hypermediaClientService.Navigate(this.apiEntryPoint);
   }
 
-  filterSuggestions() {
-    this.suggestionsFiltered = this.suggestions.filter(option => option.toLowerCase().includes(this.urlFormControl.value.toLowerCase()));
-  }
 }

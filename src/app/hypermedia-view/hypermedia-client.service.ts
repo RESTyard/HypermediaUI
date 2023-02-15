@@ -76,9 +76,6 @@ export class HypermediaClientService {
             apiPath: this.apiPath.fullPath
           }
         });
-        if(url.includes('EntryPoint')){
-          this.settingsService.saveEntryPoint(url);
-        }
         const sirenClientObject = this.MapResponse(response);
 
         this.currentClientObject$.next(sirenClientObject);

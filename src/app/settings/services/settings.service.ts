@@ -66,27 +66,4 @@ export class SettingsService {
     return sites;
   }
 
-  saveEntryPoint(url: string) {
-    let recentEntryPoints = this.getEntryPoints();
-    try {
-      const index = recentEntryPoints.indexOf(url);
-      if(index != -1) {
-        recentEntryPoints.splice(index, 1);
-      }
-      if(recentEntryPoints.length >= 5) {
-        recentEntryPoints.shift();
-      }
-      recentEntryPoints.push(url);
-      localStorage.setItem(SettingsService.ENTRY_POINTS, JSON.stringify(recentEntryPoints));
-    } catch (e) {}
-  }
-
-  getEntryPoints(): string[] {
-    try {
-      return JSON.parse(localStorage.getItem(SettingsService.ENTRY_POINTS)) ?? [];
-    } catch (e) {
-      return [];
-    }
-  }
-
 }
