@@ -1,5 +1,4 @@
 import {Header} from '../interface/headers';
-import {EncryptionService} from './encryption.service';
 import {Injectable} from '@angular/core';
 
 @Injectable()
@@ -7,16 +6,15 @@ export class SettingsService {
 
   static readonly HEADERS = "headers";
   static readonly SITE_HEADERS = "siteHeaders";
-  static readonly ENTRY_POINTS = "entryPoints";
 
-  constructor(private encryptionService: EncryptionService) {}
+  constructor() {}
   public setHeaders(headers: {}, site: string | null = null) {
     if(site === null) {
-      localStorage.setItem(SettingsService.HEADERS, this.encryptionService.encrypt(JSON.stringify(headers)));
+      localStorage.setItem(SettingsService.HEADERS, JSON.stringify(headers));
     } else {
       let currentSites = {...this.getSitesWithHeaders()};
       currentSites[site] = headers;
-      localStorage.setItem(SettingsService.SITE_HEADERS, this.encryptionService.encrypt(JSON.stringify(currentSites)));
+      localStorage.setItem(SettingsService.SITE_HEADERS, JSON.stringify(currentSites));
     }
   }
 
@@ -24,8 +22,8 @@ export class SettingsService {
     let headers: Header[] = [];
     try{
         const headersRaw = site === null ?
-            JSON.parse(this.encryptionService.decrypt(localStorage.getItem(SettingsService.HEADERS))) :
-            JSON.parse(this.encryptionService.decrypt(localStorage.getItem(SettingsService.SITE_HEADERS)))[site];
+            JSON.parse(localStorage.getItem(SettingsService.HEADERS)) :
+            JSON.parse(localStorage.getItem(SettingsService.SITE_HEADERS))[site];
         let keys = Object.keys(headersRaw);
         headers = keys
         .filter(x => x.trim() != '' && headersRaw[x].trim() != '')
@@ -48,20 +46,22 @@ export class SettingsService {
         delete currentSites[x];
       }
     });
-    localStorage.setItem(SettingsService.SITE_HEADERS, this.encryptionService.encrypt(JSON.stringify(currentSites)));
+    localStorage.setItem(SettingsService.SITE_HEADERS, JSON.stringify(currentSites));
   }
 
   getSites(): string[] {
-    return Object.keys(this.getSitesWithHeaders());
+    try {
+      return Object.keys(this.getSitesWithHeaders());
+    } catch (e) {
+      return [];
+    }
   }
 
   getSitesWithHeaders(): {} {
     let sites = {};
     try{
-        sites = JSON.parse(this.encryptionService.decrypt(localStorage.getItem(SettingsService.SITE_HEADERS)));
-    } catch (e){
-      console.log("Invalid object.")
-    }
+        sites = JSON.parse(localStorage.getItem(SettingsService.SITE_HEADERS));
+    } catch (e){}
     return sites;
   }
 
