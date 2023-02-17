@@ -17,6 +17,7 @@ export class ParameterlessActionViewComponent implements OnInit {
   actionResultLocation: string | null = null;
   actionMessage: string = "";  // TODO: Needs to be updated
   executed: boolean = false; // TODO show multiple executions as list
+  problemDetailsError: ProblemDetailsError| null = null
 
   constructor(private hypermediaClientService: HypermediaClientService) { }
 
@@ -29,7 +30,8 @@ export class ParameterlessActionViewComponent implements OnInit {
         resultLocation: string | null,
         content: any,
         problemDetailsError: ProblemDetailsError) => {
-        
+          
+        this.problemDetailsError = problemDetailsError;
         this.actionResult = actionResults;
         
         if (problemDetailsError) {

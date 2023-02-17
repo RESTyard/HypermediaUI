@@ -30,13 +30,16 @@
     <div class="resultIconContainer" [ngSwitch]="actionResult" *ngIf="executed">
       <mat-icon *ngSwitchCase="ActionResultsEnum.ok" class="containerElement" color="primary"
                 matTooltip={{actionMessage}}>done</mat-icon>
-      <mat-icon *ngSwitchCase="ActionResultsEnum.error" class="containerElement" color="primary"
+      <mat-icon *ngSwitchCase="ActionResultsEnum.error" class="containerElement" color="warn" [matMenuTriggerFor]="errorPopup"
                 matTooltip={{actionMessage}}>error</mat-icon>
       <mat-icon *ngSwitchCase="ActionResultsEnum.pending" class="containerElement" color="primary"
                 matTooltip={{actionMessage}}>schedule</mat-icon>
       <mat-icon *ngSwitchCase="ActionResultsEnum.undefined" class="containerElement" color="primary"
                 matTooltip={{actionMessage}}>question_mark</mat-icon>
     </div>
+    <mat-menu #errorPopup="matMenu" >
+      <app-problem-details-view *ngIf="problemDetailsError" [problemDetailsError]="problemDetailsError"></app-problem-details-view>
+    </mat-menu>
 
     <!-- result button -->
     <button *ngIf="actionResultLocation !== null"

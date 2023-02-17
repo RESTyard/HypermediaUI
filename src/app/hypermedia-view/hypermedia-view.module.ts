@@ -37,6 +37,8 @@ import { JsonSchemaFormModule, JsonSchemaFormService, WidgetLibraryService, Fram
 import {FormsModule} from "@angular/forms";
 
 import { NgxJsonViewerModule } from 'ngx-json-viewer';
+import { MatMenuModule } from '@angular/material/menu';
+import { ErrorDialogModule } from '../error-dialog/error-dialog.module';
 
 @NgModule({
     imports: [
@@ -56,6 +58,8 @@ import { NgxJsonViewerModule } from 'ngx-json-viewer';
         MatInputModule,
         MatSelectModule,
         MaterialDesignFrameworkModule,
+        MatMenuModule,
+        ErrorDialogModule,
 
         NgxJsonViewerModule,
 

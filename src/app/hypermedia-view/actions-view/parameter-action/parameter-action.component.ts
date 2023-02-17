@@ -17,6 +17,7 @@ export class ParameterActionComponent implements OnInit {
   actionResultLocation: string | null = null;
   actionMessage: string = "";
   executed: boolean = false; // TODO show multiple executions as list
+  problemDetailsError: ProblemDetailsError| null = null
 
   constructor(private hypermediaClientService: HypermediaClientService) { }
 
@@ -32,6 +33,7 @@ export class ParameterActionComponent implements OnInit {
         content: string,
         problemDetailsError: ProblemDetailsError) => {
 
+        this.problemDetailsError = problemDetailsError;
         this.actionResult = result;
 
         if (problemDetailsError) {

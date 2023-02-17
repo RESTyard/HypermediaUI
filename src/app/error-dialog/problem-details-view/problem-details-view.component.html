@@ -13,11 +13,7 @@
 
   <mat-card-content>
     <p *ngIf="problemDetailsError.detail">{{problemDetailsError.detail}}</p>
-
-    <mat-divider></mat-divider>
-
     <p *ngIf="problemDetailsError.instance">{{"See: " + problemDetailsError.instance}}</p>
-
   </mat-card-content>
 
 </mat-card>

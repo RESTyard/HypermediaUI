@@ -1,7 +1,7 @@
 <mat-card class="action-container" fxLayout="row" fxLayoutAlign="start center">
 
   <!-- execute button -->
-  <div fxLayout="row" class="contentRow" >
+  <div fxLayout="row" class="contentRow">
     <button class="executeButton containerElement" mat-raised-button (click)="executeAction()"
             matTooltip="{{action.title}}">
       <mat-icon class="icon" color="primary">play_circle_outline</mat-icon>
@@ -9,17 +9,22 @@
     </button>
   </div>
 
-  <!-- result icon -->
-  <div class="resultIconContainer" [ngSwitch]="actionResult" *ngIf="executed" >
-    <mat-icon *ngSwitchCase="ActionResultsEnum.ok" class="containerElement" color="primary"
-              matTooltip={{actionMessage}}>done</mat-icon>
-    <mat-icon *ngSwitchCase="ActionResultsEnum.error" class="containerElement" color="primary"
-              matTooltip={{actionMessage}}>error</mat-icon>
-    <mat-icon *ngSwitchCase="ActionResultsEnum.pending" class="containerElement" color="primary"
-              matTooltip={{actionMessage}}>schedule</mat-icon>
-    <mat-icon *ngSwitchCase="ActionResultsEnum.undefined" class="containerElement" color="primary"
-              matTooltip={{actionMessage}}>question_mark</mat-icon>
+  <div class="resultIconContainer" [ngSwitch]="actionResult" *ngIf="executed">
+    <button mat-icon-button >
+      <mat-icon *ngSwitchCase="ActionResultsEnum.ok" class="containerElement" color="primary"
+                matTooltip={{actionMessage}}>done</mat-icon>
+      <mat-icon *ngSwitchCase="ActionResultsEnum.error" class="containerElement" color="warn" [matMenuTriggerFor]="errorPopup"
+                matTooltip={{actionMessage}}>error</mat-icon>
+      <mat-icon *ngSwitchCase="ActionResultsEnum.pending" class="containerElement" color="primary" 
+                matTooltip={{actionMessage}}>schedule</mat-icon>
+      <mat-icon *ngSwitchCase="ActionResultsEnum.undefined" class="containerElement" color="primary"
+                matTooltip={{actionMessage}}>question_mark</mat-icon>
+    </button>
   </div>
+  <mat-menu #errorPopup="matMenu" >
+    <app-problem-details-view *ngIf="problemDetailsError" [problemDetailsError]="problemDetailsError"></app-problem-details-view>
+  </mat-menu>
+  
 
   <!-- result button -->
   <button *ngIf="actionResultLocation !== null"
@@ -32,7 +37,7 @@
   </button>
 
   <!-- description -->
-  <mat-panel-description >
+  <mat-panel-description>
     <span>{{action.title}}</span>
   </mat-panel-description>
 
