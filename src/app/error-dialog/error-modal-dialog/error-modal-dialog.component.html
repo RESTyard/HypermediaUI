@@ -15,11 +15,20 @@
 
     <mat-card-content>
       <button
-              (click)="close.emit()"
+              (click)="reload.emit()"
               mat-raised-button
               [color]="color"
-              i18n="errorDialog.closeButton|The text of the close button in the error dialog@@errorDialogCloseButton">
-        Restart application
+              i18n="errorDialog.refreshButton|The text of the close button in the error dialog@@errorDialogCloseButton">
+        <mat-icon>refresh</mat-icon>
+        Reload page
+      </button>
+
+      <button (click)="gotoEntryPoint.emit()"
+              mat-raised-button
+              [color]="color"
+              i18n="errorDialog.entryPointButton|The text of the close button in the error dialog@@errorDialogCloseButton">
+        <mat-icon class="icon">exit_to_app</mat-icon>
+        Go to entry point
       </button>
     </mat-card-content>
   </mat-card>

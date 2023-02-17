@@ -49,6 +49,14 @@ export class HypermediaClientService {
     return this.currentNavPaths$;
   }
 
+  NavigateToEntryPoint() {
+    if (!this.apiPath || !this.apiPath.hasPath) {
+      this.router.navigate(['']);
+    }
+
+    this.Navigate(this.apiPath.firstSegment);
+  }
+
   NavigateToApiPath(apiPath: ApiPath) {
     if (!apiPath || !apiPath.hasPath) {
       this.router.navigate(['']);

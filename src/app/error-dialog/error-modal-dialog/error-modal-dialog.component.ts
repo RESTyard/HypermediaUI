@@ -14,9 +14,10 @@ export class ErrorModalDialogComponent {
 
   @Input() problemDetailsError: ProblemDetailsError | null = null;
 
-  @Output() close = new EventEmitter();
+  @Output() reload = new EventEmitter();
+  @Output() gotoEntryPoint = new EventEmitter();
 
   constructor() {
-    this.close.subscribe(() => location.reload());
+    this.reload.subscribe(() => location.reload());
   }
 }

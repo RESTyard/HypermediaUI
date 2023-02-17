@@ -1,3 +1,5 @@
+@import '../../../defaults.scss';
+
 .backdrop {
   position: absolute;
   top: 0;
@@ -23,6 +25,10 @@
 
 .closed {
   display: none;
+}
+
+button {
+  margin-right: $defaultSpacing;
 }
 
 app-problem-details-view{
