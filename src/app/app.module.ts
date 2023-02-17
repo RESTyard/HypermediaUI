@@ -20,7 +20,9 @@ import { LinkViewComponent } from './hypermedia-view/link-view/link-view.compone
 import { ProblemDetailsViewComponent } from './error-dialog/problem-details-view/problem-details-view.component';
 import { EmptyResponseBodyErrorInterceptor } from './HttpInterceptorWorkaround';
 import { MainPageComponent } from './main-page/main-page.component';
-import {ApiKeyInterceptor} from './api-key.interceptor';
+import { ApiKeyInterceptor } from './api-key.interceptor';
+import { MatTooltipDefaultOptions, MAT_TOOLTIP_DEFAULT_OPTIONS, MAT_TOOLTIP_DEFAULT_OPTIONS_FACTORY } from '@angular/material/tooltip';
+
 
 const appRoutes: Routes = [
   {
@@ -35,6 +37,11 @@ const appRoutes: Routes = [
   // { path: '**', component: MainPageComponent } // wildcard -> 404
 ];
 
+export const myCustomTooltipDefaults: MatTooltipDefaultOptions = {
+  showDelay: 600,
+  hideDelay: 0,
+  touchendHideDelay: 0,
+};
 
 @NgModule({
   declarations: [
@@ -63,8 +70,13 @@ const appRoutes: Routes = [
   providers: [{
     provide: HTTP_INTERCEPTORS,
     useClass: ApiKeyInterceptor,
-    multi: true
-  }],
+    multi: true,
+  },
+  {
+    provide: MAT_TOOLTIP_DEFAULT_OPTIONS,
+    useValue: myCustomTooltipDefaults
+  }
+  ],
   // providers: [{
   //   provide: HTTP_INTERCEPTORS,
   //   useClass: EmptyResponseBodyErrorInterceptor,
