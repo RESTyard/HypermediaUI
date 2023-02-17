@@ -17,6 +17,7 @@ import { ErrorDialogModule } from './error-dialog/error-dialog.module';
 
 import { AppComponent } from './app.component';
 import { LinkViewComponent } from './hypermedia-view/link-view/link-view.component';
+import { ProblemDetailsViewComponent } from './error-dialog/problem-details-view/problem-details-view.component';
 import { EmptyResponseBodyErrorInterceptor } from './HttpInterceptorWorkaround';
 import { MainPageComponent } from './main-page/main-page.component';
 import {ApiKeyInterceptor} from './api-key.interceptor';

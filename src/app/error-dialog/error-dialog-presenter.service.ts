@@ -8,6 +8,7 @@ import {
 
 import { ErrorModalDialogComponent } from './error-modal-dialog/error-modal-dialog.component';
 import {ThemePalette} from "@angular/material/core";
+import { ProblemDetailsError } from './problem-details-error';
 
 @Injectable()
 export class ErrorDialogPresenter {
@@ -45,6 +46,14 @@ export class ErrorDialogPresenter {
 
       this.modal.changeDetectorRef.detectChanges();
 
+      this.modal.instance.close.subscribe(() => this.destroy());
+    }
+
+    openProblemDetails(problemDetailsError:ProblemDetailsError, color: ThemePalette = 'warn') {
+      this.modal = this.viewContainer.createComponent(ErrorModalDialogComponent);
+      this.modal.instance.problemDetailsError = problemDetailsError;
+
+      this.modal.changeDetectorRef.detectChanges();
       this.modal.instance.close.subscribe(() => this.destroy());
     }
 

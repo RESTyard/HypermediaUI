@@ -1,7 +1,10 @@
+@import '../../../defaults.scss';
+
 .jsonTree {
   --ngx-json-string: red;
   --ngx-json-number: darkorange;
   --ngx-json-boolean: blue;
   --ngx-json-null: magenta;
   --ngx-json-undefined: magenta;
+  margin: $defaultSpacing;
 }

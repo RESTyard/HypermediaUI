@@ -1,4 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
+import { ProblemDetailsError } from 'src/app/error-dialog/problem-details-error';
 import { ActionResults, HypermediaClientService } from '../../hypermedia-client.service';
 import { HypermediaAction } from '../../siren-parser/hypermedia-action';
 
@@ -29,12 +30,12 @@ export class ParameterActionComponent implements OnInit {
       (result: ActionResults,
         resultLocation: string | null,
         content: string,
-        statusCodeMessage: string) => {
+        problemDetailsError: ProblemDetailsError) => {
 
         this.actionResult = result;
 
-        if (statusCodeMessage) {
-          this.actionMessage = statusCodeMessage;
+        if (problemDetailsError) {
+          this.actionMessage = problemDetailsError.title;
         } else {
           this.actionMessage = '';
         }

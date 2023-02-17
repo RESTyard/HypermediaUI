@@ -1,0 +1,24 @@
+@import '../../../defaults.scss';
+
+::ng-deep .mat-card-header-text {
+  margin: 0px;
+}
+
+mat-divider {
+  margin-top: $defaultSpacing;
+  margin-bottom: $defaultSpacing;
+}
+
+p {
+  white-space: pre-line;
+}
+
+.problem-details-view {
+  padding: $defaultSpacing;
+  margin: 0;
+  box-shadow: none;
+}
+
+.CopyToClipboardButton {
+  margin-left: auto;
+}

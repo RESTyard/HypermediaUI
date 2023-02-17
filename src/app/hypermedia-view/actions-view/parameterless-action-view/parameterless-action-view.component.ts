@@ -1,6 +1,7 @@
 import { HypermediaClientService, ActionResults } from '../../hypermedia-client.service';
 import { Component, OnInit, Input } from '@angular/core';
 import { HypermediaAction } from '../../siren-parser/hypermedia-action';
+import { ProblemDetailsError } from 'src/app/error-dialog/problem-details-error';
 
 @Component({
   selector: 'app-parameterless-action-view',
@@ -12,7 +13,7 @@ export class ParameterlessActionViewComponent implements OnInit {
 
   ActionResultsEnum = ActionResults;
 
-  actionResult: ActionResults;
+  actionResult: ActionResults | null = null;
   actionResultLocation: string | null = null;
   actionMessage: string = "";  // TODO: Needs to be updated
   executed: boolean = false; // TODO show multiple executions as list
@@ -27,13 +28,12 @@ export class ParameterlessActionViewComponent implements OnInit {
       (actionResults: ActionResults,
         resultLocation: string | null,
         content: any,
-        statusCodeString: string) => {
+        problemDetailsError: ProblemDetailsError) => {
         
         this.actionResult = actionResults;
         
-        if (statusCodeString) {
-          this.actionMessage = statusCodeString;
-          console.log(typeof statusCodeString);
+        if (problemDetailsError) {
+          this.actionMessage = problemDetailsError.title;
         } else {
           this.actionMessage = '';
         }
