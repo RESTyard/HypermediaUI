@@ -3,7 +3,7 @@
     <mat-card-title>{{problemDetailsError.title === "" ? "Error": problemDetailsError.title}}</mat-card-title>
     <mat-card-subtitle>{{problemDetailsError.type}}{{getStatusCodeMessage(problemDetailsError.status)}}</mat-card-subtitle>
     <button mat-icon-button
-            class="CopyToClipboardButton"
+            class="CopyToClipboardButton hoverButton"
             (click)="copyToClipBoard()"
             matTooltip="Copy raw response body to clipboard"
             color="primary">

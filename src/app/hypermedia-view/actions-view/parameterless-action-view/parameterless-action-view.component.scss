@@ -11,6 +11,13 @@
   padding-left: 24px;
 }
 
+.hoverButton:hover{
+  opacity: 0.8;
+}
+
+.executeButton:hover{
+  background-color: #f5f5f5;
+}
 
 .containerElement {
   margin-right: $defaultSpacing;
