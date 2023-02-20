@@ -1,13 +1,11 @@
 /* You can add global styles to this file, and also import other style files */
 @import 'hypermedia-ui-theme';
-@import "~normalize.css/normalize.css";
 @import url("https://fonts.googleapis.com/icon?family=Material+Icons");
-
-* {
-  padding: 0;
-  margin: 0;
-}
 
 mat-card {
   margin: 1rem;
+}
+
+body{
+  margin: 0;
 }

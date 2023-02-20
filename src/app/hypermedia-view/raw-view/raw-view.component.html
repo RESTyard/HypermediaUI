@@ -1,29 +1,31 @@
-<div class="button-toolbar">
+<div class="container">
+    <div class="button-toolbar">
 
-    <button mat-icon-button
-            class="IconButton"
-            (click)="onExpand()"
-            matTooltip="Expand all"
-            color="primary">
-        <mat-icon>unfold_more</mat-icon>
-    </button>
+        <button mat-icon-button
+                class="IconButton"
+                (click)="onExpand()"
+                matTooltip="Expand all"
+                color="primary">
+            <mat-icon>unfold_more</mat-icon>
+        </button>
 
-    <button mat-icon-button
-            class="IconButton"
-            (click)="onCollaps()"
-            matTooltip="Collaps all"
-            color="primary">
-        <mat-icon>unfold_less</mat-icon>
-    </button>
+        <button mat-icon-button
+                class="IconButton"
+                (click)="onCollaps()"
+                matTooltip="Collaps all"
+                color="primary">
+            <mat-icon>unfold_less</mat-icon>
+        </button>
 
-    <button mat-icon-button
-            class="IconButton"
-            (click)="copyToClipBoard()"
-            matTooltip="Copy raw json to clipboard"
-            color="primary">
-        <mat-icon>assignment</mat-icon>
-    </button>
+        <button mat-icon-button
+                class="IconButton"
+                (click)="copyToClipBoard()"
+                matTooltip="Copy raw json to clipboard"
+                color="primary">
+            <mat-icon>assignment</mat-icon>
+        </button>
 
+    </div>
+
+    <ngx-json-viewer class="jsonTree" [json]="rawObject" [expanded]="expand"></ngx-json-viewer>
 </div>
-
-<ngx-json-viewer class="jsonTree" [json]="rawObject" [expanded]="expand"></ngx-json-viewer>

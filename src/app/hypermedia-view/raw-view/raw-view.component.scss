@@ -6,5 +6,8 @@
   --ngx-json-boolean: blue;
   --ngx-json-null: magenta;
   --ngx-json-undefined: magenta;
-  margin: $defaultSpacing;
+}
+
+.container {
+  padding: $defaultContainerSpacing;
 }
