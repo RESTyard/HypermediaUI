@@ -2,18 +2,28 @@
   <mat-card-header>
     <mat-card-title>{{problemDetailsError.title === "" ? "Error": problemDetailsError.title}}</mat-card-title>
     <mat-card-subtitle>{{problemDetailsError.type}}{{getStatusCodeMessage(problemDetailsError.status)}}</mat-card-subtitle>
-    <button mat-icon-button
-            class="CopyToClipboardButton hoverButton"
-            (click)="copyToClipBoard()"
-            matTooltip="Copy raw response body to clipboard"
-            color="primary">
-        <mat-icon>assignment</mat-icon>
-    </button>
+
   </mat-card-header>
 
   <mat-card-content>
     <p *ngIf="problemDetailsError.detail">{{problemDetailsError.detail}}</p>
     <p *ngIf="problemDetailsError.instance">{{"See: " + problemDetailsError.instance}}</p>
   </mat-card-content>
+
+  <mat-expansion-panel *ngIf="problemDetailsError?.rawObject">
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        Raw response
+        <button mat-icon-button
+                class="CopyToClipboardButton hoverButton"
+                (click)="copyToClipBoard($event)"
+                matTooltip="Copy raw response body to clipboard"
+                color="primary">
+          <mat-icon>assignment</mat-icon>
+        </button>
+      </mat-panel-title>
+    </mat-expansion-panel-header>
+    <ngx-json-viewer class="jsonTree" [json]="problemDetailsError?.rawObject"></ngx-json-viewer>
+  </mat-expansion-panel>
 
 </mat-card>

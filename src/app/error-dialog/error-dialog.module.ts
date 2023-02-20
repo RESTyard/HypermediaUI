@@ -9,6 +9,8 @@ import { GlobalErrorHandler } from './global-error.handler';
 import { ProblemDetailsViewComponent } from './problem-details-view/problem-details-view.component';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatIconModule } from '@angular/material/icon';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { NgxJsonViewerModule } from 'ngx-json-viewer';
 
 @NgModule({
   imports: [
@@ -17,6 +19,8 @@ import { MatIconModule } from '@angular/material/icon';
     MatButtonModule,
     MatDividerModule,
     MatIconModule,
+    MatExpansionModule,
+    NgxJsonViewerModule
   ],
   providers: [
     {

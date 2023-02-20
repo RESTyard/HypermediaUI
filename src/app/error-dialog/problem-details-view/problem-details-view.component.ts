@@ -16,10 +16,11 @@ export class ProblemDetailsViewComponent implements OnInit {
   ngOnInit() {
   }
 
-  copyToClipBoard() {
+  copyToClipBoard(event: any) {
     if (this.problemDetailsError) {
       this.clipboardService.copyFromContent(JSON.stringify(this.problemDetailsError.rawObject, null, 4));
     }
+    event.stopPropagation()
   }
 
   getStatusCodeMessage(statusCode: number): string {
