@@ -25,11 +25,13 @@ export class ParameterlessActionViewComponent implements OnInit {
   }
 
   public executeAction() {
+    this.actionResult= ActionResults.pending;
+    this.executed = true;
     this.hypermediaClientService.executeAction(this.action,
       (actionResults: ActionResults,
         resultLocation: string | null,
         content: any,
-        problemDetailsError: ProblemDetailsError) => {
+        problemDetailsError: ProblemDetailsError | null) => {
           
         this.problemDetailsError = problemDetailsError;
         this.actionResult = actionResults;
@@ -41,7 +43,6 @@ export class ParameterlessActionViewComponent implements OnInit {
         }
 
         this.actionResultLocation = resultLocation;
-        this.executed = true;
       });
   }
 

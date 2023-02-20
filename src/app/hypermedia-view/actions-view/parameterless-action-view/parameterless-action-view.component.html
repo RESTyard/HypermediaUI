@@ -15,8 +15,7 @@
                 matTooltip={{actionMessage}}>done</mat-icon>
       <mat-icon *ngSwitchCase="ActionResultsEnum.error" color="warn" class="hoverButton" [matMenuTriggerFor]="errorPopup"
                 matTooltip={{actionMessage}}>error</mat-icon>
-      <mat-icon *ngSwitchCase="ActionResultsEnum.pending" color="primary"
-                matTooltip={{actionMessage}}>schedule</mat-icon>
+      <mat-progress-spinner [diameter]="26" *ngSwitchCase="ActionResultsEnum.pending" mode="indeterminate" color="accent"></mat-progress-spinner>
       <mat-icon *ngSwitchCase="ActionResultsEnum.undefined" color="primary"
                 matTooltip={{actionMessage}}>question_mark</mat-icon>
     </button>

@@ -26,12 +26,14 @@ export class ParameterActionComponent implements OnInit {
 
   public onActionSubmitted(formParameters: any) {
     this.action.parameters = formParameters;
+    this.actionResult= ActionResults.pending;
+    this.executed = true;
 
     this.hypermediaClientService.executeAction(this.action,
       (result: ActionResults,
         resultLocation: string | null,
         content: string,
-        problemDetailsError: ProblemDetailsError) => {
+        problemDetailsError: ProblemDetailsError | null) => {
 
         this.problemDetailsError = problemDetailsError;
         this.actionResult = result;
@@ -44,7 +46,6 @@ export class ParameterActionComponent implements OnInit {
 
         // todo handle if has content AND location
         this.actionResultLocation = resultLocation;
-        this.executed = true;
       });
   }
 

@@ -174,7 +174,7 @@ export class HypermediaClientService {
     return parameters;
   }
 
-  executeAction(action: HypermediaAction, actionResult: (actionResults: ActionResults, resultLocation: string | null, content: any, problemDetailsError: ProblemDetailsError) => void): any {
+  executeAction(action: HypermediaAction, actionResult: (actionResults: ActionResults, resultLocation: string | null, content: any, problemDetailsError: ProblemDetailsError | null) => void): any {
     let parameters = null;
     let parameterMediaType = null;
     if (!action.isParameterLess) {
