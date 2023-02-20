@@ -37,8 +37,10 @@
       <mat-icon *ngSwitchCase="ActionResultsEnum.undefined" class="containerElement" color="primary"
                 matTooltip={{actionMessage}}>question_mark</mat-icon>
     </div>
-    <mat-menu #errorPopup="matMenu" >
-      <app-problem-details-view *ngIf="problemDetailsError" [problemDetailsError]="problemDetailsError"></app-problem-details-view>
+    <mat-menu #errorPopup="matMenu">
+      <div (click)="$event.stopPropagation()">
+        <app-problem-details-view *ngIf="problemDetailsError" [problemDetailsError]="problemDetailsError"></app-problem-details-view>
+      </div>
     </mat-menu>
 
     <!-- result button -->
