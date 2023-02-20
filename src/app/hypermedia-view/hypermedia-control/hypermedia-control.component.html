@@ -1,13 +1,17 @@
-<mat-toolbar color="primary">
-    <span>Hypermedia UI</span>
+<mat-toolbar class="headerMenue" color="primary">
+  <span>Hypermedia UI</span>
   <span class="spacer"></span>
   <app-settings-menu></app-settings-menu>
-    <button mat-button matTooltip="Exit API" (click)="navigateMainPage()">
-      <mat-icon class="icon" >exit_to_app</mat-icon>
-    </button>
+  <button mat-button matTooltip="Exit API" (click)="navigateMainPage()">
+    <mat-icon class="icon">exit_to_app</mat-icon>
+  </button>
 </mat-toolbar>
 
-<mat-toolbar class="apiToolbar" >
+<mat-progress-bar class="progressSpacer" *ngIf="isBusy" mode="indeterminate" color="accent"></mat-progress-bar>
+<div *ngIf="!isBusy" class="progressSpacer">&nbsp;</div>
+
+
+<mat-toolbar class="apiToolbar">
 
   <ng-container *ngFor="let link of navPaths; let i = index">
     <button mat-raised-button matTooltip="{{link}}" (click)="navigateLink(link)" color="primary">
@@ -23,8 +27,8 @@
   <mat-tab label="UI">
     <app-entity-view [entity]="hto"></app-entity-view>
   </mat-tab>
-  <mat-tab label="Raw" >
-    <app-raw-view [rawObject]="rawResponse"></app-raw-view>
+  <mat-tab label="Raw">
+    <app-raw-view class="rawContent" [rawObject]="rawResponse"></app-raw-view>
   </mat-tab>
 </mat-tab-group>
 

@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import {ThemePalette} from "@angular/material/core";
+import { ProblemDetailsError } from '../problem-details-error';
 
 @Component({
   selector: 'app-error-dialog',
@@ -11,9 +12,13 @@ export class ErrorModalDialogComponent {
   @Input() message = 'Critical Error raiseed';
   @Input() color: ThemePalette = "warn";
 
-  @Output() close = new EventEmitter();
+  @Input() problemDetailsError: ProblemDetailsError | null = null;
+
+  @Output() reload = new EventEmitter();
+  @Output() gotoEntryPoint = new EventEmitter();
+  @Output() exitApi = new EventEmitter();
 
   constructor() {
-    this.close.subscribe(() => location.reload());
+    this.reload.subscribe(() => location.reload());
   }
 }

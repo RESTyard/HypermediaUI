@@ -47,6 +47,10 @@ export class ApiPath {
       return this.apiPath[this.apiPath.length - 1];
     }
 
+    get firstSegment(): string {
+      return this.apiPath[0];
+    }
+
     get pathLength(): number {
       return this.apiPath.length;
     }

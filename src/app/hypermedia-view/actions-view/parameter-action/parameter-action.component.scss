@@ -4,6 +4,10 @@ mat-panel-title {
   align-items: center;
 }
 
-.icon {
-  margin-right: $defaultSpacing;
+.resultContainer {
+  margin-top: $defaultSpacing;
+}
+
+.hoverButton:hover{
+  opacity: 0.8;
 }

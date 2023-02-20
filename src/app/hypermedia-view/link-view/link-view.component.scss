@@ -5,9 +5,14 @@
   padding: 0;
 }
 
-.buttonContainer:hover .CopyToClipboardButton {
+.buttonContainer:hover .CopyToClipboardButton{
   opacity: 1;
 }
+
+.buttonContainer:hover .CopyToClipboardButton:hover{
+  opacity: 0.8;
+}
+
 .buttonContainer .CopyToClipboardButton {
   opacity: 0;
 }
@@ -21,3 +26,4 @@
 ::ng-deep .mat-icon-button {
   font-size: 10px;
 }
+

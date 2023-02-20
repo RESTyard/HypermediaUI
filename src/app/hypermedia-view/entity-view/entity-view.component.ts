@@ -1,4 +1,4 @@
-import { HypermediaVieConfiguration } from '../hypermedia-view-configuration';
+import { HypermediaViewConfiguration } from '../hypermedia-view-configuration';
 import { Component, OnInit, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { SirenClientObject } from '../siren-parser/siren-client-object';
 import { HypermediaLink } from '../siren-parser/hypermedia-link';
@@ -23,7 +23,7 @@ export class EntityViewComponent implements OnInit, OnChanges {
   public properties: PropertyInfo[] = new Array<PropertyInfo>();
   public actions: HypermediaAction[]= new Array<HypermediaAction>();
 
-  constructor(public configuration: HypermediaVieConfiguration) { }
+  constructor(public configuration: HypermediaViewConfiguration) { }
 
   ngOnInit() {
     this.processHto();

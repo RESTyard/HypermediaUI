@@ -17,19 +17,21 @@ import { ErrorDialogModule } from './error-dialog/error-dialog.module';
 
 import { AppComponent } from './app.component';
 import { LinkViewComponent } from './hypermedia-view/link-view/link-view.component';
-import { EmptyResponseBodyErrorInterceptor } from './HttpInterceptorWorkaround';
+import { ProblemDetailsViewComponent } from './error-dialog/problem-details-view/problem-details-view.component';
 import { MainPageComponent } from './main-page/main-page.component';
+import { MatTooltipDefaultOptions, MAT_TOOLTIP_DEFAULT_OPTIONS, MAT_TOOLTIP_DEFAULT_OPTIONS_FACTORY } from '@angular/material/tooltip';
 
-import {MatDialogModule} from '@angular/material/dialog';
-import {MatCardModule} from '@angular/material/card';
-import {MatSelectModule} from '@angular/material/select';
-import {SettingsModule} from './settings/settings.module';
-import {MatListModule} from '@angular/material/list';
-import {FlexModule} from '@angular/flex-layout';
-import {MatTableModule} from '@angular/material/table';
-import {MatAutocompleteModule} from '@angular/material/autocomplete';
-import {DragDropModule} from '@angular/cdk/drag-drop';
-import {CustomHeadersInterceptor} from './settings/custom-headers.interceptor';
+
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatCardModule } from '@angular/material/card';
+import { MatSelectModule } from '@angular/material/select';
+import { SettingsModule } from './settings/settings.module';
+import { MatListModule } from '@angular/material/list';
+import { FlexModule } from '@angular/flex-layout';
+import { MatTableModule } from '@angular/material/table';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { DragDropModule } from '@angular/cdk/drag-drop';
+import { CustomHeadersInterceptor } from './settings/custom-headers.interceptor';
 
 const appRoutes: Routes = [
   {
@@ -44,6 +46,11 @@ const appRoutes: Routes = [
   // { path: '**', component: MainPageComponent } // wildcard -> 404
 ];
 
+export const myCustomTooltipDefaults: MatTooltipDefaultOptions = {
+  showDelay: 600,
+  hideDelay: 0,
+  touchendHideDelay: 0,
+};
 
 @NgModule({
   declarations: [
@@ -75,16 +82,16 @@ const appRoutes: Routes = [
     MatTableModule,
     MatAutocompleteModule,
   ],
-  // providers: [{
-  //   provide: HTTP_INTERCEPTORS,
-  //   useClass: EmptyResponseBodyErrorInterceptor,
-  //   multi: true,
-  // }],
   providers: [{
     provide: HTTP_INTERCEPTORS,
     useClass: CustomHeadersInterceptor,
     multi: true
-  }],
+  },
+  {
+    provide: MAT_TOOLTIP_DEFAULT_OPTIONS,
+    useValue: myCustomTooltipDefaults
+  }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

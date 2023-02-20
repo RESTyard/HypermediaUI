@@ -12,7 +12,7 @@ import { EmbeddedEntityViewComponent } from './embedded-entity-view/embedded-ent
 import { EntityViewComponent } from './entity-view/entity-view.component';
 import { HypermediaClientService } from './hypermedia-client.service';
 import { HypermediaControlComponent } from './hypermedia-control/hypermedia-control.component';
-import { HypermediaVieConfiguration } from './hypermedia-view-configuration';
+import { HypermediaViewConfiguration } from './hypermedia-view-configuration';
 import { LinkViewComponent } from './link-view/link-view.component';
 import { PropertyGridComponent } from './property-grid/property-grid.component';
 import { RawViewComponent } from './raw-view/raw-view.component';
@@ -37,7 +37,12 @@ import { JsonSchemaFormModule, JsonSchemaFormService, WidgetLibraryService, Fram
 import {FormsModule} from "@angular/forms";
 import {SettingsModule} from '../settings/settings.module';
 
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+import {MatProgressBarModule} from '@angular/material/progress-bar';
 
+import { NgxJsonViewerModule } from 'ngx-json-viewer';
+import { MatMenuModule } from '@angular/material/menu';
+import { ErrorDialogModule } from '../error-dialog/error-dialog.module';
 
 @NgModule({
     imports: [
@@ -57,6 +62,13 @@ import {SettingsModule} from '../settings/settings.module';
         MatInputModule,
         MatSelectModule,
         MaterialDesignFrameworkModule,
+        MatMenuModule,
+        ErrorDialogModule,
+        MatProgressSpinnerModule,
+        MatProgressBarModule,
+
+        NgxJsonViewerModule,
+
         // workaround for: https://github.com/dschnelldavis/angular2-json-schema-form/issues/189
         // JsonSchemaFormModule.forRoot(MaterialDesignFrameworkModule),
         {
@@ -93,6 +105,6 @@ import {SettingsModule} from '../settings/settings.module';
     SirenDeserializer,
     SchemaSimplifier,
     HttpClient,
-    HypermediaVieConfiguration]
+    HypermediaViewConfiguration]
 })
 export class HypermediaViewModule { }

@@ -4,7 +4,7 @@ import { SirenClientObject } from '../siren-parser/siren-client-object';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PlatformLocation } from '@angular/common';
 import { ApiPath } from '../api-path';
-import { HypermediaVieConfiguration } from '../hypermedia-view-configuration';
+import { HypermediaViewConfiguration } from '../hypermedia-view-configuration';
 
 
 @Component({
@@ -13,11 +13,12 @@ import { HypermediaVieConfiguration } from '../hypermedia-view-configuration';
   styleUrls: ['./hypermedia-control.component.scss']
 })
 export class HypermediaControlComponent implements OnInit {
-  public rawResponse: object;
-  public hto: SirenClientObject;
-  public navPaths: string[];
+  public rawResponse: object | null = null;
+  public hto: SirenClientObject| null = null;
+  public navPaths: string[] = [];
+  public isBusy: boolean = false;
 
-  constructor(private hypermediaClient: HypermediaClientService, private route: ActivatedRoute, private router: Router, location: PlatformLocation, public configuration: HypermediaVieConfiguration) {
+  constructor(private hypermediaClient: HypermediaClientService, private route: ActivatedRoute, private router: Router, location: PlatformLocation, public configuration: HypermediaViewConfiguration) {
   }
 
   ngOnInit() {
@@ -32,6 +33,10 @@ export class HypermediaControlComponent implements OnInit {
     this.hypermediaClient.getNavPathsStream().subscribe((navPaths) => {
       this.navPaths = navPaths;
     });
+    this.hypermediaClient.isBusy$.subscribe(isBusy => {
+      this.isBusy = isBusy;
+    });
+
 
     this.route.queryParams.subscribe(params => {
       const apiPath = new ApiPath();

@@ -1,13 +1,13 @@
-:host ::ng-deep * {
-  font-family: monospace;
+@import '../../../defaults.scss';
+
+.jsonTree {
+  --ngx-json-string: red;
+  --ngx-json-number: darkorange;
+  --ngx-json-boolean: blue;
+  --ngx-json-null: magenta;
+  --ngx-json-undefined: magenta;
 }
 
-:host ::ng-deep pre span {
-  white-space: normal;
+.container {
+  padding: $defaultContainerSpacing;
 }
-
-:host ::ng-deep .string { color: red; }
-:host ::ng-deep .number { color: darkorange; }
-:host ::ng-deep .boolean { color: blue; }
-:host ::ng-deep .null { color: magenta; }
-:host ::ng-deep .key { color: black; }

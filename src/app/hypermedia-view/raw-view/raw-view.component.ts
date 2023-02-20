@@ -1,4 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
+import { ClipboardService } from 'ngx-clipboard';
 
 @Component({
   selector: 'app-raw-view',
@@ -6,11 +7,23 @@ import { Component, OnInit, Input } from '@angular/core';
   styleUrls: ['./raw-view.component.scss']
 })
 export class RawViewComponent implements OnInit {
-  @Input() rawObject: object;
+  @Input() rawObject: any;
 
-  constructor() { }
+  expand:boolean = true;
+  constructor(private clipboardService: ClipboardService) { }
 
   ngOnInit() {
   }
 
+  copyToClipBoard() {
+    this.clipboardService.copyFromContent(JSON.stringify(this.rawObject, null, 2));
+  }
+
+  onExpand() {
+    this.expand = true;
+  }
+
+  onCollaps() {
+    this.expand = false;
+  }
 }

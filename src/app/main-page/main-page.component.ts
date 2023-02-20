@@ -21,7 +21,7 @@ export class MainPageComponent implements OnInit {
   @Input() apiEntryPoint: string = "";
 
   constructor(private hypermediaClientService: HypermediaClientService, private settingsService: SettingsService) {
-    this.urlFormControl = new FormControl(this.apiEntryPoint, [
+  this.urlFormControl = new FormControl("", [
       Validators.required,
       Validators.pattern(this.URL_REGEX)
     ]);
@@ -30,7 +30,7 @@ export class MainPageComponent implements OnInit {
   ngOnInit() {}
 
   navigate() {
-    this.hypermediaClientService.Navigate(this.apiEntryPoint);
+    this.hypermediaClientService.Navigate(this.urlFormControl.value);
   }
 
 }

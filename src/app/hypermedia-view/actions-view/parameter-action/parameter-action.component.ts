@@ -1,5 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
-import {  ActionResults, HypermediaClientService } from '../../hypermedia-client.service';
+import { ProblemDetailsError } from 'src/app/error-dialog/problem-details-error';
+import { ActionResults, HypermediaClientService } from '../../hypermedia-client.service';
 import { HypermediaAction } from '../../siren-parser/hypermedia-action';
 
 @Component({
@@ -10,10 +11,13 @@ import { HypermediaAction } from '../../siren-parser/hypermedia-action';
 export class ParameterActionComponent implements OnInit {
   @Input() action: HypermediaAction;
 
+  ActionResultsEnum = ActionResults;
+
   actionResult: ActionResults;
-  actionMessage: string;
-  actionResultLocation: string = null;
-  actionResultBody: string;
+  actionResultLocation: string | null = null;
+  actionMessage: string = "";
+  executed: boolean = false; // TODO show multiple executions as list
+  problemDetailsError: ProblemDetailsError| null = null
 
   constructor(private hypermediaClientService: HypermediaClientService) { }
 
@@ -22,21 +26,27 @@ export class ParameterActionComponent implements OnInit {
 
   public onActionSubmitted(formParameters: any) {
     this.action.parameters = formParameters;
+    this.actionResult= ActionResults.pending;
+    this.executed = true;
 
-    this.hypermediaClientService.executeAction(this.action, (result: ActionResults, resultLocation: string, content: string, message?: string) => {
-      this.actionResult = result;
+    this.hypermediaClientService.executeAction(this.action,
+      (result: ActionResults,
+        resultLocation: string | null,
+        content: string,
+        problemDetailsError: ProblemDetailsError | null) => {
 
-      if (message) {
-        this.actionMessage = message;
-      } else {
-        this.actionMessage = '';
-      }
+        this.problemDetailsError = problemDetailsError;
+        this.actionResult = result;
 
-      // todo handle if has content AND location
-      this.actionResultLocation = resultLocation;
-      this.actionResultBody = resultLocation;
+        if (problemDetailsError) {
+          this.actionMessage = problemDetailsError.title;
+        } else {
+          this.actionMessage = '';
+        }
 
-    });
+        // todo handle if has content AND location
+        this.actionResultLocation = resultLocation;
+      });
   }
 
   navigateLocation(location: string) {

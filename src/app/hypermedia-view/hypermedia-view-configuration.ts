@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 
 @Injectable()
-export class HypermediaVieConfiguration {
+export class HypermediaViewConfiguration {
   showRawTab = true;
 
   showClasses = false;

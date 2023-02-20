@@ -1,6 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { PropertyInfo, PropertyTypes } from '../siren-parser/property-info';
-import { HypermediaVieConfiguration } from '../hypermedia-view-configuration';
+import { HypermediaViewConfiguration } from '../hypermedia-view-configuration';
 
 @Component({
   selector: 'app-property-grid',
@@ -9,7 +9,7 @@ import { HypermediaVieConfiguration } from '../hypermedia-view-configuration';
 })
 export class PropertyGridComponent implements OnInit {
   @Input() propertyContainer: PropertyInfo[];
-  @Input() configuration: HypermediaVieConfiguration;
+  @Input() configuration: HypermediaViewConfiguration;
 
   public propertyTypes = PropertyTypes;
 

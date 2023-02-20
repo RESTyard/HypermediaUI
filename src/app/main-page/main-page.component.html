@@ -9,26 +9,26 @@
 
   <div class="containerForm">
     <form>
-      <mat-form-field class="apiEntryFormField">
-        <input matInput type="url"
-               placeholder="Enter API entrypoint URL"
-               name="apiEntryPointInput"
-               [formControl]="urlFormControl"
-               [(ngModel)]="apiEntryPoint"
-               />
-
-        <mat-hint >Example: http://localhost/api/EntryPoint</mat-hint>
-        <mat-error *ngIf="urlFormControl.hasError('pattern')">
-          Check your URL
-        </mat-error>
-
-        <button mat-button type="reset" [disabled]="!apiEntryPoint" matSuffix mat-icon-button aria-label="Clear"
-                (click)="urlFormControl.reset()">
-          <mat-icon class="icon">close</mat-icon>
-        </button>
-      </mat-form-field>
+      <div style="display: flex; flex-direction: column">
+        <mat-form-field class="apiEntryFormField">
+          <input matInput type="url"
+                 placeholder="Enter API entrypoint URL"
+                 name="apiEntryPointInput"
+                 [formControl]="urlFormControl"
+          />
+          <mat-hint>Example: http://localhost/api/EntryPoint</mat-hint>
+          <mat-error *ngIf="urlFormControl.hasError('pattern')">
+            Check your URL
+          </mat-error>
+          <button mat-button type="reset" [disabled]="!urlFormControl.value" matSuffix mat-icon-button
+                  aria-label="Clear"
+                  (click)="urlFormControl.reset()">
+            <mat-icon class="icon">close</mat-icon>
+          </button>
+        </mat-form-field>
+      </div>
       <div class="containerSubmit" style="margin-top: 12px">
-        <button class="navigateButton" [disabled]="!apiEntryPoint" mat-button matSuffix mat-raised-button
+        <button class="navigateButton" [disabled]="!urlFormControl.value" mat-button matSuffix mat-raised-button
                 (click)="navigate()" color="primary">
 
           <mat-icon>explore</mat-icon>
