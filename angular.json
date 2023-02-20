@@ -23,9 +23,11 @@
               "src/assets"
             ],
             "styles": [
+              "src/hypermedia-ui-theme.scss",
               "src/styles.scss"
             ],
-            "scripts": []
+            "scripts": [],
+            "optimization": true
           },
           "configurations": {
             "production": {
@@ -137,6 +139,7 @@
               "src/assets"
             ],
             "styles": [
+              "src/hypermedia-ui-theme.scss",
               "src/styles.scss"
             ],
             "scripts": []
