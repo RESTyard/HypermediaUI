@@ -35,6 +35,8 @@ import {FlexLayoutModule} from "@angular/flex-layout";
 import {MaterialDesignFrameworkModule} from "@ajsf/material";
 import { JsonSchemaFormModule, JsonSchemaFormService, WidgetLibraryService, FrameworkLibraryService, Framework } from"@ajsf/core"
 import {FormsModule} from "@angular/forms";
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+import {MatProgressBarModule} from '@angular/material/progress-bar';
 
 import { NgxJsonViewerModule } from 'ngx-json-viewer';
 import { MatMenuModule } from '@angular/material/menu';
@@ -60,6 +62,8 @@ import { ErrorDialogModule } from '../error-dialog/error-dialog.module';
         MaterialDesignFrameworkModule,
         MatMenuModule,
         ErrorDialogModule,
+        MatProgressSpinnerModule,
+        MatProgressBarModule,
 
         NgxJsonViewerModule,
 

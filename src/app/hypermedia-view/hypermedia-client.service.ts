@@ -11,7 +11,7 @@ import {
 } from '@angular/common/http';
 import { Router } from '@angular/router';
 
-import { Observable, BehaviorSubject, map, catchError } from 'rxjs';
+import { Observable, BehaviorSubject, map, catchError, Subject, tap } from 'rxjs';
 
 
 import { SirenDeserializer } from './siren-parser/siren-deserializer';
@@ -30,6 +30,10 @@ export class HypermediaClientService {
   private currentClientObjectRaw$: BehaviorSubject<object> = new BehaviorSubject<object>({});
   private currentNavPaths$: BehaviorSubject<Array<string>> = new BehaviorSubject<Array<string>>(new Array<string>());
   private apiPath: ApiPath = new ApiPath();
+
+  // indicate that a http request is pending
+  public isBusy$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  private busyRequestsCounter = 0;
 
   private static sirenMediaType = 'application/vnd.siren+json';
   private static jsonMediaType = 'application/json';
@@ -75,12 +79,18 @@ export class HypermediaClientService {
 
     const headers = new HttpHeaders().set('Accept', HypermediaClientService.sirenMediaType);
 
+    this.AddBusyRequest();
     this.httpClient
       .get(url, {
         headers: headers
       })
-      .subscribe(
-        response => {
+      .pipe(
+        tap({
+          next: () => this.RemoveBusyRequest(),
+          error: () => this.RemoveBusyRequest()
+        }))
+      .subscribe({
+        next: response => {
           this.router.navigate(['hui'], {
             queryParams: {
               apiPath: this.apiPath.fullPath
@@ -93,7 +103,17 @@ export class HypermediaClientService {
           this.currentClientObjectRaw$.next(response);
           this.currentNavPaths$.next(this.apiPath.fullPath);
         },
-        (err: HttpErrorResponse) => { throw this.MapHttpErrorResponseToProblemDetails(err); });
+        error: (err: HttpErrorResponse) => { throw this.MapHttpErrorResponseToProblemDetails(err); }
+      });
+  }
+
+  private AddBusyRequest() {
+    this.busyRequestsCounter++;
+    this.isBusy$.next(this.busyRequestsCounter != 0);
+  }
+  private RemoveBusyRequest() {
+    this.busyRequestsCounter--;
+    this.isBusy$.next(this.busyRequestsCounter != 0);
   }
 
   navigateToMainPage() {
@@ -124,6 +144,7 @@ export class HypermediaClientService {
   }
 
   private ExecuteRequest(action: HypermediaAction, headers: any, body: any | null) {
+    this.AddBusyRequest()
     return this.httpClient.request(
       action.method,
       action.href,
@@ -131,7 +152,13 @@ export class HypermediaClientService {
         observe: "response",
         headers: headers,
         body: body
-      });
+      })
+      .pipe(
+        tap({
+          next: () => this.RemoveBusyRequest(),
+          error: () => this.RemoveBusyRequest()
+        }
+        ));
   }
 
   createWaheStyleActionParameters(action: HypermediaAction): any {
@@ -211,7 +238,7 @@ export class HypermediaClientService {
       console.error(`API Error ${errorResponse.status}: ${rawBody}`);
     }
     else {
-      console.error(`API Error ${errorResponse.status}`);
+      console.error(`API Error ${errorResponse.status}:`, errorResponse);
     }
 
     return new ProblemDetailsError({
