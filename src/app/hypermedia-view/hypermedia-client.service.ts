@@ -49,7 +49,7 @@ export class HypermediaClientService {
     return this.currentNavPaths$;
   }
 
-  NavigateToEntryPoint() {
+  navigateToEntryPoint() {
     if (!this.apiPath || !this.apiPath.hasPath) {
       this.router.navigate(['']);
     }
@@ -91,13 +91,15 @@ export class HypermediaClientService {
 
           this.currentClientObject$.next(sirenClientObject);
           this.currentClientObjectRaw$.next(response);
-          this.currentNavPaths$.next(this.apiPath.fullPath);},
+          this.currentNavPaths$.next(this.apiPath.fullPath);
+        },
         (err: HttpErrorResponse) => { throw this.MapHttpErrorResponseToProblemDetails(err); });
   }
 
   navigateToMainPage() {
     this.apiPath.clear();
     this.router.navigate([''], {});
+    location.reload;
   }
 
   createHeaders(withContentType: string | null = null): HttpHeaders {
@@ -138,7 +140,7 @@ export class HypermediaClientService {
     }
 
     const parameters = new Array<any>();
-    const internalObject:any = {};
+    const internalObject: any = {};
     internalObject[action.waheActionParameterName!] = action.parameters;
     parameters.push(internalObject);
 
@@ -183,7 +185,8 @@ export class HypermediaClientService {
     // https://stackoverflow.com/questions/54922985/getting-status-code-0-angular-httpclient
     // statuscoe 0 clientside or network error 
     if (errorResponse.status === 0) {
-      console.error('Client-side error occurred:', errorResponse.error.message);
+      let message = errorResponse.error.message ? ": " + errorResponse.error.message : "";
+      console.error(`Client-side error occurred ${message}`, errorResponse.error);
       return new ProblemDetailsError({
         type: "Client.RequestError",
         title: "Client error on request",
@@ -193,25 +196,36 @@ export class HypermediaClientService {
     }
 
     // try parse problem details
-    const contentType  = errorResponse.headers.get('Content-Type')
-    if (contentType?.includes(problemDetailsMimeType)) {
-      console.error("API Error:" + JSON.stringify(errorResponse.error, null, 4));
-      return {...new ProblemDetailsError({rawObject: errorResponse.error}), ...errorResponse.error};
+    if (errorResponse.headers) {
+      const contentType = errorResponse.headers.get('Content-Type')
+      if (contentType?.includes(problemDetailsMimeType)) {
+        console.error("API Error:" + JSON.stringify(errorResponse.error, null, 4));
+        return { ...new ProblemDetailsError({ rawObject: errorResponse.error }), ...errorResponse.error };
+      }
     }
 
     // generic error
-    console.error(`API Error: ${JSON.stringify(errorResponse.error, null, 4)}`);
+    let rawBody = null;
+    if (errorResponse.error) {
+      rawBody = JSON.stringify(errorResponse.error, null, 4);
+      console.error(`API Error ${errorResponse.status}: ${rawBody}`);
+    }
+    else {
+      console.error(`API Error ${errorResponse.status}`);
+    }
+
     return new ProblemDetailsError({
       type: "ApiError",
       title: "API error",
       detail: "API returned a generic error.",
       status: errorResponse.status,
+      rawObject: rawBody
     });
   }
 
   private HandleActionError(errorResponse: HttpErrorResponse, actionResult: (actionResults: ActionResults, resultLocation: string | null, content: any, problemDetailsError: ProblemDetailsError) => void) {
-    let problemDetailsError:ProblemDetailsError = this.MapHttpErrorResponseToProblemDetails(errorResponse);
-    
+    let problemDetailsError: ProblemDetailsError = this.MapHttpErrorResponseToProblemDetails(errorResponse);
+
     actionResult(ActionResults.error, null, null, problemDetailsError);
   }
 

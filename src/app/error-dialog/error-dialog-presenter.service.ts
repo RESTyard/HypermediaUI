@@ -3,6 +3,7 @@ import {
   ComponentRef,
   Injectable,
   Injector,
+  NgZone,
   ViewContainerRef,
 } from '@angular/core';
 
@@ -33,7 +34,8 @@ export class ErrorDialogPresenter {
   constructor(
     private hypermediaClientService: HypermediaClientService,
     private appRootProvider: ErrorDialogContainerProvider,
-    private injector: Injector
+    private injector: Injector,
+    private zone: NgZone
   ) {
     appRootProvider
       .container()
@@ -52,22 +54,28 @@ export class ErrorDialogPresenter {
   openProblemDetails(problemDetailsError: ProblemDetailsError, color: ThemePalette = 'warn') {
     this.modal = this.viewContainer.createComponent(ErrorModalDialogComponent);
     this.modal.instance.problemDetailsError = problemDetailsError;
-    
+
     this.HookUpSignals();
   }
 
   private HookUpSignals() {
-  this.modal.changeDetectorRef.detectChanges();
+    this.modal.changeDetectorRef.detectChanges();
 
     this.modal.instance.reload.subscribe(
       () => this.destroy()
-      );
+    );
+
     this.modal.instance.gotoEntryPoint.subscribe(() => {
-      this.hypermediaClientService.NavigateToEntryPoint();
       this.destroy();
+      this.zone.run(() => this.hypermediaClientService.navigateToEntryPoint());
+    });
+
+    this.modal.instance.exitApi.subscribe(() => {
+      this.destroy();
+      this.zone.run(() => this.hypermediaClientService.navigateToMainPage());
     });
   }
-  
+
   private destroy() {
     this.modal.destroy();
   }

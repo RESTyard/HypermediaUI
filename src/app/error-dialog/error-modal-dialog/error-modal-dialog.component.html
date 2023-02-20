@@ -27,8 +27,16 @@
               mat-raised-button
               [color]="color"
               i18n="errorDialog.entryPointButton|The text of the close button in the error dialog@@errorDialogCloseButton">
-        <mat-icon class="icon">exit_to_app</mat-icon>
+        <mat-icon class="icon">home</mat-icon>
         Go to entry point
+      </button>
+
+      <button (click)="exitApi.emit()"
+              mat-raised-button
+              [color]="color"
+              i18n="errorDialog.exitApiButton|The text of the close button in the error dialog@@errorDialogCloseButton">
+        <mat-icon class="icon">exit_to_app</mat-icon>
+        Exit API
       </button>
     </mat-card-content>
   </mat-card>

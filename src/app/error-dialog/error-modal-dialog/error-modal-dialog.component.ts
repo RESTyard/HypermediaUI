@@ -16,6 +16,7 @@ export class ErrorModalDialogComponent {
 
   @Output() reload = new EventEmitter();
   @Output() gotoEntryPoint = new EventEmitter();
+  @Output() exitApi = new EventEmitter();
 
   constructor() {
     this.reload.subscribe(() => location.reload());
