@@ -227,7 +227,7 @@ export class HypermediaClientService {
       const contentType = errorResponse.headers.get('Content-Type')
       if (contentType?.includes(problemDetailsMimeType)) {
         console.error("API Error:" + JSON.stringify(errorResponse.error, null, 4));
-        return { ...new ProblemDetailsError({ rawObject: errorResponse.error }), ...errorResponse.error };
+        return Object.assign(new ProblemDetailsError({ rawObject: errorResponse.error }), errorResponse.error);
       }
     }
 
