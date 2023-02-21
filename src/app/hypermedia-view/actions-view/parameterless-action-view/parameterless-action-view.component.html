@@ -20,14 +20,11 @@
                 matTooltip={{actionMessage}}>question_mark</mat-icon>
     </button>
   </div>
-  <div (click)="$event.stopPropagation()">
-    <mat-menu #errorPopup="matMenu">
-      <div (click)="$event.stopPropagation()">
-        <app-problem-details-view *ngIf="problemDetailsError" [problemDetailsError]="problemDetailsError"></app-problem-details-view>
-      </div>
-    </mat-menu>
-  </div>
-
+  <mat-menu #errorPopup="matMenu">
+    <div (click)="$event.stopPropagation()">
+      <app-problem-details-view *ngIf="problemDetailsError" [problemDetailsError]="problemDetailsError"></app-problem-details-view>
+    </div>
+  </mat-menu>
 
   <!-- result button -->
   <button *ngIf="actionResultLocation !== null"
