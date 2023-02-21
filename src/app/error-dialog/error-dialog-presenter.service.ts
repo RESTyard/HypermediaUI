@@ -59,8 +59,6 @@ export class ErrorDialogPresenter {
   }
 
   private HookUpSignals() {
-    this.modal.changeDetectorRef.detectChanges();
-
     this.modal.instance.reload.subscribe(
       () => this.destroy()
     );
@@ -79,5 +77,4 @@ export class ErrorDialogPresenter {
   private destroy() {
     this.modal.destroy();
   }
-
 }
