@@ -10,15 +10,13 @@
   </div>
 
   <div class="resultIconContainer" [ngSwitch]="actionResult" *ngIf="executed">
-    <button mat-icon-button class="containerElement">
       <mat-icon *ngSwitchCase="ActionResultsEnum.ok" color="primary"
                 matTooltip={{actionMessage}}>done</mat-icon>
       <mat-icon *ngSwitchCase="ActionResultsEnum.error" color="warn" class="hoverButton" [matMenuTriggerFor]="errorPopup"
                 matTooltip={{actionMessage}}>error</mat-icon>
-      <mat-progress-spinner [diameter]="26" *ngSwitchCase="ActionResultsEnum.pending" mode="indeterminate" color="accent"></mat-progress-spinner>
+      <mat-progress-spinner [diameter]="24" *ngSwitchCase="ActionResultsEnum.pending" mode="indeterminate" color="accent"></mat-progress-spinner>
       <mat-icon *ngSwitchCase="ActionResultsEnum.undefined" color="primary"
                 matTooltip={{actionMessage}}>question_mark</mat-icon>
-    </button>
   </div>
   <mat-menu #errorPopup="matMenu">
     <div (click)="$event.stopPropagation()">
