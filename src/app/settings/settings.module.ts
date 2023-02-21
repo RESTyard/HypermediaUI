@@ -1,6 +1,5 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HeaderSettingsDialogComponent } from './header-settings-dialog/header-settings-dialog.component';
 import {MatCardModule} from '@angular/material/card';
 import {MatSelectModule} from '@angular/material/select';
 import {MatInputModule} from '@angular/material/input';
@@ -15,10 +14,12 @@ import { SettingsMenuComponent } from './settings-menu/settings-menu.component';
 import {MatMenuModule} from '@angular/material/menu';
 import {MatDividerModule} from '@angular/material/divider';
 import { SiteSettingsDialogComponent } from './site-settings-dialog/site-settings-dialog.component';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { SiteSettingsComponent } from './site-settings/site-settings.component';
 
 @NgModule({
   declarations: [
-    HeaderSettingsDialogComponent,
+    SiteSettingsComponent,
     SettingsMenuComponent,
     SiteSettingsDialogComponent
   ],
@@ -34,7 +35,10 @@ import { SiteSettingsDialogComponent } from './site-settings-dialog/site-setting
     MatDialogModule,
     MatSnackBarModule,
     MatMenuModule,
-    MatDividerModule
+    MatDividerModule,
+    MatExpansionModule,
+    MatIconModule
+
   ],
   exports: [
     SettingsMenuComponent

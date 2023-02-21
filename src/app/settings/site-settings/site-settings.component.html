@@ -1,0 +1,29 @@
+<mat-card>
+    <label *ngIf="!urlEditable">{{headline}}</label>
+    <mat-form-field *ngIf="urlEditable">
+        <mat-label>Site host</mat-label>
+        <input type="text" matInput [formControl]="this.urlFormControl">
+    </mat-form-field>
+    <mat-icon *ngIf="canBeDeleted" (click)="removeSite()">delete</mat-icon>
+
+    <!-- headers -->
+    <mat-card-subtitle>
+        Headers
+        <mat-icon (click)="addHeader()">add</mat-icon>
+    </mat-card-subtitle>
+
+    <ng-container *ngFor="let headerFormGroup of headerFormGroups; let i = index;">
+        <div [formGroup]="headerFormGroup" class="headers">
+          <span>{{i + 1}}.</span>
+          <mat-form-field>
+            <mat-label>Key</mat-label>
+            <input type="text" matInput formControlName="key">
+          </mat-form-field>
+          <mat-form-field >
+            <mat-label>Value</mat-label>
+            <input type="text" matInput formControlName="value">
+          </mat-form-field>
+          <mat-icon (click)="removeHeader(i)">remove_circle_outline</mat-icon>
+        </div>
+      </ng-container>
+</mat-card>

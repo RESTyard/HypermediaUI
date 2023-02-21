@@ -7,7 +7,6 @@ import {
 } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import {SettingsService} from './services/settings.service';
-import {Header} from './interface/headers';
 
 @Injectable()
 export class CustomHeadersInterceptor implements HttpInterceptor {
@@ -16,12 +15,19 @@ export class CustomHeadersInterceptor implements HttpInterceptor {
 
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     let headers = request.headers;
-    this.settingsService.getHeaders().forEach(x => {
-      headers = headers.set(x.key, x.value);
+    this.settingsService.getGlobalHeaders().forEach(h => {
+      if (h.Key!== "") {
+        headers = headers.set(h.Key, h.Value);
+      }
+      
     });
-    this.settingsService.getHeaders(new URL(request.url).host).forEach(x => {
-      headers = headers.set(x.key, x.value);
+
+    this.settingsService.getHeadersForSite(new URL(request.url).host).forEach(h => {
+      if (h.Key!== "") {
+        headers = headers.set(h.Key, h.Value);
+      }
     });
+
     return next.handle(request.clone({
       headers: headers
     }));

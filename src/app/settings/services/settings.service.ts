@@ -1,68 +1,52 @@
-import {Header} from '../interface/headers';
-import {Injectable} from '@angular/core';
+import { Injectable } from '@angular/core';
+import { AppSettings, HeaderSetting, SiteSettings } from './AppSettings';
+import { ProblemDetailsError } from 'src/app/error-dialog/problem-details-error';
 
 @Injectable()
 export class SettingsService {
 
-  static readonly HEADERS = "headers";
-  static readonly SITE_HEADERS = "siteHeaders";
+  static readonly AppSettingsKey = "appSettings";
 
-  constructor() {}
-  public setHeaders(headers: {}, site: string | null = null) {
-    if(site === null) {
-      localStorage.setItem(SettingsService.HEADERS, JSON.stringify(headers));
-    } else {
-      let currentSites = {...this.getSitesWithHeaders()};
-      currentSites[site] = headers;
-      localStorage.setItem(SettingsService.SITE_HEADERS, JSON.stringify(currentSites));
+  public CurrentSettings: AppSettings = new AppSettings();
+
+  constructor() {
+    this.LoadCurrentSettings();
+  }
+
+  public LoadCurrentSettings() {
+
+    const settingsRaw = localStorage.getItem(SettingsService.AppSettingsKey);
+    if (settingsRaw) {
+      this.CurrentSettings = JSON.parse(settingsRaw);
+      return;
     }
+
+    this.CurrentSettings = new AppSettings();
   }
 
-  getHeaders(site: string | null = null): Header[] {
-    let headers: Header[] = [];
-    try{
-        const headersRaw = site === null ?
-            JSON.parse(localStorage.getItem(SettingsService.HEADERS)) :
-            JSON.parse(localStorage.getItem(SettingsService.SITE_HEADERS))[site];
-        let keys = Object.keys(headersRaw);
-        headers = keys
-        .filter(x => x.trim() != '' && headersRaw[x].trim() != '')
-        .map(x => ({ key: x, value: headersRaw[x] } as Header));
-    } catch (e){
-        console.log("Invalid object.")
+  public SaveCurrentSettings() {
+    localStorage.setItem(SettingsService.AppSettingsKey, JSON.stringify(this.CurrentSettings));
+  }
+
+  getGlobalHeaders(): HeaderSetting[] {
+    return this.CurrentSettings.SiteSettings.GlobalSiteSettings.Headers;
+  }
+
+  getHeadersForSite(requestSiteHost: string): HeaderSetting[] {
+    let specificSettings = this.CurrentSettings.SiteSettings.SiteSpecificSettings.filter(site => site.SiteUrl.trim() != '' && site.SiteUrl === requestSiteHost);
+    // we should only find one site
+    if (specificSettings.length > 1) {
+      throw new ProblemDetailsError({
+        title: "Too many matches for given host",
+        detail: `${requestSiteHost} was found ${specificSettings.length} times in settings. Make sure each entry only exists once.`,
+        status: 0
+      })
     }
-    return headers;
-  }
-
-  public setSites(sites: string[]){
-    let currentSites = {...this.getSitesWithHeaders()};
-    sites.forEach(x => {
-      if(!currentSites.hasOwnProperty(x)){
-        currentSites[x] = {};
-      }
-    });
-    Object.keys(currentSites).forEach(x => {
-      if(!sites.includes(x)){
-        delete currentSites[x];
-      }
-    });
-    localStorage.setItem(SettingsService.SITE_HEADERS, JSON.stringify(currentSites));
-  }
-
-  getSites(): string[] {
-    try {
-      return Object.keys(this.getSitesWithHeaders());
-    } catch (e) {
+    if (specificSettings.length == 0) {
       return [];
     }
-  }
 
-  getSitesWithHeaders(): {} {
-    let sites = {};
-    try{
-        sites = JSON.parse(localStorage.getItem(SettingsService.SITE_HEADERS));
-    } catch (e){}
-    return sites;
+    return specificSettings[0].Headers;
   }
 
 }

@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import {FormControl} from '@angular/forms';
 import {SettingsService} from '../services/settings.service';
 import {MatSnackBar} from '@angular/material/snack-bar';
+import { SiteSetting, SiteSettings } from '../services/AppSettings';
 
 @Component({
   selector: 'app-site-settings-dialog',
@@ -11,43 +12,25 @@ import {MatSnackBar} from '@angular/material/snack-bar';
 export class SiteSettingsDialogComponent implements OnInit {
 
   siteFormControls: FormControl[] = [];
-  constructor(private settingsService: SettingsService, private snackBar: MatSnackBar) { }
+  siteSettings: SiteSettings| null = null;
+  constructor(private settingsService: SettingsService, private snackBar: MatSnackBar) {
+    settingsService.LoadCurrentSettings();
+    this.siteSettings = settingsService.CurrentSettings.SiteSettings;
+   }
 
   ngOnInit(): void {
-    this.initSites();
-  }
-
-  initSites(){
-    this.siteFormControls = [];
-    const sites = this.settingsService.getSites();
-    sites.forEach(x => {
-      const control = new FormControl(x);
-      control.disable();
-      this.siteFormControls.push(control);
-    });
-    if(sites.length == 0){
-      this.siteFormControls.push(new FormControl(''));
-    }
   }
 
   saveSites(): void {
-    let sites = this.siteFormControls
-      .filter(x => x.getRawValue().trim() != '')
-      .map(x => x.getRawValue());
-    this.settingsService.setSites(sites);
-    this.initSites();
-    this.snackBar.open("Sites saved.");
+    this.settingsService.SaveCurrentSettings(),
+    this.snackBar.open("Settings saved.");
   }
 
   addSite(): void {
-    this.siteFormControls.push(new FormControl(''));
+    this.settingsService.CurrentSettings.SiteSettings.SiteSpecificSettings.push(new SiteSetting());
   }
 
   removeSite(index: number): void {
-    this.siteFormControls.splice(index, 1);
-    if(this.siteFormControls.length == 0) {
-      this.addSite();
-    }
+    this.settingsService.CurrentSettings.SiteSettings.SiteSpecificSettings.splice(index-1, 1);
   }
-
 }
