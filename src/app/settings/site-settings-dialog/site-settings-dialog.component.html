@@ -1,7 +1,7 @@
 <div class="header">
 
   <span class="title">
-    Site settings
+    Header settings
   </span>
 
   <span class="spacer"></span>
@@ -23,7 +23,7 @@
 </div>
 
 <app-site-settings [siteSetting]="siteSettings?.GlobalSiteSettings" [urlEditable]="false"
-                   headline="Global site settings" [canBeDeleted]="false"></app-site-settings>
+                   headline="Global" [canBeDeleted]="false"></app-site-settings>
 <ng-container *ngFor="let site of siteSettings?.SiteSpecificSettings; let i = index;">
   <app-site-settings [siteSetting]="site" (deleteRequested)="removeSite(i)"></app-site-settings>
 </ng-container>
