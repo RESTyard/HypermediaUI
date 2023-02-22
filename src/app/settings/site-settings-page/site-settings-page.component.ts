@@ -14,7 +14,6 @@ export class SiteSettingsPageComponent implements OnInit {
   siteFormControls: FormControl[] = [];
   siteSettings: SiteSettings;
   constructor(private settingsService: SettingsService) {
-    settingsService.LoadCurrentSettings();
     this.siteSettings = settingsService.CurrentSettings.SiteSettings;
    }
 
