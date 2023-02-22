@@ -31,6 +31,6 @@ export class SiteSettingsPageComponent implements OnInit {
   }
 
   removeSite(index: number): void {
-    this.settingsService.CurrentSettings.SiteSettings.SiteSpecificSettings.splice(index-1, 1);
+    this.settingsService.CurrentSettings.SiteSettings.SiteSpecificSettings.splice(index, 1);
   }
 }
