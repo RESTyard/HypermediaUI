@@ -12,7 +12,6 @@ import { EmbeddedEntityViewComponent } from './embedded-entity-view/embedded-ent
 import { EntityViewComponent } from './entity-view/entity-view.component';
 import { HypermediaClientService } from './hypermedia-client.service';
 import { HypermediaControlComponent } from './hypermedia-control/hypermedia-control.component';
-import { HypermediaVieConfiguration } from './hypermedia-view-configuration';
 import { LinkViewComponent } from './link-view/link-view.component';
 import { PropertyGridComponent } from './property-grid/property-grid.component';
 import { RawViewComponent } from './raw-view/raw-view.component';
@@ -35,6 +34,8 @@ import {FlexLayoutModule} from "@angular/flex-layout";
 import {MaterialDesignFrameworkModule} from "@ajsf/material";
 import { JsonSchemaFormModule, JsonSchemaFormService, WidgetLibraryService, FrameworkLibraryService, Framework } from"@ajsf/core"
 import {FormsModule} from "@angular/forms";
+import {SettingsModule} from '../settings/settings.module';
+
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {MatProgressBarModule} from '@angular/material/progress-bar';
 
@@ -81,6 +82,7 @@ import { ErrorDialogModule } from '../error-dialog/error-dialog.module';
         PrettyJsonModule,
         ClipboardModule,
         FormsModule,
+        SettingsModule,
     ],
   exports: [
     HypermediaControlComponent
@@ -101,7 +103,6 @@ import { ErrorDialogModule } from '../error-dialog/error-dialog.module';
     ObservableLruCache,
     SirenDeserializer,
     SchemaSimplifier,
-    HttpClient,
-    HypermediaVieConfiguration]
+    HttpClient]
 })
 export class HypermediaViewModule { }

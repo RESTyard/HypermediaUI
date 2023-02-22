@@ -1,13 +1,13 @@
 <mat-card class="problem-details-view">
   <mat-card-header>
-    <mat-card-title>{{problemDetailsError.title === "" ? "Error": problemDetailsError.title}}</mat-card-title>
-    <mat-card-subtitle>{{problemDetailsError.type}}{{getStatusCodeMessage(problemDetailsError.status)}}</mat-card-subtitle>
+    <mat-card-title>{{problemDetailsError?.title === "" ? "Error": problemDetailsError?.title}}</mat-card-title>
+    <mat-card-subtitle>{{problemDetailsError?.type}}{{getStatusCodeMessage(problemDetailsError?.status)}}</mat-card-subtitle>
 
   </mat-card-header>
 
   <mat-card-content>
-    <p *ngIf="problemDetailsError.detail">{{problemDetailsError.detail}}</p>
-    <p *ngIf="problemDetailsError.instance">{{"See: " + problemDetailsError.instance}}</p>
+    <p *ngIf="problemDetailsError?.detail">{{problemDetailsError?.detail}}</p>
+    <p *ngIf="problemDetailsError?.instance">{{"See: " + problemDetailsError?.instance}}</p>
   </mat-card-content>
 
   <mat-expansion-panel *ngIf="problemDetailsError?.rawObject">

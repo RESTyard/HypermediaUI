@@ -1,13 +1,13 @@
 <mat-toolbar class="headerMenue" color="primary">
   <span>Hypermedia UI</span>
-
   <span class="spacer"></span>
+  <app-settings-menu></app-settings-menu>
   <button mat-button matTooltip="Exit API" (click)="navigateMainPage()">
     <mat-icon class="icon">exit_to_app</mat-icon>
   </button>
 </mat-toolbar>
 
-<mat-progress-bar *ngIf="isBusy" mode="indeterminate" color="accent"></mat-progress-bar>
+<mat-progress-bar class="progressSpacer" *ngIf="isBusy" mode="indeterminate" color="accent"></mat-progress-bar>
 <div *ngIf="!isBusy" class="progressSpacer">&nbsp;</div>
 
 
@@ -23,7 +23,7 @@
   </ng-container>
 </mat-toolbar>
 
-<mat-tab-group *ngIf="configuration.showRawTab">
+<mat-tab-group *ngIf="GeneralSettings.showRawTab">
   <mat-tab label="UI">
     <app-entity-view [entity]="hto"></app-entity-view>
   </mat-tab>
@@ -32,4 +32,4 @@
   </mat-tab>
 </mat-tab-group>
 
-<app-entity-view [entity]="hto" *ngIf="!configuration.showRawTab"></app-entity-view>
+<app-entity-view [entity]="hto" *ngIf="!GeneralSettings.showRawTab"></app-entity-view>

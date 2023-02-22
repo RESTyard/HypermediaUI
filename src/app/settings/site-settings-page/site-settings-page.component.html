@@ -1,0 +1,14 @@
+
+
+<app-site-settings [siteSetting]="siteSettings?.GlobalSiteSettings" [urlEditable]="false"
+                   headline="Global" [canBeDeleted]="false"></app-site-settings>
+<ng-container *ngFor="let site of siteSettings?.SiteSpecificSettings; let i = index;">
+  <app-site-settings [siteSetting]="site" (deleteRequested)="removeSite(i)"></app-site-settings>
+</ng-container>
+
+<div class="toolbar">
+  <button id="addButton" mat-raised-button color="primary" type="button" (click)="addSite()">
+    <mat-icon>add_circle_outline</mat-icon>
+    Add site
+  </button>
+</div>

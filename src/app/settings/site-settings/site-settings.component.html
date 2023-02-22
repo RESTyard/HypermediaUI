@@ -1,0 +1,47 @@
+<mat-card>
+  <div id="titleContainer">
+    <div matTooltip="Applies to all http calls. Overrriden by site specific settings." *ngIf="!urlEditable" fxlayout="row" fxLayoutAlign="start center">
+      <mat-icon fontSet="material-icons-outlined">language</mat-icon>
+      <span id="globalTitle">{{headline}}</span>
+    </div>
+
+    <mat-form-field *ngIf="urlEditable" id="siteHostField">
+      <mat-label>
+        Host
+      </mat-label>
+      <input type="text" matInput [formControl]="this.urlFormControl">
+    </mat-form-field>
+
+    <span class="spacer"></span>
+
+    <mat-icon matTooltip="Delete site specific settings" fontSet="material-icons-outlined" id="deleteSiteButton" *ngIf="canBeDeleted"
+              (click)="removeSite()">delete</mat-icon>
+  </div>
+
+  <!-- headers -->
+  <div id="headerToolbar">
+    <span id="headersTitle">Headers</span>
+    <mat-icon id="addHeaderButton" (click)="addHeader()">add</mat-icon>
+  </div>
+
+  <ng-container *ngFor="let headerFormGroup of headerFormGroups; let i = index;">
+    <div [formGroup]="headerFormGroup" id="headers">
+
+      <mat-form-field class="headerKeyField">
+        <mat-label>Key</mat-label>
+        <input type="text" matInput formControlName="key">
+      </mat-form-field>
+
+      <span class="spacer"></span>
+
+      <mat-form-field class="headerValueField">
+        <mat-label>Value</mat-label>
+        <input type="text" matInput formControlName="value">
+      </mat-form-field>
+
+      <mat-icon class="deleteHeader" fontSet="material-icons-outlined" (click)="removeHeader(i)">delete</mat-icon>
+
+      <span class="flexSpacer"></span>
+    </div>
+  </ng-container>
+</mat-card>

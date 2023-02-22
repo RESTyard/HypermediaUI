@@ -28,7 +28,8 @@
   align-items: center;
 
   height: $defaultRowHeigth;
-  margin: 0;
+  margin-right: $defaultSpacing+$defaultSpacing;
+  margin-left:  $defaultSpacing;
   padding: 0;
   align-items: center;
 }
