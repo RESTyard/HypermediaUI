@@ -1,4 +1,3 @@
-import { HypermediaViewConfiguration } from './hypermedia-view-configuration';
 import { HypermediaLink } from './siren-parser/hypermedia-link';
 import { Injectable } from '@angular/core';
 import {
@@ -22,8 +21,8 @@ import { HypermediaAction, HttpMethodTypes } from './siren-parser/hypermedia-act
 import { SirenHelpers } from './SirenHelpers';
 import { ApiPath } from './api-path';
 
-import {SettingsService} from '../settings/services/settings.service';
-import {generate} from 'rxjs/internal/observable/generate';
+import { SettingsService } from '../settings/services/settings.service';
+import { generate } from 'rxjs/internal/observable/generate';
 
 import { ProblemDetailsError } from '../error-dialog/problem-details-error';
 
@@ -42,7 +41,12 @@ export class HypermediaClientService {
   private static sirenMediaType = 'application/vnd.siren+json';
   private static jsonMediaType = 'application/json';
 
-  constructor(private httpClient: HttpClient, private schemaCache: ObservableLruCache<object>, private sirenDeserializer: SirenDeserializer, private router: Router, private hypermediaConfiguration: HypermediaViewConfiguration, private settingsService: SettingsService) {
+  constructor(
+    private httpClient: HttpClient,
+    private schemaCache: ObservableLruCache<object>,
+    private sirenDeserializer: SirenDeserializer,
+    private router: Router,
+    private settingsService: SettingsService) {
   }
 
   getHypermediaObjectStream(): BehaviorSubject<SirenClientObject> {
@@ -183,7 +187,7 @@ export class HypermediaClientService {
     if (!action.isParameterLess) {
       parameterMediaType = HypermediaClientService.jsonMediaType;
 
-      if (this.hypermediaConfiguration.useEmbeddingPropertyForActionParameters) {
+      if (this.settingsService.CurrentSettings.GeneralSettings.useEmbeddingPropertyForActionParameters) {
         parameters = this.createWaheStyleActionParameters(action);
       } else {
         parameters = action.parameters;
@@ -230,7 +234,7 @@ export class HypermediaClientService {
       const contentType = errorResponse.headers.get('Content-Type')
       if (contentType?.includes(problemDetailsMimeType)) {
         console.error("API Error:" + JSON.stringify(errorResponse.error, null, 4));
-        return Object.assign(new ProblemDetailsError({ rawObject: errorResponse.error }),errorResponse.error);
+        return Object.assign(new ProblemDetailsError({ rawObject: errorResponse.error }), errorResponse.error);
       }
     }
 

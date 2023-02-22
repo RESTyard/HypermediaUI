@@ -20,6 +20,9 @@ import { FlexLayoutModule } from '@angular/flex-layout';
 import { MatTabsModule } from '@angular/material/tabs';
 import { SettingsViewComponent } from './settings-view/settings-view.component';
 import { GeneralSettingsPageComponent } from './general-settings-page/general-settings-page.component';
+import {MatSlideToggleModule} from '@angular/material/slide-toggle';
+import {MatListModule} from '@angular/material/list';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @NgModule({
   declarations: [
@@ -46,6 +49,9 @@ import { GeneralSettingsPageComponent } from './general-settings-page/general-se
     MatIconModule,
     FlexLayoutModule,
     MatTabsModule,
+    MatSlideToggleModule,
+    MatListModule,
+    MatTooltipModule
 
   ],
   exports: [

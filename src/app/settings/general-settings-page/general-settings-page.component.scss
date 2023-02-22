@@ -1,2 +1,15 @@
 @import '../../../defaults.scss';
 
+.SubTitle {
+    font-size: large;
+}
+
+#content{
+    margin-top: $defaultSpacing;
+    overflow: hidden; // hide scrollbar
+}
+
+mat-slide-toggle {
+    margin-top: $defaultSpacing*2;
+    margin-left: $defaultSpacing;
+}

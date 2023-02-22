@@ -1,6 +1,6 @@
 <mat-card>
   <div id="titleContainer">
-    <div *ngIf="!urlEditable" fxlayout="row" fxLayoutAlign="start center">
+    <div matTooltip="Applies to all http calls. Overrriden by site specific settings." *ngIf="!urlEditable" fxlayout="row" fxLayoutAlign="start center">
       <mat-icon fontSet="material-icons-outlined">language</mat-icon>
       <span id="globalTitle">{{headline}}</span>
     </div>
@@ -14,7 +14,7 @@
 
     <span class="spacer"></span>
 
-    <mat-icon fontSet="material-icons-outlined" id="deleteSiteButton" *ngIf="canBeDeleted"
+    <mat-icon matTooltip="Delete site specific settings" fontSet="material-icons-outlined" id="deleteSiteButton" *ngIf="canBeDeleted"
               (click)="removeSite()">delete</mat-icon>
   </div>
 

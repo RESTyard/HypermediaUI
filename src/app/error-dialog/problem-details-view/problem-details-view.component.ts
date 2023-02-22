@@ -23,9 +23,9 @@ export class ProblemDetailsViewComponent implements OnInit {
     event.stopPropagation()
   }
 
-  getStatusCodeMessage(statusCode: number): string {
+  getStatusCodeMessage(statusCode: number | undefined): string {
     let message;
-    if (statusCode == 0) {
+    if (!statusCode || statusCode == 0) {
       return "";
     }
 

@@ -23,7 +23,7 @@
   </ng-container>
 </mat-toolbar>
 
-<mat-tab-group *ngIf="configuration.showRawTab">
+<mat-tab-group *ngIf="GeneralSettings.showRawTab">
   <mat-tab label="UI">
     <app-entity-view [entity]="hto"></app-entity-view>
   </mat-tab>
@@ -32,4 +32,4 @@
   </mat-tab>
 </mat-tab-group>
 
-<app-entity-view [entity]="hto" *ngIf="!configuration.showRawTab"></app-entity-view>
+<app-entity-view [entity]="hto" *ngIf="!GeneralSettings.showRawTab"></app-entity-view>

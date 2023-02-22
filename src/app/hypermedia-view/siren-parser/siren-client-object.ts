@@ -9,11 +9,11 @@ import { ISirenClientObject, IEmbeddedLinkEntity, IEmbeddedEntity } from './enti
 export class SirenClientObject implements ISirenClientObject {
     classes: string[] = new Array<string>();
     links: HypermediaLink[] = new Array<HypermediaLink>();
-    properties: PropertyInfo[];
-    embeddedLinkEntities: IEmbeddedLinkEntity[];
-    embeddedEntities: IEmbeddedEntity[];
-    title: string;
-    actions: HypermediaAction[];
+    properties: PropertyInfo[] = [];
+    embeddedLinkEntities: IEmbeddedLinkEntity[] = [];
+    embeddedEntities: IEmbeddedEntity[] = [];
+    title: string = "";
+    actions: HypermediaAction[] = [];
 
     constructor() { }
   }

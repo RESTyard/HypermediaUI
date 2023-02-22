@@ -1,10 +1,11 @@
-import { HypermediaViewConfiguration } from '../hypermedia-view-configuration';
 import { Component, OnInit, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { SirenClientObject } from '../siren-parser/siren-client-object';
 import { HypermediaLink } from '../siren-parser/hypermedia-link';
 import { HypermediaAction } from '../siren-parser/hypermedia-action';
 import { PropertyInfo } from '../siren-parser/property-info';
 import { IEmbeddedEntity, IEmbeddedLinkEntity } from '../siren-parser/entity-interfaces';
+import { SettingsService } from 'src/app/settings/services/settings.service';
+import { GeneralSettings } from 'src/app/settings/services/AppSettings';
 
 @Component({
   selector: 'app-entity-view',
@@ -13,17 +14,20 @@ import { IEmbeddedEntity, IEmbeddedLinkEntity } from '../siren-parser/entity-int
 })
 export class EntityViewComponent implements OnInit, OnChanges {
 
-  @Input() entity: SirenClientObject;
+  @Input() entity: SirenClientObject = new SirenClientObject();
 
-  public title: string;
-  public embeddedLinkEntities: IEmbeddedLinkEntity[];
-  public embeddedEntities: IEmbeddedEntity[];
-  public classes: string;
+  public title: string = "";
+  public embeddedLinkEntities: IEmbeddedLinkEntity[] = [];
+  public embeddedEntities: IEmbeddedEntity[] = [];
+  public classes: string = "";
   public links: HypermediaLink[] = new Array<HypermediaLink>();
   public properties: PropertyInfo[] = new Array<PropertyInfo>();
-  public actions: HypermediaAction[]= new Array<HypermediaAction>();
+  public actions: HypermediaAction[] = new Array<HypermediaAction>();
+  GeneralSettings: GeneralSettings = new GeneralSettings();
 
-  constructor(public configuration: HypermediaViewConfiguration) { }
+  constructor(public settingsService: SettingsService) {
+    this.GeneralSettings = settingsService.CurrentSettings.GeneralSettings;
+  }
 
   ngOnInit() {
     this.processHto();

@@ -4,8 +4,8 @@ import { SirenClientObject } from '../siren-parser/siren-client-object';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PlatformLocation } from '@angular/common';
 import { ApiPath } from '../api-path';
-import { HypermediaViewConfiguration } from '../hypermedia-view-configuration';
-
+import { SettingsService } from 'src/app/settings/services/settings.service';
+import { GeneralSettings } from 'src/app/settings/services/AppSettings';
 
 @Component({
   selector: 'app-hypermedia-control',
@@ -17,8 +17,10 @@ export class HypermediaControlComponent implements OnInit {
   public hto: SirenClientObject| null = null;
   public navPaths: string[] = [];
   public isBusy: boolean = false;
+  GeneralSettings: GeneralSettings;
 
-  constructor(private hypermediaClient: HypermediaClientService, private route: ActivatedRoute, private router: Router, location: PlatformLocation, public configuration: HypermediaViewConfiguration) {
+  constructor(private hypermediaClient: HypermediaClientService, private route: ActivatedRoute, private router: Router, location: PlatformLocation, public settingsService: SettingsService) {
+    this.GeneralSettings = settingsService.CurrentSettings.GeneralSettings
   }
 
   ngOnInit() {

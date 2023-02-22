@@ -1,11 +1,6 @@
 import { HypermediaClientService } from '../hypermedia-view/hypermedia-client.service';
 import { Component, OnInit, Input } from '@angular/core';
 import {FormControl, Validators} from '@angular/forms';
-import {SettingsService} from '../settings/services/settings.service';
-import {Observable} from 'rxjs/internal/Observable';
-import {startWith} from 'rxjs/internal/operators/startWith';
-import {map} from 'rxjs/internal/operators/map';
-import {of} from 'rxjs/internal/observable/of';
 
 @Component({
   selector: 'app-main-page',
@@ -20,7 +15,7 @@ export class MainPageComponent implements OnInit {
 
   @Input() apiEntryPoint: string = "";
 
-  constructor(private hypermediaClientService: HypermediaClientService, private settingsService: SettingsService) {
+  constructor(private hypermediaClientService: HypermediaClientService) {
   this.urlFormControl = new FormControl("", [
       Validators.required,
       Validators.pattern(this.URL_REGEX)

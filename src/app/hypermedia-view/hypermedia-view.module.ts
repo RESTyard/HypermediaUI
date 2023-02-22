@@ -12,7 +12,6 @@ import { EmbeddedEntityViewComponent } from './embedded-entity-view/embedded-ent
 import { EntityViewComponent } from './entity-view/entity-view.component';
 import { HypermediaClientService } from './hypermedia-client.service';
 import { HypermediaControlComponent } from './hypermedia-control/hypermedia-control.component';
-import { HypermediaViewConfiguration } from './hypermedia-view-configuration';
 import { LinkViewComponent } from './link-view/link-view.component';
 import { PropertyGridComponent } from './property-grid/property-grid.component';
 import { RawViewComponent } from './raw-view/raw-view.component';
@@ -104,7 +103,6 @@ import { ErrorDialogModule } from '../error-dialog/error-dialog.module';
     ObservableLruCache,
     SirenDeserializer,
     SchemaSimplifier,
-    HttpClient,
-    HypermediaViewConfiguration]
+    HttpClient]
 })
 export class HypermediaViewModule { }

@@ -1,2 +1,12 @@
-foo
+<div id="content">
+    <span class="SubTitle">Rendering options</span><br>
 
+    <mat-slide-toggle [formControl]="showRawTab" [checked]="" color="primary">Show raw view</mat-slide-toggle><br>
+    <mat-slide-toggle [formControl]="showClasses" [checked]="" color="primary">Show classes</mat-slide-toggle><br>
+    <mat-slide-toggle [formControl]="showEmptyEntities" [checked]="" color="primary">Show empty entities</mat-slide-toggle><br>
+    <mat-slide-toggle [formControl]="showEmptyProperties" [checked]="" color="primary">Show empty properties</mat-slide-toggle><br>
+    <mat-slide-toggle [formControl]="showNullProperties" [checked]="" color="primary">Show null properties</mat-slide-toggle><br>
+    <mat-slide-toggle [formControl]="showEmptyLinks" [checked]="" color="primary">Show empty links</mat-slide-toggle><br>
+    <mat-slide-toggle [formControl]="showEmptyActions" [checked]="" color="primary">Show empty actions</mat-slide-toggle><br>
+    <mat-slide-toggle [formControl]="useEmbeddingPropertyForActionParameters" [checked]="" color="primary">Use embedding property for action parameters</mat-slide-toggle>
+</div>
