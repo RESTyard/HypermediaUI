@@ -17,7 +17,7 @@ export class SettingsService {
 
     const settingsRaw = localStorage.getItem(SettingsService.AppSettingsKey);
     if (settingsRaw) {
-      this.CurrentSettings = JSON.parse(settingsRaw);
+      this.CurrentSettings = Object.assign(this.CurrentSettings, JSON.parse(settingsRaw));
       return;
     }
 
