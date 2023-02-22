@@ -13,16 +13,17 @@ import {MAT_SNACK_BAR_DEFAULT_OPTIONS, MatSnackBarModule} from '@angular/materia
 import { SettingsMenuComponent } from './settings-menu/settings-menu.component';
 import {MatMenuModule} from '@angular/material/menu';
 import {MatDividerModule} from '@angular/material/divider';
-import { SiteSettingsDialogComponent } from './site-settings-dialog/site-settings-dialog.component';
+import { SiteSettingsPageComponent } from './site-settings-page/site-settings-page.component';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { SiteSettingsComponent } from './site-settings/site-settings.component';
 import { FlexLayoutModule } from '@angular/flex-layout';
+import { MatTabsModule } from '@angular/material/tabs';
 
 @NgModule({
   declarations: [
     SiteSettingsComponent,
     SettingsMenuComponent,
-    SiteSettingsDialogComponent
+    SiteSettingsPageComponent
   ],
   imports: [
     CommonModule,
@@ -39,7 +40,8 @@ import { FlexLayoutModule } from '@angular/flex-layout';
     MatDividerModule,
     MatExpansionModule,
     MatIconModule,
-    FlexLayoutModule 
+    FlexLayoutModule,
+    MatTabsModule,
 
   ],
   exports: [

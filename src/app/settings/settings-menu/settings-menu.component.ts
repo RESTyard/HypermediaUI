@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
-import {SiteSettingsDialogComponent} from '../site-settings-dialog/site-settings-dialog.component';
+import {SiteSettingsPageComponent} from '../site-settings-page/site-settings-page.component';
 
 @Component({
   selector: 'app-settings-menu',
@@ -17,7 +17,7 @@ export class SettingsMenuComponent implements OnInit {
   }
 
   openSiteSettings() {
-    this.dialog.open(SiteSettingsDialogComponent, {
+    this.dialog.open(SiteSettingsPageComponent, {
       height: '80%',
       width: '80%',
     });
