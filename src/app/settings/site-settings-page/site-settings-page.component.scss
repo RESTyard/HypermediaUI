@@ -1,15 +1,7 @@
 @import '../../../defaults.scss';
-.title {
-  align-self: center;
-  font-size: x-large;
-  font-family: Roboto, "Helvetica Neue", sans-serif;
-}
 
-.header {
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-start;
-  align-items: center;
+.toolbar {
+  margin-top: $defaultSpacing*2;
 }
 
 #addButton {

@@ -1,29 +1,14 @@
-<div class="header">
 
-  <span class="title">
-    Site settings
-  </span>
-
-  <span class="spacer"></span>
-  <button mat-icon-button mat-dialog-close>
-    <mat-icon id="exitButton">close</mat-icon>
-  </button>
-</div>
-
-<div class="toolbar">
-  <button id="addButton" mat-raised-button color="primary" type="button" (click)="addSite()">
-    <mat-icon>add_circle_outline</mat-icon>
-    Add site
-  </button>
-
-  <button id="saveButton" mat-raised-button color="primary" type="button" (click)="saveSites()">
-    <mat-icon>save</mat-icon>
-    Save
-  </button>
-</div>
 
 <app-site-settings [siteSetting]="siteSettings?.GlobalSiteSettings" [urlEditable]="false"
                    headline="Global" [canBeDeleted]="false"></app-site-settings>
 <ng-container *ngFor="let site of siteSettings?.SiteSpecificSettings; let i = index;">
   <app-site-settings [siteSetting]="site" (deleteRequested)="removeSite(i)"></app-site-settings>
 </ng-container>
+
+<div class="toolbar">
+  <button id="addButton" mat-raised-button color="primary" type="button" (click)="addSite()">
+    <mat-icon>add_circle_outline</mat-icon>
+    Add site
+  </button>
+</div>
