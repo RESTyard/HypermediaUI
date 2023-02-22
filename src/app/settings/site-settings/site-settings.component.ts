@@ -5,7 +5,7 @@ import { HeaderSetting, SiteSetting } from '../services/AppSettings';
 @Component({
   selector: 'app-site-settings',
   templateUrl: './site-settings.component.html',
-  styleUrls: ['./site-settings.component.css']
+  styleUrls: ['./site-settings.component.scss']
 })
 
 

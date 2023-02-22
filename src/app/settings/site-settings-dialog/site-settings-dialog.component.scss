@@ -1,0 +1,26 @@
+@import '../../../defaults.scss';
+.settingsCard {
+  background-color: lightgray;
+}
+
+.title {
+  align-self: center;
+  font-size: x-large;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+.header {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+#addButton {
+  margin-left: 16px;
+  margin-right: $defaultSpacing;
+}
+
+.spacer{
+  flex: auto;
+}

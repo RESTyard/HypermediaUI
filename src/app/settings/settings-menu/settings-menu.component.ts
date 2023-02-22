@@ -5,12 +5,12 @@ import {SiteSettingsDialogComponent} from '../site-settings-dialog/site-settings
 @Component({
   selector: 'app-settings-menu',
   templateUrl: './settings-menu.component.html',
-  styleUrls: ['./settings-menu.component.css']
+  styleUrls: ['./settings-menu.component.scss']
 })
 export class SettingsMenuComponent implements OnInit {
 
   constructor(private dialog: MatDialog) {
-    
+    this.openSiteSettings();
    }
 
   ngOnInit(): void {
@@ -18,10 +18,8 @@ export class SettingsMenuComponent implements OnInit {
 
   openSiteSettings() {
     this.dialog.open(SiteSettingsDialogComponent, {
-      maxHeight: '100%',
-      maxWidth: '100%',
-      height: '100%',
-      width: '100%'
+      height: '80%',
+      width: '80%',
     });
   }
 }

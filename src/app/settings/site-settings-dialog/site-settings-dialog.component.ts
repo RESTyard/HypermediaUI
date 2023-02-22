@@ -7,7 +7,7 @@ import { SiteSetting, SiteSettings } from '../services/AppSettings';
 @Component({
   selector: 'app-site-settings-dialog',
   templateUrl: './site-settings-dialog.component.html',
-  styleUrls: ['./site-settings-dialog.component.css']
+  styleUrls: ['./site-settings-dialog.component.scss']
 })
 export class SiteSettingsDialogComponent implements OnInit {
 

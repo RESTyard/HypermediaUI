@@ -1,12 +1,5 @@
 <div class="sm:hidden flex grow justify-end">
-  <button mat-icon-button class="text-white" [matMenuTriggerFor]="settingsMenu">
-    <mat-icon>menu</mat-icon>
+  <button mat-icon-button class="text-white" (click)="openSiteSettings()" >
+    <mat-icon>settings</mat-icon>
   </button>
 </div>
-
-<mat-menu #settingsMenu="matMenu" yPosition="below" xPosition="before">
-  <ng-container>
-    <button (click)="openSiteSettings()" mat-menu-item>Sites</button>
-    <!-- <mat-divider></mat-divider> -->
-  </ng-container>
-</mat-menu>

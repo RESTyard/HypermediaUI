@@ -1,0 +1,51 @@
+@import '../../../defaults.scss';
+#headerToolbar {
+    display: flex;
+    vertical-align: middle;
+    margin-bottom: $defaultSpacing;
+}
+
+#globalTitle {
+    font-size: 16px;
+     margin-left: $defaultSpacing;
+     margin-top: 4px;
+}
+
+#headersTitle {
+    align-self: center;
+    margin-right: $defaultSpacing;
+}
+
+.spacer{
+    flex: auto;
+}
+
+
+
+#titleContainer{
+    display: flex;
+    vertical-align: start;
+}
+
+#headers{
+   display: flex;
+   align-items: center;
+}
+
+.headerKeyField{
+    // background-color: blue;
+    flex:20;
+}
+
+.headerValueField{
+    // background-color: red;
+    flex:40;
+}
+
+.flexSpacer{
+    flex: 40;
+}
+
+.deleteHeader{
+    margin-left: $defaultSpacing;
+}

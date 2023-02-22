@@ -16,6 +16,7 @@ import {MatDividerModule} from '@angular/material/divider';
 import { SiteSettingsDialogComponent } from './site-settings-dialog/site-settings-dialog.component';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { SiteSettingsComponent } from './site-settings/site-settings.component';
+import { FlexLayoutModule } from '@angular/flex-layout';
 
 @NgModule({
   declarations: [
@@ -37,7 +38,8 @@ import { SiteSettingsComponent } from './site-settings/site-settings.component';
     MatMenuModule,
     MatDividerModule,
     MatExpansionModule,
-    MatIconModule
+    MatIconModule,
+    FlexLayoutModule 
 
   ],
   exports: [
