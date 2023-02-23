@@ -27,7 +27,7 @@ $hui-app-theme: mat.define-light-theme((
 @include mat.all-component-themes($hui-app-theme);
 
 // call custom component style mixins
-@import 'app/hypermedia-view/entity-view/entity-view.component';
+@import '../app/hypermedia-view/entity-view/entity-view.component';
 @include entity-view-theme($hui-app-theme);
 
 $background: map-get($hui-app-theme, background);
