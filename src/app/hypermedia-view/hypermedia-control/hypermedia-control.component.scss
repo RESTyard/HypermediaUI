@@ -1,4 +1,4 @@
-@import '../../../defaults.scss';
+@import '../../../styles/defaults.scss';
 
 headerMenue{
   padding: $defaultSpacing;
@@ -24,4 +24,8 @@ rawContent{
 .progressSpacer {
   height: 6px;
   width: 100%;
+}
+
+.appIcon {
+  margin-right: $defaultSpacing;
 }

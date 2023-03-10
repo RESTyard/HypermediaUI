@@ -1,4 +1,4 @@
-@import '../../defaults.scss';
+@import '../../styles/defaults.scss';
 
 .mainGrid {
     display: grid;
@@ -31,5 +31,9 @@ mat-error {
 .navigateButton{
   justify-self: center;
   grid-row: 3;
+}
+
+.appIcon {
+  margin-right: $defaultSpacing;
 }
 

@@ -23,8 +23,8 @@
               "src/assets"
             ],
             "styles": [
-              "src/hypermedia-ui-theme.scss",
-              "src/styles.scss"
+              "src/styles/hypermedia-ui-theme.scss",
+              "src/styles/styles.scss"
             ],
             "scripts": [],
             "optimization": true
@@ -139,8 +139,8 @@
               "src/assets"
             ],
             "styles": [
-              "src/hypermedia-ui-theme.scss",
-              "src/styles.scss"
+              "src/styles/hypermedia-ui-theme.scss",
+              "src/styles/styles.scss"
             ],
             "scripts": []
           }
