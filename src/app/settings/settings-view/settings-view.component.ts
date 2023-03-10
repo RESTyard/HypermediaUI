@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import {MatDialog} from '@angular/material/dialog';
+import {MatDialog, MatDialogRef} from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { SettingsService } from '../services/settings.service';
 
@@ -10,15 +10,16 @@ import { SettingsService } from '../services/settings.service';
 })
 export class SettingsViewComponent implements OnInit {
 
-  constructor(private settingsService: SettingsService, private snackBar: MatSnackBar) {
+  constructor(private settingsService: SettingsService,
+              private snackBar: MatSnackBar,
+              private dialogRef: MatDialogRef<SettingsViewComponent>) {
    }
 
   ngOnInit(): void {
-  }
-
-  saveSites(): void {
-    this.settingsService.SaveCurrentSettings(),
-    this.snackBar.open("Settings saved.");
+    this.dialogRef.afterClosed().subscribe(() => {
+      this.settingsService.SaveCurrentSettings(),
+      this.snackBar.open("Settings saved.");
+    })
   }
 
 }
