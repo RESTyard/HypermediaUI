@@ -40,7 +40,7 @@ export class SiteSettingsComponent implements OnInit {
   private AddHeaderFormControl(headerSetting: HeaderSetting): FormGroup<any> {
     let key = new FormControl(headerSetting.Key);
     key.valueChanges.subscribe(v => v ? headerSetting.Key = v!.trim() : headerSetting.Key = "");
-    
+
     let value = new FormControl(headerSetting.Value);
     value.valueChanges.subscribe(v => v ? headerSetting.Value = v!.trim() : headerSetting.Value = "");
 
@@ -58,8 +58,8 @@ export class SiteSettingsComponent implements OnInit {
   }
 
   removeHeader(index: number) {
-    this.siteSetting?.Headers.splice(index - 1, 1);
-    this.headerFormGroups.splice(index - 1, 1);
+    this.siteSetting?.Headers.splice(index, 1);
+    this.headerFormGroups.splice(index, 1);
   }
 
   removeSite() {
