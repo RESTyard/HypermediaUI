@@ -9,7 +9,8 @@ import {FormControl, Validators} from '@angular/forms';
 })
 export class MainPageComponent implements OnInit {
 
-  private readonly URL_REGEX = /^https?:\/\/\w+(\.\w+)*(:[0-9]+)?\/?(\/[.\w]*)*$/;
+  // note: \ need to be escaped by using \\
+  private readonly URL_REGEX = "https?:\\/\\/(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b([-a-zA-Z0-9()!@:%_\\+.~#?&\\/\\/=]*)";
 
   public urlFormControl: FormControl;
 
