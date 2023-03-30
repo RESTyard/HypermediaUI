@@ -22,6 +22,13 @@ export class ParameterActionComponent implements OnInit {
   constructor(private hypermediaClientService: HypermediaClientService) { }
 
   ngOnInit() {
+    // This is a workaround if we do not find a built-in way to configure json-schema-form to allow empty array as default value
+    for (let key in this.action.defaultValues['Filter']) {
+      let value = this.action.defaultValues['Filter'][key];
+      if(Array.isArray(value) && value.length == 0){
+        delete this.action.defaultValues['Filter'][key];
+      }
+    }
   }
 
   public onActionSubmitted(formParameters: any) {
