@@ -19,6 +19,8 @@ export class GeneralSettings {
     showEmptyActions:boolean = false;
   
     useEmbeddingPropertyForActionParameters:boolean = true;
+
+    showHostInformation:boolean = true;
 }
 
 export class SiteSettings {

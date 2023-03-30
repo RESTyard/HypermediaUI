@@ -17,6 +17,7 @@ export class HypermediaControlComponent implements OnInit {
   public hto: SirenClientObject| null = null;
   public navPaths: string[] = [];
   public isBusy: boolean = false;
+  public CurrentHost: string = "";
   public CurrentEntryPoint: string = "";
   GeneralSettings: GeneralSettings;
   IsInsecureConnection: boolean = false;
@@ -55,13 +56,15 @@ export class HypermediaControlComponent implements OnInit {
 
   private SetHostInfo(navPaths: string[]) {
     if (!navPaths || navPaths.length < 1) {
+      this.CurrentHost = '';
       this.CurrentEntryPoint = '';
       this.IsInsecureConnection = false;
       return;
     }
 
-    let url = new URL(navPaths[0]);
-    this.CurrentEntryPoint = url.host;
+    this.CurrentEntryPoint = navPaths[0];
+    let url = new URL(this.CurrentEntryPoint);
+    this.CurrentHost = url.host;
     if (url.protocol === "http:") {
       this.IsInsecureConnection = true;
     } else {

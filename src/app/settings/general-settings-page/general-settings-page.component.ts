@@ -21,6 +21,7 @@ export class GeneralSettingsPageComponent implements OnInit {
   showEmptyLinks: FormControl<boolean>= new FormControl();
   showEmptyActions: FormControl<boolean>= new FormControl();
   useEmbeddingPropertyForActionParameters: FormControl<boolean>= new FormControl();
+  showHostInformation: FormControl<boolean>= new FormControl();
 
   constructor(private settingsService: SettingsService, private snackBar: MatSnackBar, private formBuilder: FormBuilder) {
     this.generalSettings = settingsService.CurrentSettings.GeneralSettings;
@@ -50,6 +51,9 @@ export class GeneralSettingsPageComponent implements OnInit {
 
     this.useEmbeddingPropertyForActionParameters = new FormControl<boolean>(this.generalSettings.useEmbeddingPropertyForActionParameters, { nonNullable: true });
     this.useEmbeddingPropertyForActionParameters.valueChanges.subscribe(v => this.generalSettings.useEmbeddingPropertyForActionParameters = v);
+
+    this.showHostInformation = new FormControl<boolean>(this.generalSettings.showHostInformation, { nonNullable: true });
+    this.showHostInformation.valueChanges.subscribe(v => this.generalSettings.showHostInformation = v);
   }
 
   saveSites(): void {
