@@ -1,21 +1,31 @@
-<mat-card>
-  <div id="titleContainer">
-    <div matTooltip="Applies to all http calls. Overrriden by site specific settings." *ngIf="!urlEditable" fxlayout="row" fxLayoutAlign="start center">
+<mat-expansion-panel id="settingExpansionPanel">
+  <mat-expansion-panel-header *ngIf="!urlEditable">
+    <mat-panel-title>
       <mat-icon fontSet="material-icons-outlined">language</mat-icon>
-      <span id="globalTitle">{{headline}}</span>
-    </div>
+      <span class="hostTitle">{{headline}}</span>
+    </mat-panel-title>
+    <mat-panel-description>
+      Applies to all http calls. Overrriden by site specific settings.
+    </mat-panel-description>
+  </mat-expansion-panel-header>
 
-    <mat-form-field *ngIf="urlEditable" id="siteHostField">
+  <mat-expansion-panel-header *ngIf="urlEditable">
+    <mat-panel-title>
+      <span class="hostTitle newHostInfo" *ngIf="!this.urlFormControl.value">Host</span>
+      <span class="hostTitle">{{this.urlFormControl.value}}</span>
+      <span class="spacer"></span>
+      <mat-icon matTooltip="Delete site specific settings" fontSet="material-icons-outlined" id="deleteSiteButton" *ngIf="canBeDeleted" (click)="removeSite()">delete</mat-icon>
+    </mat-panel-title>
+  </mat-expansion-panel-header>
+
+  <div id="titleContainer">
+    <mat-form-field *ngIf="urlEditable" class="siteHostField">
       <mat-label>
         Host
       </mat-label>
       <input type="text" matInput [formControl]="this.urlFormControl">
     </mat-form-field>
-
-    <span class="spacer"></span>
-
-    <mat-icon matTooltip="Delete site specific settings" fontSet="material-icons-outlined" id="deleteSiteButton" *ngIf="canBeDeleted"
-              (click)="removeSite()">delete</mat-icon>
+    <span class="flexSpacer"></span>
   </div>
 
   <!-- headers -->
@@ -44,4 +54,4 @@
       <span class="flexSpacer"></span>
     </div>
   </ng-container>
-</mat-card>
+</mat-expansion-panel>
