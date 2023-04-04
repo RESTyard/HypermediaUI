@@ -17,7 +17,10 @@ export class HypermediaControlComponent implements OnInit {
   public hto: SirenClientObject| null = null;
   public navPaths: string[] = [];
   public isBusy: boolean = false;
+  public CurrentHost: string = "";
+  public CurrentEntryPoint: string = "";
   GeneralSettings: GeneralSettings;
+  IsInsecureConnection: boolean = false;
 
   constructor(private hypermediaClient: HypermediaClientService, private route: ActivatedRoute, private router: Router, location: PlatformLocation, public settingsService: SettingsService) {
     this.GeneralSettings = settingsService.CurrentSettings.GeneralSettings
@@ -34,11 +37,11 @@ export class HypermediaControlComponent implements OnInit {
 
     this.hypermediaClient.getNavPathsStream().subscribe((navPaths) => {
       this.navPaths = navPaths;
+      this.SetHostInfo(navPaths);
     });
     this.hypermediaClient.isBusy$.subscribe(isBusy => {
       this.isBusy = isBusy;
     });
-
 
     this.route.queryParams.subscribe(params => {
       const apiPath = new ApiPath();
@@ -49,6 +52,24 @@ export class HypermediaControlComponent implements OnInit {
       }
     });
 
+  }
+
+  private SetHostInfo(navPaths: string[]) {
+    if (!navPaths || navPaths.length < 1) {
+      this.CurrentHost = '';
+      this.CurrentEntryPoint = '';
+      this.IsInsecureConnection = false;
+      return;
+    }
+
+    this.CurrentEntryPoint = navPaths[0];
+    let url = new URL(this.CurrentEntryPoint);
+    this.CurrentHost = url.host;
+    if (url.protocol === "http:") {
+      this.IsInsecureConnection = true;
+    } else {
+      this.IsInsecureConnection = false;
+    }
   }
 
   public getUrlShortName(url: string): string {
@@ -77,5 +98,4 @@ export class HypermediaControlComponent implements OnInit {
   public navigateMainPage() {
     this.hypermediaClient.navigateToMainPage();
   }
-
 }

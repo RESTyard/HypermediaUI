@@ -5,10 +5,10 @@
     margin-bottom: $defaultSpacing;
 }
 
-#globalTitle {
+.hostTitle {
     font-size: 16px;
-     margin-left: $defaultSpacing;
-     margin-top: 4px;
+    margin-left: $defaultSpacing;
+    margin-top: 4px;
 }
 
 #headersTitle {
@@ -16,17 +16,24 @@
     margin-right: $defaultSpacing;
 }
 
+.newHostInfo {
+    color: grey;
+}
+
 .spacer{
     flex: auto;
 }
 
-.hostInput {
-    width: 500px;
+.siteHostField {
+    flex:60;
+}
+
+#settingExpansionPanel {
+    margin-bottom: 6px;
 }
 
 #titleContainer{
     display: flex;
-    vertical-align: start;
 }
 
 #headers{
@@ -35,12 +42,10 @@
 }
 
 .headerKeyField{
-    // background-color: blue;
     flex:20;
 }
 
 .headerValueField{
-    // background-color: red;
     flex:40;
 }
 

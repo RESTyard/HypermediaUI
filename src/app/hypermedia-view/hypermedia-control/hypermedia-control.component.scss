@@ -29,3 +29,16 @@ rawContent{
 .appIcon {
   margin-right: $defaultSpacing;
 }
+
+#CurrentEntryPoint {
+  font-size: 16px;
+}
+
+.isInsecure {
+  color: red;
+}
+
+#IsInsecureConnectionIcon {
+  color: red;
+  margin-right: 16px;
+}

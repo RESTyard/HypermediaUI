@@ -9,11 +9,12 @@ import { HypermediaAction } from '../../siren-parser/hypermedia-action';
   styleUrls: ['./parameter-action.component.scss']
 })
 export class ParameterActionComponent implements OnInit {
-  @Input() action: HypermediaAction;
+  @Input()
+  action!: HypermediaAction;
 
   ActionResultsEnum = ActionResults;
 
-  actionResult: ActionResults;
+  actionResult: ActionResults = ActionResults.undefined;
   actionResultLocation: string | null = null;
   actionMessage: string = "";
   executed: boolean = false; // TODO show multiple executions as list
@@ -22,9 +23,14 @@ export class ParameterActionComponent implements OnInit {
   constructor(private hypermediaClientService: HypermediaClientService) { }
 
   ngOnInit() {
+    // This is a workaround if we do not find a built-in way to configure json-schema-form to allow empty array as default value
+    let defaultValues:any = this.action.defaultValues;
+    if (defaultValues) {
+      this.RemoveEmptyArraysFromDefaults(defaultValues);
+    }
   }
 
-  public onActionSubmitted(formParameters: any) {
+    public onActionSubmitted(formParameters: any) {
     this.action.parameters = formParameters;
     this.actionResult= ActionResults.pending;
     this.executed = true;
@@ -51,5 +57,27 @@ export class ParameterActionComponent implements OnInit {
 
   navigateLocation(location: string) {
     this.hypermediaClientService.Navigate(location);
+  }
+
+  private RemoveEmptyArraysFromDefaults(objectToClean: any, nestingCounter = 0) {
+    if (objectToClean === null) {
+      return;
+    }
+
+    if (nestingCounter == 50) {
+      throw new Error("Cleaning up default values went too deep. Object most probably contains a loop.")
+    }
+
+    for (let key in objectToClean) {
+      let value = objectToClean[key];
+      
+      if (Array.isArray(value) && value.length == 0) {
+        delete objectToClean[key];
+      }
+      
+      if (typeof value === 'object') {
+        this.RemoveEmptyArraysFromDefaults(value, nestingCounter + 1);
+      }
+    }
   }
 }
