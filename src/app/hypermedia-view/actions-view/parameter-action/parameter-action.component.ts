@@ -26,7 +26,7 @@ export class ParameterActionComponent implements OnInit {
     // This is a workaround if we do not find a built-in way to configure json-schema-form to allow empty array as default value
     let defaultValues:any = this.action.defaultValues;
     if (defaultValues) {
-      this.RemoveEmptyArrayFromDefaults(defaultValues);
+      this.RemoveEmptyArraysFromDefaults(defaultValues);
     }
   }
 
@@ -59,11 +59,24 @@ export class ParameterActionComponent implements OnInit {
     this.hypermediaClientService.Navigate(location);
   }
 
-  private RemoveEmptyArrayFromDefaults(defaultValues: any) {
-    for (let key in defaultValues['Filter']) {
-      let value = defaultValues['Filter'][key];
+  private RemoveEmptyArraysFromDefaults(objectToClean: any, nestingCounter = 0) {
+    if (objectToClean === null) {
+      return;
+    }
+
+    if (nestingCounter == 50) {
+      throw new Error("Cleaning up default values went too deep. Object most probably contains a loop.")
+    }
+
+    for (let key in objectToClean) {
+      let value = objectToClean[key];
+      
       if (Array.isArray(value) && value.length == 0) {
-        delete defaultValues['Filter'][key];
+        delete objectToClean[key];
+      }
+      
+      if (typeof value === 'object') {
+        this.RemoveEmptyArraysFromDefaults(value, nestingCounter + 1);
       }
     }
   }
