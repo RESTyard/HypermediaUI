@@ -42,48 +42,53 @@ import {MatProgressBarModule} from '@angular/material/progress-bar';
 import { NgxJsonViewerModule } from 'ngx-json-viewer';
 import { MatMenuModule } from '@angular/material/menu';
 import { ErrorDialogModule } from '../error-dialog/error-dialog.module';
+import { FileUploadActionComponent } from './actions-view/file-upload-action/file-upload-action.component';
+import {FileUploadModule} from 'primeng/fileupload';
+import {NgxDropzoneModule} from 'ngx-dropzone';
 
 @NgModule({
-    imports: [
-        CommonModule,
-        HttpClientModule,
-        MatCardModule,
-        MatButtonModule,
-        MatGridListModule,
-        MatCheckboxModule,
-        MatExpansionModule,
-        MatTabsModule,
-        MatTooltipModule,
-        MatIconModule,
-        MatToolbarModule,
-        MatListModule,
-        FlexLayoutModule,
-        MatInputModule,
-        MatSelectModule,
-        MaterialDesignFrameworkModule,
-        MatMenuModule,
-        ErrorDialogModule,
-        MatProgressSpinnerModule,
-        MatProgressBarModule,
+  imports: [
+    CommonModule,
+    HttpClientModule,
+    MatCardModule,
+    MatButtonModule,
+    MatGridListModule,
+    MatCheckboxModule,
+    MatExpansionModule,
+    MatTabsModule,
+    MatTooltipModule,
+    MatIconModule,
+    MatToolbarModule,
+    MatListModule,
+    FlexLayoutModule,
+    MatInputModule,
+    MatSelectModule,
+    MaterialDesignFrameworkModule,
+    MatMenuModule,
+    ErrorDialogModule,
+    MatProgressSpinnerModule,
+    MatProgressBarModule,
 
-        NgxJsonViewerModule,
+    NgxJsonViewerModule,
 
-        // workaround for: https://github.com/dschnelldavis/angular2-json-schema-form/issues/189
-        // JsonSchemaFormModule.forRoot(MaterialDesignFrameworkModule),
-        {
-            ngModule: JsonSchemaFormModule,
-            providers: [
-                JsonSchemaFormService,
-                FrameworkLibraryService,
-                WidgetLibraryService,
-                {provide: Framework, multi: true}
-            ]
-        },
-        PrettyJsonModule,
-        ClipboardModule,
-        FormsModule,
-        SettingsModule,
-    ],
+    // workaround for: https://github.com/dschnelldavis/angular2-json-schema-form/issues/189
+    // JsonSchemaFormModule.forRoot(MaterialDesignFrameworkModule),
+    {
+      ngModule: JsonSchemaFormModule,
+      providers: [
+        JsonSchemaFormService,
+        FrameworkLibraryService,
+        WidgetLibraryService,
+        {provide: Framework, multi: true}
+      ]
+    },
+    PrettyJsonModule,
+    ClipboardModule,
+    FormsModule,
+    SettingsModule,
+    FileUploadModule,
+    NgxDropzoneModule,
+  ],
   exports: [
     HypermediaControlComponent
   ],
@@ -97,6 +102,7 @@ import { ErrorDialogModule } from '../error-dialog/error-dialog.module';
     ActionsViewComponent,
     ParameterlessActionViewComponent,
     ParameterActionComponent,
+    FileUploadActionComponent,
   ],
   providers: [
     HypermediaClientService,

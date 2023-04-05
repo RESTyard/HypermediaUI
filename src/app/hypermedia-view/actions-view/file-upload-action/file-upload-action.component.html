@@ -1,0 +1,8 @@
+<ngx-dropzone [multiple]="false" [maxFileSize]=maxFileSize (change)="onSelect($event)">
+	<ngx-dropzone-label>Drop here or click to select</ngx-dropzone-label>
+	<ngx-dropzone-preview *ngIf="file != null" [removable]="true" (removed)="onRemove(file)">
+		<ngx-dropzone-label>{{ file.name }} ({{ file.type }})</ngx-dropzone-label>
+	</ngx-dropzone-preview>
+</ngx-dropzone>
+<br/>
+<button (click)="onSubmit()" mat-raised-button>Upload</button>

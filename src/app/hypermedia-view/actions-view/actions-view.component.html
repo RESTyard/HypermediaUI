@@ -6,11 +6,15 @@
     </div>
 
     <ng-template #parameterActionTemplate>
-      <div class="actionContainer">
+      <div class="actionContainer" *ngIf="action.type != 'multipart/form-data'; else fileUploadActionTemplate">
         <app-parameter-action [action]=action></app-parameter-action>
       </div>
+      <ng-template #fileUploadActionTemplate>
+        <div class="actionContainer">
+          <app-file-upload-action [action]=action></app-file-upload-action>
+        </div>
+      </ng-template>
     </ng-template>
-
   </ng-container>
 
 </div>

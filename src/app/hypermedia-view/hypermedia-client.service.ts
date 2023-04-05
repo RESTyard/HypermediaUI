@@ -40,6 +40,7 @@ export class HypermediaClientService {
 
   private static sirenMediaType = 'application/vnd.siren+json';
   private static jsonMediaType = 'application/json';
+  private static formDataMediaType = 'multipart/form-data';
 
   constructor(
     private httpClient: HttpClient,
@@ -152,6 +153,7 @@ export class HypermediaClientService {
 
   private ExecuteRequest(action: HypermediaAction, headers: any, body: any | null) {
     this.AddBusyRequest()
+    console.log(body)
     return this.httpClient.request(
       action.method,
       action.href,
@@ -185,12 +187,21 @@ export class HypermediaClientService {
     let parameters = null;
     let parameterMediaType = null;
     if (!action.isParameterLess) {
-      parameterMediaType = HypermediaClientService.jsonMediaType;
+      // parameterMediaType = HypermediaClientService.jsonMediaType;
+      parameterMediaType = action.type;
 
       if (this.settingsService.CurrentSettings.GeneralSettings.useEmbeddingPropertyForActionParameters) {
         parameters = this.createWaheStyleActionParameters(action);
       } else {
-        parameters = action.parameters;
+        if(action.type == HypermediaClientService.formDataMediaType){
+          parameters = action.formData;
+        } else {
+          parameters = action.parameters;
+        }
+      }
+
+      if(action.type == HypermediaClientService.formDataMediaType){
+        parameters = action.formData;
       }
     }
 
@@ -217,7 +228,7 @@ export class HypermediaClientService {
     }
 
     // https://stackoverflow.com/questions/54922985/getting-status-code-0-angular-httpclient
-    // statuscoe 0 clientside or network error 
+    // statuscoe 0 clientside or network error
     if (errorResponse.status === 0) {
       let message = errorResponse.error.message ? ": " + errorResponse.error.message : "";
       console.error(`Client-side error occurred ${message}`, errorResponse.error);

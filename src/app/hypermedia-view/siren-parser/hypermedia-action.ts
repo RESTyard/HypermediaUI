@@ -14,6 +14,7 @@ export class HypermediaAction {
   public waheActionParameterJsonSchema: Observable<object> | undefined;
   public parameters: string | undefined;
   public defaultValues: object | undefined;
+  public formData: FormData | undefined;
 
   constructor() { }
 }

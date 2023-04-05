@@ -14,7 +14,7 @@ import {map} from "rxjs";
 
 @Injectable()
 export class SirenDeserializer {
-  private readonly waheActionType = 'application/json';
+  private readonly waheActionTypes = ['application/json', 'octet-stream', 'multipart/form-data'];
 
   constructor(
      private httpClient: HttpClient,
@@ -218,8 +218,8 @@ export class SirenDeserializer {
   }
 
   parseWaheStyleParameters(action: any, hypermediaAction: HypermediaAction) {
-    if (!ReflectionHelpers.hasProperty(action, 'type') || action.type !== this.waheActionType) {
-      throw new Error(`Only suporting actions with type="${this.waheActionType}". [action ${action.name}]`); // todo parse standard siren
+    if (!ReflectionHelpers.hasProperty(action, 'type') || !this.waheActionTypes.includes(action.type)) {
+      throw new Error(`Only supporting actions with types="${this.waheActionTypes.join()}". [action ${action.name}]`); // todo parse standard siren
     }
 
     if (!ReflectionHelpers.hasFilledArrayProperty(action, 'fields')) {
