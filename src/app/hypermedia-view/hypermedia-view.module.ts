@@ -43,7 +43,6 @@ import { NgxJsonViewerModule } from 'ngx-json-viewer';
 import { MatMenuModule } from '@angular/material/menu';
 import { ErrorDialogModule } from '../error-dialog/error-dialog.module';
 import { FileUploadActionComponent } from './actions-view/file-upload-action/file-upload-action.component';
-import {FileUploadModule} from 'primeng/fileupload';
 import {NgxDropzoneModule} from 'ngx-dropzone';
 
 @NgModule({
@@ -86,7 +85,6 @@ import {NgxDropzoneModule} from 'ngx-dropzone';
     ClipboardModule,
     FormsModule,
     SettingsModule,
-    FileUploadModule,
     NgxDropzoneModule,
   ],
   exports: [
