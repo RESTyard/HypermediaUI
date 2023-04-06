@@ -5,8 +5,8 @@
 }
 
 .dropzone-container {
-  max-height: 150px;
-  max-width: 30%;
+  max-height: 160px;
+  max-width: 250px;
 }
 
 .file-name {
