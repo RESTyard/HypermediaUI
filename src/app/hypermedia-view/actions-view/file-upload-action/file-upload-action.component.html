@@ -20,15 +20,20 @@
   </div>
 
 <mat-menu #errorPopup="matMenu">
-    <div (click)="$event.stopPropagation()">
-      <app-problem-details-view *ngIf="problemDetailsError" [problemDetailsError]="problemDetailsError"></app-problem-details-view>
-    </div>
-  </mat-menu>
-
+  <div (click)="$event.stopPropagation()">
+    <app-problem-details-view *ngIf="problemDetailsError" [problemDetailsError]="problemDetailsError"></app-problem-details-view>
+  </div>
+</mat-menu>
 <ngx-dropzone class="dropzone-container" [multiple]="false" [maxFileSize]=maxFileSize (change)="onSelect($event)">
 	<ngx-dropzone-label>Drop here or click to select</ngx-dropzone-label>
 	<ngx-dropzone-preview *ngIf="file != null" [removable]="true" (removed)="onRemove(file)">
-		<ngx-dropzone-label>{{ file.name }} ({{ file.type }})</ngx-dropzone-label>
+    <ngx-dropzone-label>
+      <i [class]="'fa ' + getFileIconClassByExtension(file.name) + ' fa-3x'"></i>
+      <mat-vertical-stepper></mat-vertical-stepper>
+      <span class="file-name" [matTooltip]="file.name">{{ file.name }}</span>
+      <mat-vertical-stepper></mat-vertical-stepper>
+      <span class="size">{{convertBytesToMBReadable(file.size)}}</span>
+    </ngx-dropzone-label>
 	</ngx-dropzone-preview>
 </ngx-dropzone>
 <br/>

@@ -44,6 +44,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { ErrorDialogModule } from '../error-dialog/error-dialog.module';
 import { FileUploadActionComponent } from './actions-view/file-upload-action/file-upload-action.component';
 import {NgxDropzoneModule} from 'ngx-dropzone';
+import {MatStepperModule} from '@angular/material/stepper';
 
 @NgModule({
   imports: [
@@ -86,6 +87,7 @@ import {NgxDropzoneModule} from 'ngx-dropzone';
     FormsModule,
     SettingsModule,
     NgxDropzoneModule,
+    MatStepperModule,
   ],
   exports: [
     HypermediaControlComponent
