@@ -1,20 +1,16 @@
 <div class="container">
   <ng-container *ngFor="let action of actions">
-
-    <div class="actionContainer" *ngIf="action.isParameterLess; else parameterActionTemplate">
+    <div class="actionContainer" *ngIf="action.expectedContentType == ContentTypes.NONE">
       <app-parameterless-action-view [action]=action></app-parameterless-action-view>
     </div>
 
-    <ng-template #parameterActionTemplate>
-      <div class="actionContainer" *ngIf="action.type != 'multipart/form-data'; else fileUploadActionTemplate">
-        <app-parameter-action [action]=action></app-parameter-action>
-      </div>
-      <ng-template #fileUploadActionTemplate>
-        <div class="actionContainer">
-          <app-file-upload-action [action]=action></app-file-upload-action>
-        </div>
-      </ng-template>
-    </ng-template>
+    <div class="actionContainer" *ngIf="action.expectedContentType == ContentTypes.JSON">
+      <app-parameter-action [action]=action></app-parameter-action>
+    </div>
+
+    <div class="actionContainer" *ngIf="action.expectedContentType == ContentTypes.FORM_DATA">
+      <app-file-upload-action [action]=action></app-file-upload-action>
+    </div>
   </ng-container>
 
 </div>

@@ -17,7 +17,7 @@ import { SirenDeserializer } from './siren-parser/siren-deserializer';
 import { MockResponses } from './mockResponses';
 import { ObservableLruCache } from './api-access/observable-lru-cache';
 import { SirenClientObject } from './siren-parser/siren-client-object';
-import { HypermediaAction, HttpMethodTypes } from './siren-parser/hypermedia-action';
+import {HypermediaAction, HttpMethodTypes, ContentTypes} from './siren-parser/hypermedia-action';
 import { SirenHelpers } from './SirenHelpers';
 import { ApiPath } from './api-path';
 
@@ -184,27 +184,29 @@ export class HypermediaClientService {
   }
 
   executeAction(action: HypermediaAction, actionResult: (actionResults: ActionResults, resultLocation: string | null, content: any, problemDetailsError: ProblemDetailsError | null) => void): any {
-    let parameters = null;
-    let parameterMediaType = null;
-    if (!action.isParameterLess) {
-      // parameterMediaType = HypermediaClientService.jsonMediaType;
-      parameterMediaType = action.type;
-
-      if (this.settingsService.CurrentSettings.GeneralSettings.useEmbeddingPropertyForActionParameters) {
-        parameters = this.createWaheStyleActionParameters(action);
-      } else {
-        parameters = action.parameters;
+    let requestBody = null;
+    switch (action.expectedContentType){
+      case ContentTypes.NONE: {
+        break;
       }
-
-      if(action.type == HypermediaClientService.formDataMediaType){
-        parameters = action.formData;
+      case ContentTypes.FORM_DATA: {
+        requestBody = action.formData;
+        break;
+      }
+      case ContentTypes.JSON: {
+        if (this.settingsService.CurrentSettings.GeneralSettings.useEmbeddingPropertyForActionParameters) {
+          requestBody = this.createWaheStyleActionParameters(action);
+        } else {
+          requestBody = action.parameters;
+        }
+        break;
       }
     }
 
-    const headers = this.createHeaders(parameterMediaType)
+    const headers = this.createHeaders(action.type)
 
     // todo if action responds with a action resource, process body
-    this.ExecuteRequest(action, headers, parameters)
+    this.ExecuteRequest(action, headers, requestBody)
       .subscribe({
         next: (response: HttpResponse<any>) => this.OnActionResponse(response, actionResult),
         error: (errorResponse: HttpErrorResponse) => this.HandleActionError(errorResponse, actionResult)

@@ -1,16 +1,16 @@
-import { HttpClient, HttpErrorResponse, HttpResponseBase, HttpResponse, HttpHeaders } from '@angular/common/http';
-import { SirenClientObject } from './siren-client-object';
-import { HypermediaLink } from './hypermedia-link';
-import { PropertyInfo, PropertyTypes } from './property-info';
-import { HypermediaAction, HttpMethodTypes } from './hypermedia-action';
-import { ReflectionHelpers } from './reflection-helpers';
-import { SchemaSimplifier } from './schema-simplifier';
-import { EmbeddedLinkEntity } from './embedded-link-entity';
-import { IEmbeddedEntity, ISirenClientObject } from './entity-interfaces';
-import { EmbeddedEntity } from './embedded-entity';
-import { ObservableLruCache } from '../api-access/observable-lru-cache';
-import { Injectable } from '@angular/core';
-import {map} from "rxjs";
+import {HttpClient} from '@angular/common/http';
+import {SirenClientObject} from './siren-client-object';
+import {HypermediaLink} from './hypermedia-link';
+import {PropertyInfo, PropertyTypes} from './property-info';
+import {ContentTypes, HttpMethodTypes, HypermediaAction} from './hypermedia-action';
+import {ReflectionHelpers} from './reflection-helpers';
+import {SchemaSimplifier} from './schema-simplifier';
+import {EmbeddedLinkEntity} from './embedded-link-entity';
+import {IEmbeddedEntity, ISirenClientObject} from './entity-interfaces';
+import {EmbeddedEntity} from './embedded-entity';
+import {ObservableLruCache} from '../api-access/observable-lru-cache';
+import {Injectable} from '@angular/core';
+import {map} from 'rxjs';
 
 @Injectable()
 export class SirenDeserializer {
@@ -155,10 +155,10 @@ export class SirenDeserializer {
 
   deserializeActionParameters(action: any, hypermediaAction: HypermediaAction) {
     if (!ReflectionHelpers.hasFilledArrayProperty(action, 'fields') || action.fields.length === 0) {
-      hypermediaAction.isParameterLess = true;
+      hypermediaAction.expectedContentType = ContentTypes.NONE;
       return;
     } else {
-      hypermediaAction.isParameterLess = false;
+      hypermediaAction.expectedContentType = action.type;
       this.parseWaheStyleParameters(action, hypermediaAction);
     }
   }
