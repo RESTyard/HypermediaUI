@@ -193,11 +193,7 @@ export class HypermediaClientService {
       if (this.settingsService.CurrentSettings.GeneralSettings.useEmbeddingPropertyForActionParameters) {
         parameters = this.createWaheStyleActionParameters(action);
       } else {
-        if(action.type == HypermediaClientService.formDataMediaType){
-          parameters = action.formData;
-        } else {
-          parameters = action.parameters;
-        }
+        parameters = action.parameters;
       }
 
       if(action.type == HypermediaClientService.formDataMediaType){

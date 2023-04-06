@@ -1,4 +1,20 @@
-<ngx-dropzone [multiple]="false" [maxFileSize]=maxFileSize (change)="onSelect($event)">
+<div class="resultIconContainer" [ngSwitch]="actionResult" *ngIf="executed">
+      <mat-icon *ngSwitchCase="ActionResultsEnum.ok" color="primary"
+                matTooltip={{actionMessage}}>done</mat-icon>
+      <mat-icon *ngSwitchCase="ActionResultsEnum.error" color="warn" class="hoverButton" [matMenuTriggerFor]="errorPopup"
+                matTooltip={{actionMessage}}>error</mat-icon>
+      <mat-progress-spinner [diameter]="24" *ngSwitchCase="ActionResultsEnum.pending" mode="indeterminate" color="accent"></mat-progress-spinner>
+      <mat-icon *ngSwitchCase="ActionResultsEnum.undefined" color="primary"
+                matTooltip={{actionMessage}}>question_mark</mat-icon>
+  </div>
+
+<mat-menu #errorPopup="matMenu">
+    <div (click)="$event.stopPropagation()">
+      <app-problem-details-view *ngIf="problemDetailsError" [problemDetailsError]="problemDetailsError"></app-problem-details-view>
+    </div>
+  </mat-menu>
+
+<ngx-dropzone class="dropzone-container" [multiple]="false" [maxFileSize]=maxFileSize (change)="onSelect($event)">
 	<ngx-dropzone-label>Drop here or click to select</ngx-dropzone-label>
 	<ngx-dropzone-preview *ngIf="file != null" [removable]="true" (removed)="onRemove(file)">
 		<ngx-dropzone-label>{{ file.name }} ({{ file.type }})</ngx-dropzone-label>

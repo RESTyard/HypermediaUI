@@ -50,7 +50,7 @@ export class ParameterActionComponent implements OnInit {
           this.actionMessage = '';
         }
 
-        // todo handle if has content AND location
+        // todo handle if it has content AND location
         this.actionResultLocation = resultLocation;
       });
   }
@@ -70,11 +70,11 @@ export class ParameterActionComponent implements OnInit {
 
     for (let key in objectToClean) {
       let value = objectToClean[key];
-      
+
       if (Array.isArray(value) && value.length == 0) {
         delete objectToClean[key];
       }
-      
+
       if (typeof value === 'object') {
         this.RemoveEmptyArraysFromDefaults(value, nestingCounter + 1);
       }

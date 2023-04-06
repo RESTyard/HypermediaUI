@@ -8,6 +8,7 @@ export class HypermediaAction {
   public title: string  = "";
   public type: string | undefined;
 
+  //TODO: make it an enum of action types
   public isParameterLess: boolean | undefined;
   public waheActionParameterName: string | undefined;
   public waheActionParameterClasses: string[] | undefined;

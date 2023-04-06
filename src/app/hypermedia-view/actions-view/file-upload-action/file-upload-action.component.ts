@@ -3,6 +3,7 @@ import {HypermediaAction} from '../../siren-parser/hypermedia-action';
 import {NgxDropzoneChangeEvent} from 'ngx-dropzone';
 import {ActionResults, HypermediaClientService} from '../../hypermedia-client.service';
 import {ProblemDetailsError} from '../../../error-dialog/problem-details-error';
+import {MatSnackBar} from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-file-upload-action',
@@ -15,6 +16,7 @@ export class FileUploadActionComponent implements OnInit {
   action!: HypermediaAction;
   file: File;
 
+  ActionResultsEnum = ActionResults;
   actionResult: ActionResults = ActionResults.undefined;
   actionResultLocation: string | null = null;
   actionMessage: string = "";
@@ -22,7 +24,7 @@ export class FileUploadActionComponent implements OnInit {
   problemDetailsError: ProblemDetailsError| null = null
   maxFileSize: number = +"1e+7";
 
-  constructor(private hypermediaClientService: HypermediaClientService) { }
+  constructor(private hypermediaClientService: HypermediaClientService, private snackBar: MatSnackBar) { }
 
   ngOnInit(): void {
   }
@@ -33,20 +35,21 @@ export class FileUploadActionComponent implements OnInit {
     } else {
       if($event.rejectedFiles.length > 0){
         if($event.rejectedFiles[0].reason == 'size'){
-          console.log(`Maximum size of ${this.maxFileSize} exceeded. File size = ${$event.rejectedFiles[0].size}.`);
+          this.snackBar.open(`Maximum size of ${this.maxFileSize/Math.pow(10, 6)} MB exceeded. File size = ${($event.rejectedFiles[0].size/Math.pow(10, 6)).toFixed(2)} MB.`, null, {
+            panelClass: ['error-snackbar']
+          });
         }
       }
     }
   }
 
-  onRemove(f: File) {
+  onRemove(_: File) {
     this.file = null;
-    console.log(f);
   }
 
   onSubmit() {
     let formData = new FormData();
-    formData.set('file', this.file);
+    formData.set('upload_file', this.file);
     this.action.formData = formData;
     this.actionResult= ActionResults.pending;
     this.executed = true;
@@ -66,7 +69,7 @@ export class FileUploadActionComponent implements OnInit {
           this.actionMessage = '';
         }
 
-        // todo handle if has content AND location
+        // todo handle if it has content AND location
         this.actionResultLocation = resultLocation;
       });
   }

@@ -52,14 +52,13 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     MatSlideToggleModule,
     MatListModule,
     MatTooltipModule
-
   ],
   exports: [
     SettingsMenuComponent
   ],
   providers: [
     SettingsService,
-    {provide: MAT_SNACK_BAR_DEFAULT_OPTIONS, useValue: {duration: 2000}},
+    {provide: MAT_SNACK_BAR_DEFAULT_OPTIONS, useValue: {duration: 4000}},
   ]
 })
 export class SettingsModule { }

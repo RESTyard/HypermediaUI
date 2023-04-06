@@ -16,8 +16,6 @@ import { ClipboardModule } from 'ngx-clipboard';
 import { ErrorDialogModule } from './error-dialog/error-dialog.module';
 
 import { AppComponent } from './app.component';
-import { LinkViewComponent } from './hypermedia-view/link-view/link-view.component';
-import { ProblemDetailsViewComponent } from './error-dialog/problem-details-view/problem-details-view.component';
 import { MainPageComponent } from './main-page/main-page.component';
 import { MatTooltipDefaultOptions, MAT_TOOLTIP_DEFAULT_OPTIONS, MAT_TOOLTIP_DEFAULT_OPTIONS_FACTORY } from '@angular/material/tooltip';
 
@@ -30,7 +28,6 @@ import { MatListModule } from '@angular/material/list';
 import { FlexModule } from '@angular/flex-layout';
 import { MatTableModule } from '@angular/material/table';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { DragDropModule } from '@angular/cdk/drag-drop';
 import { CustomHeadersInterceptor } from './settings/custom-headers.interceptor';
 
 const appRoutes: Routes = [

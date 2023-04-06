@@ -1,0 +1,10 @@
+.error-snackbar {
+  background-color: #f44336; /* set the background color to red */
+  color: #fff; /* set the text color to white */
+  font-size: 14px; /* set the font size */
+}
+
+.dropzone-container {
+  max-height: 150px;
+  max-width: 40%;
+}
