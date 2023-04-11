@@ -40,18 +40,24 @@ export class SirenDeserializer {
   }
 
   private deserializeEntity(raw: any, result: ISirenClientObject) {
-    result.classes = [...(<string[]>raw.class)]; // todo handle undefined
-    result.title = raw.title;
+    if (ReflectionHelpers.hasFilledArrayProperty(raw, 'class')) {
+      result.classes = [...(<string[]>raw.class)];
+    }
+
+    if (ReflectionHelpers.hasFilledArrayProperty(raw, 'title')) {
+      result.title = raw.title;
+    }
+    
     result.links = this.deserializeLinks(raw);
     result.properties = this.deserializeProperties(raw);
     result.actions = this.deserializeActions(raw);
 
     // todo preserve order of embeddedLinkEntitys and embeddedEntity, splitting types changes order
-    result.embeddedLinkEntities = this.deserializeEmbeddedLinkEntity(raw.entities);
-    result.embeddedEntities = this.deserializeEmbeddedEntitys(raw.entities);
+    if (ReflectionHelpers.hasFilledArrayProperty(raw, 'entities')) {
+      result.embeddedLinkEntities = this.deserializeEmbeddedLinkEntity(raw.entities);
+      result.embeddedEntities = this.deserializeEmbeddedEntitys(raw.entities);
+    }
   }
-
-
 
   private deserializeLinks(raw: any): HypermediaLink[] {
     const result = new Array<HypermediaLink>();

@@ -6,7 +6,7 @@ export interface ISirenClientObject {
   classes: string[];
   links: HypermediaLink[];
   properties: PropertyInfo[];
-  embeddedLinkEntities;
+  embeddedLinkEntities: IEmbeddedLinkEntity[];
   embeddedEntities: IEmbeddedEntity[];
   title: string;
   actions: HypermediaAction[];
