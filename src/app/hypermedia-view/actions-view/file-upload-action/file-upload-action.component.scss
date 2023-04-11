@@ -31,3 +31,11 @@
   margin-left:  $defaultSpacing;
   padding: 0;
 }
+
+.mat-expansion-panel-header-title {
+  max-width: fit-content;
+}
+
+.mat-expansion-panel-content .mat-expansion-panel-body {
+  padding: 0 24px;
+}
