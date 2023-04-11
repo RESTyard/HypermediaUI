@@ -1,31 +1,24 @@
 <mat-expansion-panel>
   <mat-expansion-panel-header>
     <mat-panel-title>
-      <mat-icon class="icon" color="primary">cloud_upload</mat-icon>
+      <mat-icon class="icon" color="primary">cloud_upload</mat-icon>&nbsp;
       <div>{{action.name}}</div>
     </mat-panel-title>
     <mat-panel-description>
       {{action.title}}
     </mat-panel-description>
+    <mat-panel-description><!--placeholder for style adjustment--></mat-panel-description>
+    <mat-panel-description><!--placeholder for style adjustment--></mat-panel-description>
   </mat-expansion-panel-header>
-
-<div class="resultIconContainer" [ngSwitch]="actionResult" *ngIf="executed">
-      <mat-icon *ngSwitchCase="ActionResultsEnum.ok" color="primary"
-                matTooltip={{actionMessage}}>done</mat-icon>
-      <mat-icon *ngSwitchCase="ActionResultsEnum.error" color="warn" class="hoverButton" [matMenuTriggerFor]="errorPopup"
-                matTooltip={{actionMessage}}>error</mat-icon>
-      <mat-progress-spinner [diameter]="24" *ngSwitchCase="ActionResultsEnum.pending" mode="indeterminate" color="accent"></mat-progress-spinner>
-      <mat-icon *ngSwitchCase="ActionResultsEnum.undefined" color="primary"
-                matTooltip={{actionMessage}}>question_mark</mat-icon>
-  </div>
 
 <mat-menu #errorPopup="matMenu">
   <div (click)="$event.stopPropagation()">
     <app-problem-details-view *ngIf="problemDetailsError" [problemDetailsError]="problemDetailsError"></app-problem-details-view>
   </div>
 </mat-menu>
+
 <ngx-dropzone class="dropzone-container" [multiple]="false" [maxFileSize]=maxFileSize (change)="onSelect($event)">
-	<ngx-dropzone-label>Drop here or click to select</ngx-dropzone-label>
+	<ngx-dropzone-label>Drop a file here or click to select</ngx-dropzone-label>
 	<ngx-dropzone-preview *ngIf="file != null" [removable]="true" (removed)="onRemove(file)">
     <ngx-dropzone-label>
       <i [class]="'fa ' + getFileIconClassByExtension(file.name) + ' fa-3x'"></i>
@@ -36,7 +29,32 @@
     </ngx-dropzone-label>
 	</ngx-dropzone-preview>
 </ngx-dropzone>
-<br/>
-<button (click)="onSubmit()" mat-raised-button>Upload</button>
+
+<mat-grid-list cols="12" rowHeight="40px">
+  <mat-grid-tile>
+    <button (click)="onSubmit()" [disabled]="file == null" mat-raised-button>Upload</button>
+  </mat-grid-tile>
+  <mat-grid-tile colspan="2">
+    <div class="resultIconContainer" [ngSwitch]="actionResult" *ngIf="executed">
+      <mat-icon *ngSwitchCase="ActionResultsEnum.ok" color="primary"
+                matTooltip={{actionMessage}}>done</mat-icon>
+      <mat-icon *ngSwitchCase="ActionResultsEnum.error" color="warn" class="hoverButton" [matMenuTriggerFor]="errorPopup"
+                matTooltip={{actionMessage}}>error</mat-icon>
+      <mat-progress-spinner [diameter]="24" *ngSwitchCase="ActionResultsEnum.pending" mode="indeterminate" color="accent"></mat-progress-spinner>
+      <mat-icon *ngSwitchCase="ActionResultsEnum.undefined" color="primary"
+                matTooltip={{actionMessage}}>question_mark</mat-icon>
+    </div>
+    <div>
+      <button *ngIf="actionResultLocation !== null"
+          class="containerElement"
+          mat-raised-button
+          (click)="navigateLocation(actionResultLocation)"
+          color="accent"
+          matTooltip="Go to result: {{actionResultLocation}}">
+        <mat-icon class="icon" color="primary">start</mat-icon>
+      </button>
+    </div>
+  </mat-grid-tile>
+</mat-grid-list>
 
 </mat-expansion-panel>

@@ -8,7 +8,7 @@ import {MatSnackBar} from '@angular/material/snack-bar';
 @Component({
   selector: 'app-file-upload-action',
   templateUrl: './file-upload-action.component.html',
-  styleUrls: ['./file-upload-action.component.css']
+  styleUrls: ['./file-upload-action.component.scss']
 })
 export class FileUploadActionComponent implements OnInit {
 
@@ -72,12 +72,15 @@ export class FileUploadActionComponent implements OnInit {
         // todo handle if it has content AND location
         this.actionResultLocation = resultLocation;
       });
+
   }
 
   convertBytesToMBReadable(bytes): string {
     return (bytes/Math.pow(10, 6)).toFixed(2) + " MB";
   }
 
+  //TODO: Add 'file' to the text in dropzone, fix spacing
+  //TODO: Decrease margin between dropzone up and down, spacing between 'upload' and 'add data'
   getFileIconClassByExtension(filename): string {
     const ext = filename.split(".").pop().toLowerCase();
     for (let type in FILE_TYPE_ICON_MAP) {
@@ -86,6 +89,10 @@ export class FileUploadActionComponent implements OnInit {
         }
       }
       return "fa-file-text";
+  }
+
+  navigateLocation(location: string) {
+    this.hypermediaClientService.Navigate(location);
   }
 }
 
