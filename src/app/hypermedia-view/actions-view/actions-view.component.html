@@ -1,14 +1,14 @@
 <div class="container">
-  <ng-container *ngFor="let action of actions">
-    <div class="actionContainer" *ngIf="action.expectedContentType == ContentTypes.NONE">
+  <ng-container *ngFor="let action of actions" [ngSwitch]="action.expectedContentType">
+    <div class="actionContainer" *ngSwitchCase="ContentTypes.NONE">
       <app-parameterless-action-view [action]=action></app-parameterless-action-view>
     </div>
 
-    <div class="actionContainer" *ngIf="action.expectedContentType == ContentTypes.JSON">
+    <div class="actionContainer" *ngSwitchCase=" ContentTypes.JSON">
       <app-parameter-action [action]=action></app-parameter-action>
     </div>
 
-    <div class="actionContainer" *ngIf="action.expectedContentType == ContentTypes.FORM_DATA">
+    <div class="actionContainer" *ngSwitchCase="ContentTypes.FORM_DATA">
       <app-file-upload-action [action]=action></app-file-upload-action>
     </div>
   </ng-container>
