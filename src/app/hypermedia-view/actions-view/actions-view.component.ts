@@ -12,7 +12,6 @@ export class ActionsViewComponent implements OnInit {
   constructor() { }
 
   ngOnInit() {
-    console.log("here2", this.actions);
   }
 
   protected readonly ContentTypes = ContentTypes;
