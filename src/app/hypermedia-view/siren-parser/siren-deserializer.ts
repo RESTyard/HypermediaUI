@@ -49,7 +49,7 @@ export class SirenDeserializer {
     }
     
     result.links = this.deserializeLinks(raw);
-    result.properties = this.deserializeProperties(raw);
+    result.properties = this.deserializeProperties(raw); // todo do not create info objects here, migth not be needed
     result.actions = this.deserializeActions(raw);
 
     // todo preserve order of embeddedLinkEntitys and embeddedEntity, splitting types changes order
