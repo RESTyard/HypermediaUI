@@ -13,9 +13,14 @@
   <!-- <div>schema: {{action.waheActionParameterJsonSchema | async}}</div> -->
 
   <!-- todo if contains body show it / navigate to it -->
-  <json-schema-form [(data)]="action.defaultValues" [schema]="action.waheActionParameterJsonSchema | async"
-                    (onSubmit)="onActionSubmitted($event)"></json-schema-form>
+<!--  <json-schema-form [(data)]="action.defaultValues" [schema]="action.waheActionParameterJsonSchema | async"-->
+<!--                    (onSubmit)="onActionSubmitted($event)"></json-schema-form>-->
 
+
+  <form [formGroup]="form" (ngSubmit)="onActionSubmitted()">
+    <formly-form [fields]="formlyFields" [form]="form"></formly-form>
+    <button type="submit" class="btn btn-default">Submit</button>
+  </form>
 
   <!-- <button *ngIf="actionResultLocation !== null" mat-raised-button (click)="navigateLocation(actionResultLocation)" matTooltip="{{actionResultLocation}}">
     Action result

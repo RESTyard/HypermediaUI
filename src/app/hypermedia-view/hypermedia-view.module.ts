@@ -31,8 +31,6 @@ import {MatSelectModule} from "@angular/material/select";
 import {MatToolbarModule} from "@angular/material/toolbar";
 import {MatInputModule} from "@angular/material/input";
 import {FlexLayoutModule} from "@angular/flex-layout";
-import {MaterialDesignFrameworkModule} from "@ajsf/material";
-import { JsonSchemaFormModule, JsonSchemaFormService, WidgetLibraryService, FrameworkLibraryService, Framework } from"@ajsf/core"
 import {FormsModule} from "@angular/forms";
 import {SettingsModule} from '../settings/settings.module';
 
@@ -45,6 +43,10 @@ import { ErrorDialogModule } from '../error-dialog/error-dialog.module';
 import { FileUploadActionComponent } from './actions-view/file-upload-action/file-upload-action.component';
 import {NgxDropzoneModule} from 'ngx-dropzone';
 import {MatStepperModule} from '@angular/material/stepper';
+
+import { ReactiveFormsModule } from '@angular/forms';
+import { FormlyModule } from '@ngx-formly/core';
+import { FormlyMaterialModule } from '@ngx-formly/material';
 
 @NgModule({
   imports: [
@@ -63,7 +65,6 @@ import {MatStepperModule} from '@angular/material/stepper';
     FlexLayoutModule,
     MatInputModule,
     MatSelectModule,
-    MaterialDesignFrameworkModule,
     MatMenuModule,
     ErrorDialogModule,
     MatProgressSpinnerModule,
@@ -71,17 +72,10 @@ import {MatStepperModule} from '@angular/material/stepper';
 
     NgxJsonViewerModule,
 
-    // workaround for: https://github.com/dschnelldavis/angular2-json-schema-form/issues/189
-    // JsonSchemaFormModule.forRoot(MaterialDesignFrameworkModule),
-    {
-      ngModule: JsonSchemaFormModule,
-      providers: [
-        JsonSchemaFormService,
-        FrameworkLibraryService,
-        WidgetLibraryService,
-        {provide: Framework, multi: true}
-      ]
-    },
+    ReactiveFormsModule,
+    FormlyModule.forRoot(),
+    FormlyMaterialModule,
+
     PrettyJsonModule,
     ClipboardModule,
     FormsModule,

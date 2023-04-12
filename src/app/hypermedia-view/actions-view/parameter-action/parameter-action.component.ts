@@ -2,6 +2,8 @@ import { Component, OnInit, Input } from '@angular/core';
 import { ProblemDetailsError } from 'src/app/error-dialog/problem-details-error';
 import { ActionResults, HypermediaClientService } from '../../hypermedia-client.service';
 import { HypermediaAction } from '../../siren-parser/hypermedia-action';
+import {FormlyFieldConfig} from '@ngx-formly/core';
+import {Form, FormGroup} from '@angular/forms';
 
 @Component({
   selector: 'app-parameter-action',
@@ -20,18 +22,25 @@ export class ParameterActionComponent implements OnInit {
   executed: boolean = false; // TODO show multiple executions as list
   problemDetailsError: ProblemDetailsError| null = null
 
+  formlyFields: FormlyFieldConfig[] = null;
+  form: FormGroup = new FormGroup({});
+
   constructor(private hypermediaClientService: HypermediaClientService) { }
 
   ngOnInit() {
-    // This is a workaround if we do not find a built-in way to configure json-schema-form to allow empty array as default value
-    let defaultValues:any = this.action.defaultValues;
-    if (defaultValues) {
-      this.RemoveEmptyArraysFromDefaults(defaultValues);
-    }
+    const defaultValues = this.action.defaultValues;
+    this.action.waheActionParameterJsonSchema.subscribe(x => {
+      this.formlyFields = this.mapSchemaToFormlyFields(x);
+      this.formlyFields.forEach(value => {
+        if(defaultValues[value.key.toString()]){
+          value['defaultValue'] = defaultValues[value.key.toString()];
+        }
+      });
+    });
   }
 
-    public onActionSubmitted(formParameters: any) {
-    this.action.parameters = formParameters;
+  public onActionSubmitted() {
+    this.action.parameters = this.form.value;
     this.actionResult= ActionResults.pending;
     this.executed = true;
 
@@ -80,4 +89,66 @@ export class ParameterActionComponent implements OnInit {
       }
     }
   }
+
+  mapSchemaToFormlyFields(schema: any): FormlyFieldConfig[] {
+    console.log('schema', schema)
+    const fields: FormlyFieldConfig[] = [];
+
+    if (schema?.properties) {
+      for (const prop in schema.properties) {
+        if (schema.properties.hasOwnProperty(prop)) {
+          const propSchema = schema.properties[prop];
+
+          let field: FormlyFieldConfig = {
+            key: prop,
+            type: 'input', // set default type
+            templateOptions: {
+              label: propSchema.title || prop,
+              required: propSchema.required
+            }
+          };
+
+          switch (propSchema.type) {
+            case 'object':
+              field.type = 'formly-group';
+              field.fieldGroup = this.mapSchemaToFormlyFields(propSchema);
+              break;
+            case 'integer':
+            case 'number':
+              field.type = 'input';
+              field.templateOptions.type = 'number';
+              break;
+            case 'boolean':
+              field.type = 'checkbox';
+              break;
+            case 'array':
+              field.type = 'select';
+              field.fieldArray = { type: 'input' }; // set default fieldArray
+              if (propSchema.items.type === 'object') {
+                field.fieldArray.type = 'formly-group';
+                field.fieldArray.fieldGroup = this.mapSchemaToFormlyFields(propSchema.items);
+              }
+              break;
+            default:
+              field.type = 'input';
+              field.templateOptions.type = propSchema.type;
+          }
+
+          if (propSchema.enum) {
+            field.type = 'enum';
+            field.templateOptions.options = propSchema.enum.map((value, index) => ({
+              label: propSchema['x-enumNames'][index] || value,
+              value
+            }));
+          }
+
+          fields.push(field);
+        }
+      }
+    }
+    console.log('fields', fields)
+    return fields;
+  }
+
 }
+
