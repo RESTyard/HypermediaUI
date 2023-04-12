@@ -79,8 +79,6 @@ export class FileUploadActionComponent implements OnInit {
     return (bytes/Math.pow(10, 6)).toFixed(2) + " MB";
   }
 
-  //TODO: Add 'file' to the text in dropzone, fix spacing
-  //TODO: Decrease margin between dropzone up and down, spacing between 'upload' and 'add data'
   getFileIconClassByExtension(filename): string {
     const ext = filename.split(".").pop().toLowerCase();
     for (let type in FILE_TYPE_ICON_MAP) {

@@ -31,3 +31,11 @@
   margin-left:  $defaultSpacing;
   padding: 0;
 }
+
+.mat-expansion-panel-header-title {
+  max-width: fit-content;
+}
+
+.upload-button-container {
+  margin-top: 8px;
+}
