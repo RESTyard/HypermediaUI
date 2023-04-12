@@ -35,6 +35,11 @@ export class ParameterActionComponent implements OnInit {
         if(defaultValues[value.key.toString()]){
           value['defaultValue'] = defaultValues[value.key.toString()];
         }
+        // value.fieldGroup.forEach(x => {
+        //   if(x.type == 'repeat' && !value['defaultValue'].hasOwnProperty(x.key.toString())){
+        //     value['defaultValue'][x.key.toString()] = [{value: null}];
+        //   }
+        // });
       });
     });
   }
@@ -68,28 +73,6 @@ export class ParameterActionComponent implements OnInit {
     this.hypermediaClientService.Navigate(location);
   }
 
-  private RemoveEmptyArraysFromDefaults(objectToClean: any, nestingCounter = 0) {
-    if (objectToClean === null) {
-      return;
-    }
-
-    if (nestingCounter == 50) {
-      throw new Error("Cleaning up default values went too deep. Object most probably contains a loop.")
-    }
-
-    for (let key in objectToClean) {
-      let value = objectToClean[key];
-
-      if (Array.isArray(value) && value.length == 0) {
-        delete objectToClean[key];
-      }
-
-      if (typeof value === 'object') {
-        this.RemoveEmptyArraysFromDefaults(value, nestingCounter + 1);
-      }
-    }
-  }
-
   mapSchemaToFormlyFields(schema: any): FormlyFieldConfig[] {
     console.log('schema', schema)
     const fields: FormlyFieldConfig[] = [];
@@ -107,7 +90,6 @@ export class ParameterActionComponent implements OnInit {
               required: propSchema.required
             }
           };
-
           switch (propSchema.type) {
             case 'object':
               field.type = 'formly-group';
@@ -122,8 +104,16 @@ export class ParameterActionComponent implements OnInit {
               field.type = 'checkbox';
               break;
             case 'array':
-              field.type = 'select';
-              field.fieldArray = { type: 'input' }; // set default fieldArray
+              field.type = 'repeat';
+              field.props = {
+                addText: 'Add',
+                removeText: 'Remove',
+                label: prop,
+              };
+              field.fieldArray = { type: 'input', templateOptions: {
+                type: 'text',
+                label: 'My Array',
+              }};
               if (propSchema.items.type === 'object') {
                 field.fieldArray.type = 'formly-group';
                 field.fieldArray.fieldGroup = this.mapSchemaToFormlyFields(propSchema.items);
@@ -146,7 +136,6 @@ export class ParameterActionComponent implements OnInit {
         }
       }
     }
-    console.log('fields', fields)
     return fields;
   }
 

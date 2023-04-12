@@ -47,6 +47,7 @@ import {MatStepperModule} from '@angular/material/stepper';
 import { ReactiveFormsModule } from '@angular/forms';
 import { FormlyModule } from '@ngx-formly/core';
 import { FormlyMaterialModule } from '@ngx-formly/material';
+import { FormlyRepeatSectionComponent } from './actions-view/parameter-action/formly-repeat-section/formly-repeat-section.component';
 
 @NgModule({
   imports: [
@@ -73,7 +74,14 @@ import { FormlyMaterialModule } from '@ngx-formly/material';
     NgxJsonViewerModule,
 
     ReactiveFormsModule,
-    FormlyModule.forRoot(),
+    FormlyModule.forRoot({
+      types: [
+        { name: 'repeat', component: FormlyRepeatSectionComponent }
+      ],
+      validationMessages: [
+        { name: 'required', message: 'This field is required' }
+      ]
+    }),
     FormlyMaterialModule,
 
     PrettyJsonModule,
@@ -97,6 +105,7 @@ import { FormlyMaterialModule } from '@ngx-formly/material';
     ParameterlessActionViewComponent,
     ParameterActionComponent,
     FileUploadActionComponent,
+    FormlyRepeatSectionComponent,
   ],
   providers: [
     HypermediaClientService,
