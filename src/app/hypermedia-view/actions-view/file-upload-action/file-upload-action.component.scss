@@ -8,7 +8,7 @@
 
 .dropzone-container {
   max-height: 160px;
-  max-width: 250px;
+  max-width: 240px;
 }
 
 .file-name {
@@ -36,8 +36,9 @@
   max-width: fit-content;
 }
 
-.upload-button-container {
-  margin-top: 8px;
+#buttonRow {
+  margin-top: $defaultSpacing;
+  height: $defaultRowHeigth;
 }
 
 .fileIcon {

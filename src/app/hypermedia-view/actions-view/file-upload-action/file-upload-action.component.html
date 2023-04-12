@@ -9,50 +9,55 @@
     </mat-panel-description>
   </mat-expansion-panel-header>
 
-<mat-menu #errorPopup="matMenu">
-  <div (click)="$event.stopPropagation()">
-    <app-problem-details-view *ngIf="problemDetailsError" [problemDetailsError]="problemDetailsError"></app-problem-details-view>
-  </div>
-</mat-menu>
+  <ngx-dropzone class="dropzone-container" [multiple]="false" [maxFileSize]=maxFileSize (change)="onSelect($event)">
+    <ngx-dropzone-label>Drop a file here or click to select</ngx-dropzone-label>
+    <ngx-dropzone-preview *ngIf="file != null" [removable]="true" (removed)="onRemove(file)">
+      <ngx-dropzone-label>
+        <mat-icon class="fileIcon">description</mat-icon>
+        <mat-vertical-stepper></mat-vertical-stepper>
+        <span class="file-name" [matTooltip]="file.name">{{ file.name }}</span>
+        <mat-vertical-stepper></mat-vertical-stepper>
+        <span class="size">{{convertBytesToMBReadable(file.size)}}</span>
+      </ngx-dropzone-label>
+    </ngx-dropzone-preview>
+  </ngx-dropzone>
 
-<ngx-dropzone class="dropzone-container" [multiple]="false" [maxFileSize]=maxFileSize (change)="onSelect($event)">
-	<ngx-dropzone-label>Drop a file here or click to select</ngx-dropzone-label>
-	<ngx-dropzone-preview *ngIf="file != null" [removable]="true" (removed)="onRemove(file)">
-    <ngx-dropzone-label>
-      <mat-icon class="fileIcon">description</mat-icon>      
-      <mat-vertical-stepper></mat-vertical-stepper>
-      <span class="file-name" [matTooltip]="file.name">{{ file.name }}</span>
-      <mat-vertical-stepper></mat-vertical-stepper>
-      <span class="size">{{convertBytesToMBReadable(file.size)}}</span>
-    </ngx-dropzone-label>
-	</ngx-dropzone-preview>
-</ngx-dropzone>
+  <div id="buttonRow" fxLayout="row" fxLayoutAlign="start center">
+    <button (click)="onSubmit()"
+            [disabled]="file == null"
+            mat-raised-button
+            matTooltip="Please select a file."
+            [matTooltipDisabled]="file != null">Upload</button>
 
-<mat-grid-list class="upload-button-container" cols="12" rowHeight="40px">
-  <mat-grid-tile  matTooltip="Please select a file." [matTooltipDisabled]="file != null">
-    <button (click)="onSubmit()" [disabled]="file == null" mat-raised-button>Upload</button>
-  </mat-grid-tile>
-  <mat-grid-tile colspan="2">
     <div class="resultIconContainer" [ngSwitch]="actionResult" *ngIf="executed">
       <mat-icon *ngSwitchCase="ActionResultsEnum.ok" color="primary"
                 matTooltip={{actionMessage}}>done</mat-icon>
-      <mat-icon *ngSwitchCase="ActionResultsEnum.error" color="warn" class="hoverButton" [matMenuTriggerFor]="errorPopup"
+      <mat-icon *ngSwitchCase="ActionResultsEnum.error" color="warn" class="hoverButton"
+                [matMenuTriggerFor]="errorPopup"
                 matTooltip={{actionMessage}}>error</mat-icon>
-      <mat-progress-spinner [diameter]="24" *ngSwitchCase="ActionResultsEnum.pending" mode="indeterminate" color="accent"></mat-progress-spinner>
+      <mat-progress-spinner [diameter]="24" *ngSwitchCase="ActionResultsEnum.pending" mode="indeterminate"
+                            color="accent"></mat-progress-spinner>
       <mat-icon *ngSwitchCase="ActionResultsEnum.undefined" color="primary"
                 matTooltip={{actionMessage}}>question_mark</mat-icon>
     </div>
     <div>
       <button *ngIf="actionResultLocation !== null"
-          class="containerElement"
-          mat-raised-button
-          (click)="navigateLocation(actionResultLocation)"
-          color="accent"
-          matTooltip="Go to result: {{actionResultLocation}}">
+              class="containerElement"
+              mat-raised-button
+              (click)="navigateLocation(actionResultLocation)"
+              color="accent"
+              matTooltip="Go to result: {{actionResultLocation}}">
         <mat-icon class="icon" color="primary">start</mat-icon>
       </button>
     </div>
-  </mat-grid-tile>
-</mat-grid-list>
+  </div>
+
+  <mat-menu #errorPopup="matMenu">
+    <div (click)="$event.stopPropagation()">
+      <app-problem-details-view *ngIf="problemDetailsError"
+                                [problemDetailsError]="problemDetailsError">
+      </app-problem-details-view>
+    </div>
+  </mat-menu>
 
 </mat-expansion-panel>
