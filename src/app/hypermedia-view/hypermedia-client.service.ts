@@ -153,7 +153,7 @@ export class HypermediaClientService {
 
   private ExecuteRequest(action: HypermediaAction, headers: any, body: any | null) {
     this.AddBusyRequest()
-    console.log(body)
+    
     return this.httpClient.request(
       action.method,
       action.href,

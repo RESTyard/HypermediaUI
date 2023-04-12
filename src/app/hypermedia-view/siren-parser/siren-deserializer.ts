@@ -14,7 +14,7 @@ import {map} from 'rxjs';
 
 @Injectable()
 export class SirenDeserializer {
-  private readonly waheActionTypes = ['application/json', 'octet-stream', 'multipart/form-data'];
+  private readonly waheActionTypes = ['application/json', 'multipart/form-data'];
 
   constructor(
      private httpClient: HttpClient,
