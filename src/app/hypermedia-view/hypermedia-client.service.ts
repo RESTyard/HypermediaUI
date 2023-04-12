@@ -17,7 +17,7 @@ import { SirenDeserializer } from './siren-parser/siren-deserializer';
 import { MockResponses } from './mockResponses';
 import { ObservableLruCache } from './api-access/observable-lru-cache';
 import { SirenClientObject } from './siren-parser/siren-client-object';
-import {HypermediaAction, HttpMethodTypes, ContentTypes} from './siren-parser/hypermedia-action';
+import {HypermediaAction, HttpMethodTypes, ActionType} from './siren-parser/hypermedia-action';
 import { SirenHelpers } from './SirenHelpers';
 import { ApiPath } from './api-path';
 
@@ -185,15 +185,15 @@ export class HypermediaClientService {
 
   executeAction(action: HypermediaAction, actionResult: (actionResults: ActionResults, resultLocation: string | null, content: any, problemDetailsError: ProblemDetailsError | null) => void): any {
     let requestBody = null;
-    switch (action.expectedContentType){
-      case ContentTypes.NONE: {
+    switch (action.actionType){
+      case ActionType.NoParameters: {
         break;
       }
-      case ContentTypes.FORM_DATA: {
+      case ActionType.FileUpload: {
         requestBody = action.formData;
         break;
       }
-      case ContentTypes.JSON: {
+      case ActionType.JsonObjectParameters: {
         if (this.settingsService.CurrentSettings.GeneralSettings.useEmbeddingPropertyForActionParameters) {
           requestBody = this.createWaheStyleActionParameters(action);
         } else {

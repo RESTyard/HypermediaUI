@@ -2,7 +2,7 @@ import {HttpClient} from '@angular/common/http';
 import {SirenClientObject} from './siren-client-object';
 import {HypermediaLink} from './hypermedia-link';
 import {PropertyInfo, PropertyTypes} from './property-info';
-import {ContentTypes, HttpMethodTypes, HypermediaAction} from './hypermedia-action';
+import {ActionType, HttpMethodTypes, HypermediaAction} from './hypermedia-action';
 import {ReflectionHelpers} from './reflection-helpers';
 import {SchemaSimplifier} from './schema-simplifier';
 import {EmbeddedLinkEntity} from './embedded-link-entity';
@@ -161,16 +161,16 @@ export class SirenDeserializer {
 
   deserializeActionParameters(action: any, hypermediaAction: HypermediaAction) {
     if (!ReflectionHelpers.hasFilledArrayProperty(action, 'fields') || action.fields.length === 0) {
-      hypermediaAction.expectedContentType = ContentTypes.NONE;
+      hypermediaAction.actionType = ActionType.NoParameters;
       return;
     } else {
-      hypermediaAction.expectedContentType = action.type;
+      hypermediaAction.actionType = action.type;
       this.parseWaheStyleParameters(action, hypermediaAction);
     }
   }
 
   private getMethod(action: any): HttpMethodTypes {
-    let method = HttpMethodTypes[<string>action.method];
+    let method = HttpMethodTypes[action.method as keyof typeof HttpMethodTypes];
 
     // default value for siren is GET
     if (!method) {

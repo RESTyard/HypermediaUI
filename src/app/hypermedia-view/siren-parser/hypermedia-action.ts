@@ -8,7 +8,7 @@ export class HypermediaAction {
   public title: string  = "";
   public type: string | undefined;
 
-  public expectedContentType: ContentTypes;
+  public actionType: ActionType = ActionType.NoParameters;
   public waheActionParameterName: string | undefined;
   public waheActionParameterClasses: string[] | undefined;
   public waheActionParameterJsonSchema: Observable<object> | undefined;
@@ -27,8 +27,8 @@ export enum HttpMethodTypes {
   PATCH = 'PATCH'
 }
 
-export enum ContentTypes {
-  NONE = 'none',
-  JSON = 'application/json',
-  FORM_DATA = 'multipart/form-data'
+export enum ActionType {
+  NoParameters = 'none',
+  JsonObjectParameters = 'application/json',
+  FileUpload = 'multipart/form-data'
 }

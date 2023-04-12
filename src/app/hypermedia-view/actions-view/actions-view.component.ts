@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, OnChanges } from '@angular/core';
-import {ContentTypes, HypermediaAction} from '../siren-parser/hypermedia-action';
+import {ActionType, HypermediaAction} from '../siren-parser/hypermedia-action';
 
 @Component({
   selector: 'app-actions-view',
@@ -14,5 +14,5 @@ export class ActionsViewComponent implements OnInit {
   ngOnInit() {
   }
 
-  protected readonly ContentTypes = ContentTypes;
+  protected readonly ActionType = ActionType;
 }
