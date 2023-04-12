@@ -28,8 +28,8 @@
 	</ngx-dropzone-preview>
 </ngx-dropzone>
 
-<mat-grid-list cols="12" rowHeight="40px">
-  <mat-grid-tile matTooltip="Please select a file." [matTooltipDisabled]="file != null">
+<mat-grid-list class="upload-button-container" cols="12" rowHeight="40px">
+  <mat-grid-tile  matTooltip="Please select a file." [matTooltipDisabled]="file != null">
     <button (click)="onSubmit()" [disabled]="file == null" mat-raised-button>Upload</button>
   </mat-grid-tile>
   <mat-grid-tile colspan="2">
