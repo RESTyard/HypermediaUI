@@ -1,4 +1,4 @@
-<mat-card class="problem-details-view">
+<mat-card appearance="outlined" class="problem-details-view">
   <mat-card-header>
     <mat-card-title>{{problemDetailsError?.title === "" ? "Error": problemDetailsError?.title}}</mat-card-title>
     <mat-card-subtitle>{{problemDetailsError?.type}}{{getStatusCodeMessage(problemDetailsError?.status)}}</mat-card-subtitle>
