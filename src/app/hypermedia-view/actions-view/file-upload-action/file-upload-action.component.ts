@@ -14,7 +14,7 @@ export class FileUploadActionComponent implements OnInit {
 
   @Input()
   action!: HypermediaAction;
-  file: File;
+  file: File | null = null;
 
   ActionResultsEnum = ActionResults;
   actionResult: ActionResults = ActionResults.undefined;
@@ -35,7 +35,7 @@ export class FileUploadActionComponent implements OnInit {
     } else {
       if($event.rejectedFiles.length > 0){
         if($event.rejectedFiles[0].reason == 'size'){
-          this.snackBar.open(`Maximum size of ${this.convertBytesToMBReadable(this.maxFileSize)} exceeded. File size = ${this.convertBytesToMBReadable($event.rejectedFiles[0].size)}.`, null, {
+          this.snackBar.open(`Maximum size of ${this.convertBytesToMBReadable(this.maxFileSize)} exceeded. File size = ${this.convertBytesToMBReadable($event.rejectedFiles[0].size)}.`, undefined, {
             panelClass: ['error-snackbar']
           });
         }
@@ -48,6 +48,10 @@ export class FileUploadActionComponent implements OnInit {
   }
 
   onSubmit() {
+    if (!this.file) {
+      return;
+    }
+
     let formData = new FormData();
     formData.set('upload_file', this.file);
     this.action.formData = formData;
@@ -75,52 +79,11 @@ export class FileUploadActionComponent implements OnInit {
 
   }
 
-  convertBytesToMBReadable(bytes): string {
+  convertBytesToMBReadable(bytes: any): string {
     return (bytes/Math.pow(10, 6)).toFixed(2) + " MB";
-  }
-
-  getFileIconClassByExtension(filename): string {
-    const ext = filename.split(".").pop().toLowerCase();
-    for (let type in FILE_TYPE_ICON_MAP) {
-        if (FILE_TYPE_ICON_MAP[type].includes(ext)) {
-          return type;
-        }
-      }
-      return "fa-file-text";
   }
 
   navigateLocation(location: string) {
     this.hypermediaClientService.Navigate(location);
   }
 }
-
-export const FILE_TYPE_ICON_MAP = {
-  'fa-file-image': ["jpg", "jpeg", "png", "gif", "bmp", "tif", "tiff", "svg"],
-  'fa-file-pdf': ["pdf"],
-  'fa-file-word': ["doc", "docx"],
-  'fa-file-text': ["txt", "rtf", "csv"],
-  'fa-file-audio': ["mp3", "wav", "ogg", "wma", "m4a", "aac"],
-  'fa-file-code': [
-    "js",
-    "html",
-    "css",
-    "php",
-    "xml",
-    "py",
-    "java",
-    "rb",
-    "c",
-    "cpp",
-    "h",
-    "hpp", "json", "sql", "pl", "sh", "bash", "bat"
-  ],
-  'fa-file-archive': ["zip", "rar", "7z", "tar", "gz", "tgz", "bz2"],
-  'fa-file-drive': ["gdoc", "gsheet", "gslides"],
-  'fa-file-font': ["ttf", "otf", "woff", "woff2"],
-  'fa-file-powerpoint': ["ppt", "pptx"],
-  'fa-file-alt': ["ini", "conf", "cfg", "prefs"],
-  'fa-file-excel': ["xls", "xlsx", "csv"],
-  'fa-file-vector': ["ai", "eps", "svg"],
-  'fa-file-video': ["mp4", "avi", "wmv", "mov", "flv", "mkv"]
-};
-
