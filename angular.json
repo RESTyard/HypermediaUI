@@ -23,7 +23,6 @@
               "src/assets"
             ],
             "styles": [
-              "node_modules/@fortawesome/fontawesome-free/css/all.min.css",
               "src/styles/hypermedia-ui-theme.scss",
               "src/styles/styles.scss"
             ],
