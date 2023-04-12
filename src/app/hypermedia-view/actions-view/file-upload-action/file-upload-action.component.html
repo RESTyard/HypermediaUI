@@ -23,11 +23,12 @@
   </ngx-dropzone>
 
   <div id="buttonRow" fxLayout="row" fxLayoutAlign="start center">
-    <button (click)="onSubmit()"
+    <!--place tooltip in parent because it does not work when button is disabled-->
+    <span matTooltip="Please select a file." [matTooltipDisabled]="file != null">
+      <button (click)="onSubmit()"
             [disabled]="file == null"
-            mat-raised-button
-            matTooltip="Please select a file."
-            [matTooltipDisabled]="file != null">Upload</button>
+            mat-raised-button>Upload</button>
+    </span>
 
     <div class="resultIconContainer" [ngSwitch]="actionResult" *ngIf="executed">
       <mat-icon *ngSwitchCase="ActionResultsEnum.ok" color="primary"
