@@ -3,8 +3,7 @@ import { ProblemDetailsError } from 'src/app/error-dialog/problem-details-error'
 import { ActionResults, HypermediaClientService } from '../../hypermedia-client.service';
 import { HypermediaAction } from '../../siren-parser/hypermedia-action';
 import {FormlyFieldConfig} from '@ngx-formly/core';
-import {AbstractControl, Form, FormGroup} from '@angular/forms';
-import {Observable} from 'rxjs/internal/Observable';
+import {FormGroup} from '@angular/forms';
 import {FormlyJsonschema} from '@ngx-formly/core/json-schema';
 
 @Component({

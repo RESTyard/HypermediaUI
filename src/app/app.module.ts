@@ -25,7 +25,6 @@ import { MatCardModule } from '@angular/material/card';
 import { MatSelectModule } from '@angular/material/select';
 import { SettingsModule } from './settings/settings.module';
 import { MatListModule } from '@angular/material/list';
-import { FlexModule } from '@angular/flex-layout';
 import { MatTableModule } from '@angular/material/table';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { CustomHeadersInterceptor } from './settings/custom-headers.interceptor';
@@ -75,7 +74,6 @@ export const myCustomTooltipDefaults: MatTooltipDefaultOptions = {
     MatCardModule,
     MatSelectModule,
     MatListModule,
-    FlexModule,
     MatTableModule,
     MatAutocompleteModule,
   ],

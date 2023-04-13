@@ -16,7 +16,6 @@ import {MatDividerModule} from '@angular/material/divider';
 import { SiteSettingsPageComponent } from './site-settings-page/site-settings-page.component';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { SiteSettingsComponent } from './site-settings/site-settings.component';
-import { FlexLayoutModule } from '@angular/flex-layout';
 import { MatTabsModule } from '@angular/material/tabs';
 import { SettingsViewComponent } from './settings-view/settings-view.component';
 import { GeneralSettingsPageComponent } from './general-settings-page/general-settings-page.component';
@@ -47,7 +46,6 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     MatDividerModule,
     MatExpansionModule,
     MatIconModule,
-    FlexLayoutModule,
     MatTabsModule,
     MatSlideToggleModule,
     MatListModule,
