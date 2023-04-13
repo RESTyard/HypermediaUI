@@ -3,7 +3,8 @@ import { ProblemDetailsError } from 'src/app/error-dialog/problem-details-error'
 import { ActionResults, HypermediaClientService } from '../../hypermedia-client.service';
 import { HypermediaAction } from '../../siren-parser/hypermedia-action';
 import {FormlyFieldConfig} from '@ngx-formly/core';
-import {Form, FormGroup} from '@angular/forms';
+import {AbstractControl, Form, FormGroup} from '@angular/forms';
+import {Observable} from 'rxjs/internal/Observable';
 
 @Component({
   selector: 'app-parameter-action',
@@ -35,16 +36,20 @@ export class ParameterActionComponent implements OnInit {
         if(defaultValues[value.key.toString()]){
           value['defaultValue'] = defaultValues[value.key.toString()];
         }
-        // value.fieldGroup.forEach(x => {
-        //   if(x.type == 'repeat' && !value['defaultValue'].hasOwnProperty(x.key.toString())){
-        //     value['defaultValue'][x.key.toString()] = [{value: null}];
-        //   }
-        // });
+        value.fieldGroup.forEach(x => {
+          if(x.type == 'repeat' && !value['defaultValue'].hasOwnProperty(x.key.toString())){
+            value['defaultValue'][x.key.toString()] = [null];
+          }
+        });
       });
     });
   }
 
   public onActionSubmitted() {
+    if(!this.form.valid){
+      console.log('not valid')
+      return;
+    }
     this.action.parameters = this.form.value;
     this.actionResult= ActionResults.pending;
     this.executed = true;
@@ -114,6 +119,7 @@ export class ParameterActionComponent implements OnInit {
                 type: 'text',
                 label: 'My Array',
               }};
+
               if (propSchema.items.type === 'object') {
                 field.fieldArray.type = 'formly-group';
                 field.fieldArray.fieldGroup = this.mapSchemaToFormlyFields(propSchema.items);
@@ -136,6 +142,7 @@ export class ParameterActionComponent implements OnInit {
         }
       }
     }
+    console.log('fields', fields)
     return fields;
   }
 
