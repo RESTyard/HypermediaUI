@@ -5,6 +5,7 @@ import { HypermediaAction } from '../../siren-parser/hypermedia-action';
 import {FormlyFieldConfig} from '@ngx-formly/core';
 import {AbstractControl, Form, FormGroup} from '@angular/forms';
 import {Observable} from 'rxjs/internal/Observable';
+import {FormlyJsonschema} from '@ngx-formly/core/json-schema';
 
 @Component({
   selector: 'app-parameter-action',
@@ -25,23 +26,23 @@ export class ParameterActionComponent implements OnInit {
 
   formlyFields: FormlyFieldConfig[] = null;
   form: FormGroup = new FormGroup({});
+  model: any;
 
-  constructor(private hypermediaClientService: HypermediaClientService) { }
+  constructor(private hypermediaClientService: HypermediaClientService, private formlyJsonschema: FormlyJsonschema) { }
 
   ngOnInit() {
     const defaultValues = this.action.defaultValues;
     this.action.waheActionParameterJsonSchema.subscribe(x => {
-      this.formlyFields = this.mapSchemaToFormlyFields(x);
-      this.formlyFields.forEach(value => {
-        if(defaultValues[value.key.toString()]){
-          value['defaultValue'] = defaultValues[value.key.toString()];
-        }
-        value.fieldGroup.forEach(x => {
-          if(x.type == 'repeat' && !value['defaultValue'].hasOwnProperty(x.key.toString())){
-            value['defaultValue'][x.key.toString()] = [null];
+      this.formlyFields = [this.formlyJsonschema.toFieldConfig(x, {
+        map: mappedField => {
+          if(mappedField.key != undefined){
+            mappedField.props.label = mappedField.key+"";
           }
-        });
-      });
+          mappedField.defaultValue = defaultValues[mappedField.key+""];
+          return mappedField;
+        }
+      })];
+      console.log('formlyFields', this.formlyFields)
     });
   }
 
@@ -77,74 +78,5 @@ export class ParameterActionComponent implements OnInit {
   navigateLocation(location: string) {
     this.hypermediaClientService.Navigate(location);
   }
-
-  mapSchemaToFormlyFields(schema: any): FormlyFieldConfig[] {
-    console.log('schema', schema)
-    const fields: FormlyFieldConfig[] = [];
-
-    if (schema?.properties) {
-      for (const prop in schema.properties) {
-        if (schema.properties.hasOwnProperty(prop)) {
-          const propSchema = schema.properties[prop];
-
-          let field: FormlyFieldConfig = {
-            key: prop,
-            type: 'input', // set default type
-            templateOptions: {
-              label: propSchema.title || prop,
-              required: propSchema.required
-            }
-          };
-          switch (propSchema.type) {
-            case 'object':
-              field.type = 'formly-group';
-              field.fieldGroup = this.mapSchemaToFormlyFields(propSchema);
-              break;
-            case 'integer':
-            case 'number':
-              field.type = 'input';
-              field.templateOptions.type = 'number';
-              break;
-            case 'boolean':
-              field.type = 'checkbox';
-              break;
-            case 'array':
-              field.type = 'repeat';
-              field.props = {
-                addText: 'Add',
-                removeText: 'Remove',
-                label: prop,
-              };
-              field.fieldArray = { type: 'input', templateOptions: {
-                type: 'text',
-                label: 'My Array',
-              }};
-
-              if (propSchema.items.type === 'object') {
-                field.fieldArray.type = 'formly-group';
-                field.fieldArray.fieldGroup = this.mapSchemaToFormlyFields(propSchema.items);
-              }
-              break;
-            default:
-              field.type = 'input';
-              field.templateOptions.type = propSchema.type;
-          }
-
-          if (propSchema.enum) {
-            field.type = 'enum';
-            field.templateOptions.options = propSchema.enum.map((value, index) => ({
-              label: propSchema['x-enumNames'][index] || value,
-              value
-            }));
-          }
-
-          fields.push(field);
-        }
-      }
-    }
-    console.log('fields', fields)
-    return fields;
-  }
-
 }
 
