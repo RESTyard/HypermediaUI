@@ -44,7 +44,7 @@ export class SirenDeserializer {
       result.classes = [...(<string[]>raw.class)];
     }
 
-    if (ReflectionHelpers.hasFilledArrayProperty(raw, 'title')) {
+    if (ReflectionHelpers.hasFilledProperty(raw, 'title')) {
       result.title = raw.title;
     }
 
