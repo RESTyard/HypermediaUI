@@ -1,4 +1,5 @@
-import { Observable } from 'rxjs';
+import {Observable} from 'rxjs';
+import {FileUploadConfiguration} from "./file-upload-configuration";
 
 export class HypermediaAction {
   public name: string | undefined;
@@ -7,14 +8,18 @@ export class HypermediaAction {
   public href: string = "";
   public title: string  = "";
   public type: string | undefined;
+  public fieldType: string | undefined;
 
   public actionType: ActionType = ActionType.NoParameters;
+
   public waheActionParameterName: string | undefined;
   public waheActionParameterClasses: string[] | undefined;
   public waheActionParameterJsonSchema: Observable<object> | undefined;
   public parameters: string | undefined;
   public defaultValues: object | undefined;
+
   public formData: FormData | undefined;
+  public FileUploadConfiguration: FileUploadConfiguration = new FileUploadConfiguration();
 
   constructor() { }
 }
@@ -32,3 +37,4 @@ export enum ActionType {
   JsonObjectParameters = 'application/json',
   FileUpload = 'multipart/form-data'
 }
+

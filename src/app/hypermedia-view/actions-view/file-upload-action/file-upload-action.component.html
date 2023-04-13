@@ -9,9 +9,16 @@
     </mat-panel-description>
   </mat-expansion-panel-header>
 
-  <ngx-dropzone class="dropzone-container" [multiple]="false" [maxFileSize]=maxFileSize (change)="onSelect($event)">
-    <ngx-dropzone-label>Drop a file here or click to select</ngx-dropzone-label>
-    <ngx-dropzone-preview *ngIf="file != null" [removable]="true" (removed)="onRemove(file)">
+  <ngx-dropzone class="dropzone-container"
+                [multiple]="action.FileUploadConfiguration.AllowMultiple"
+                [maxFileSize]="action.FileUploadConfiguration.MaxFileSizeBytes > -1 ? action.FileUploadConfiguration.MaxFileSizeBytes : 0"
+                [accept]="action.FileUploadConfiguration.Accept.length > 0 ? action.FileUploadConfiguration.Accept.join(',') : '*'"
+                [processDirectoryDrop] = "action.FileUploadConfiguration.AllowMultiple"
+                [expandable] = true
+                (change)="onSelect($event)">
+    <ngx-dropzone-label *ngIf="action.FileUploadConfiguration.AllowMultiple === false">Drop a file here or click to select</ngx-dropzone-label>
+    <ngx-dropzone-label *ngIf="action.FileUploadConfiguration.AllowMultiple === true">Drop a files or folder here or click to select</ngx-dropzone-label>
+    <ngx-dropzone-preview *ngFor="let file of files" [removable]="true" (removed)="onRemove(file)">
       <ngx-dropzone-label>
         <mat-icon class="fileIcon">description</mat-icon>
         <mat-vertical-stepper></mat-vertical-stepper>
@@ -22,11 +29,11 @@
     </ngx-dropzone-preview>
   </ngx-dropzone>
 
-  <div id="buttonRow" fxLayout="row" fxLayoutAlign="start center">
+  <div id="buttonRow">
     <!--place tooltip in parent because it does not work when button is disabled-->
-    <span matTooltip="Please select a file." [matTooltipDisabled]="file != null">
+    <span matTooltip="Please select a file." [matTooltipDisabled]="this.hasFiles()">
       <button (click)="onSubmit()"
-            [disabled]="file == null"
+            [disabled]="!this.hasFiles()"
             mat-raised-button>Upload</button>
     </span>
 

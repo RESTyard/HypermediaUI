@@ -4,6 +4,7 @@ import {NgxDropzoneChangeEvent} from 'ngx-dropzone';
 import {ActionResults, HypermediaClientService} from '../../hypermedia-client.service';
 import {ProblemDetailsError} from '../../../error-dialog/problem-details-error';
 import {MatSnackBar} from '@angular/material/snack-bar';
+import {RejectedFile} from "ngx-dropzone/lib/ngx-dropzone.service";
 
 @Component({
   selector: 'app-file-upload-action',
@@ -14,7 +15,7 @@ export class FileUploadActionComponent implements OnInit {
 
   @Input()
   action!: HypermediaAction;
-  file: File | null = null;
+  files: File[] = [];
 
   ActionResultsEnum = ActionResults;
   actionResult: ActionResults = ActionResults.undefined;
@@ -22,7 +23,6 @@ export class FileUploadActionComponent implements OnInit {
   actionMessage: string = "";
   executed: boolean = false; // TODO show multiple executions as list
   problemDetailsError: ProblemDetailsError| null = null
-  maxFileSize: number = +"1e+7";
 
   constructor(private hypermediaClientService: HypermediaClientService, private snackBar: MatSnackBar) { }
 
@@ -30,30 +30,47 @@ export class FileUploadActionComponent implements OnInit {
   }
 
   onSelect($event: NgxDropzoneChangeEvent) {
-    if($event.addedFiles.length > 0){
-      this.file = $event.addedFiles[0];
-    } else {
-      if($event.rejectedFiles.length > 0){
-        if($event.rejectedFiles[0].reason == 'size'){
-          this.snackBar.open(`Maximum size of ${this.convertBytesToMBReadable(this.maxFileSize)} exceeded. File size = ${this.convertBytesToMBReadable($event.rejectedFiles[0].size)}.`, undefined, {
-            panelClass: ['error-snackbar']
-          });
+    this.files.push(...$event.addedFiles);
+
+    // show toast message with size violations
+    if($event.rejectedFiles.length > 0){
+      let rejectedFilesMessage = "";
+
+      const self = this;
+      $event.rejectedFiles.forEach((rejectedFile) => {
+        if(rejectedFile.reason == 'size') {
+          rejectedFilesMessage += `${rejectedFile.name} too big (${self.convertBytesToMBReadable(rejectedFile.size)} > ${self.convertBytesToMBReadable(self.action.FileUploadConfiguration.MaxFileSizeBytes)})\n`;
+        } else if (rejectedFile.reason == 'type'){
+          rejectedFilesMessage += `${rejectedFile.name} has wrong type. Acceptable: ${self.action.FileUploadConfiguration.getAcceptString()}\n`
+        } else if (rejectedFile.reason == 'no_multiple') {
+          rejectedFilesMessage += "Only one file is allowed\n"
+        } else {
+          rejectedFilesMessage += `${rejectedFile.name} rejected for unknown reason\n`
         }
-      }
+      });
+
+      this.snackBar.open(rejectedFilesMessage, undefined, {
+        panelClass: ['error-snackbar']
+      });
     }
   }
 
-  onRemove(_: File) {
-    this.file = null;
+  hasFiles():boolean {
+    return this.files.length >0
+  }
+
+  onRemove($event:File) {
+    this.files.splice(this.files.indexOf($event), 1);
   }
 
   onSubmit() {
-    if (!this.file) {
+    if (this.files.length < 1) {
       return;
     }
 
     let formData = new FormData();
-    formData.set('upload_file', this.file);
+    this.files.forEach((file) => { formData.append('files', file); });
+    
     this.action.formData = formData;
     this.actionResult= ActionResults.pending;
     this.executed = true;
