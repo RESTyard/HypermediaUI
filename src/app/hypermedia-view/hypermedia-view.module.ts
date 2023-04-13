@@ -30,7 +30,6 @@ import {MatListModule} from "@angular/material/list";
 import {MatSelectModule} from "@angular/material/select";
 import {MatToolbarModule} from "@angular/material/toolbar";
 import {MatInputModule} from "@angular/material/input";
-import {FlexLayoutModule} from "@angular/flex-layout";
 import {FormsModule} from "@angular/forms";
 import {SettingsModule} from '../settings/settings.module';
 
@@ -66,7 +65,6 @@ import {NullTypeComponent} from './actions-view/parameter-action/formly-types/nu
     MatIconModule,
     MatToolbarModule,
     MatListModule,
-    FlexLayoutModule,
     MatInputModule,
     MatSelectModule,
     MatMenuModule,

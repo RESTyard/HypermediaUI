@@ -22,7 +22,7 @@
     </ngx-dropzone-preview>
   </ngx-dropzone>
 
-  <div id="buttonRow" fxLayout="row" fxLayoutAlign="start center">
+  <div id="buttonRow">
     <!--place tooltip in parent because it does not work when button is disabled-->
     <span matTooltip="Please select a file." [matTooltipDisabled]="file != null">
       <button (click)="onSubmit()"

@@ -39,6 +39,8 @@
 #buttonRow {
   margin-top: $defaultSpacing;
   height: $defaultRowHeigth;
+  display: flex;
+  flex-direction: row;
 }
 
 .fileIcon {
