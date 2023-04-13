@@ -47,7 +47,6 @@ import {MatStepperModule} from '@angular/material/stepper';
 import { ReactiveFormsModule } from '@angular/forms';
 import {FormlyFieldConfig, FormlyModule} from '@ngx-formly/core';
 import { FormlyMaterialModule } from '@ngx-formly/material';
-import { FormlyRepeatSectionComponent } from './actions-view/parameter-action/formly-repeat-section/formly-repeat-section.component';
 import {ArrayTypeComponent} from './actions-view/parameter-action/formly-types/array-type';
 import {ObjectTypeComponent} from './actions-view/parameter-action/formly-types/object-type';
 import {MultiSchemaTypeComponent} from './actions-view/parameter-action/formly-types/multi-schema-type';
@@ -95,7 +94,6 @@ import {NullTypeComponent} from './actions-view/parameter-action/formly-types/nu
         { name: 'const', message: constValidationMessage },
       ],
       types: [
-        { name: 'repeat', component: FormlyRepeatSectionComponent },
         { name: 'null', component: NullTypeComponent, wrappers: ['form-field'] },
         { name: 'array', component: ArrayTypeComponent },
         { name: 'object', component: ObjectTypeComponent },
@@ -125,7 +123,6 @@ import {NullTypeComponent} from './actions-view/parameter-action/formly-types/nu
     ParameterlessActionViewComponent,
     ParameterActionComponent,
     FileUploadActionComponent,
-    FormlyRepeatSectionComponent,
     ArrayTypeComponent, ObjectTypeComponent, MultiSchemaTypeComponent, NullTypeComponent
   ],
   providers: [

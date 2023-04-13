@@ -31,18 +31,16 @@ export class ParameterActionComponent implements OnInit {
   constructor(private hypermediaClientService: HypermediaClientService, private formlyJsonschema: FormlyJsonschema) { }
 
   ngOnInit() {
-    const defaultValues = this.action.defaultValues;
     this.action.waheActionParameterJsonSchema.subscribe(x => {
       this.formlyFields = [this.formlyJsonschema.toFieldConfig(x, {
         map: mappedField => {
           if(mappedField.key != undefined){
             mappedField.props.label = mappedField.key+"";
-            mappedField.defaultValue = defaultValues[mappedField.key+""];
+            mappedField.defaultValue = this.action.defaultValues[mappedField.key+""];
           }
           return mappedField;
         }
       })];
-      console.log('formlyFields', this.formlyFields)
     });
   }
 
