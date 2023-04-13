@@ -7,16 +7,22 @@ import {FieldArrayType} from '@ngx-formly/core';
       <legend *ngIf="props.label">{{ props.label }}</legend>
       <p *ngIf="props.description">{{ props.description }}</p>
       <div class="d-flex flex-row-reverse">
-        <button class="btn btn-primary" type="button" (click)="add()">+</button>
+        <button mat-raised-button type="button" (click)="add()">+</button>
       </div>
       <div class="alert alert-danger" role="alert" *ngIf="showError && formControl.errors">
         <formly-validation-message [field]="field"></formly-validation-message>
       </div>
       <div *ngFor="let field of field.fieldGroup; let i = index" class="row align-items-start">
-        <formly-field class="col" [field]="field"></formly-field>
-        <div *ngIf="field.props['removable'] !== false" class="col-2 text-right">
-          <button class="btn btn-danger" type="button" (click)="remove(i)">-</button>
-        </div>
+        <mat-grid-list cols="12" rowHeight="50px">
+          <mat-grid-tile colspan="11">
+            <formly-field style="width: 100%" [field]="field"></formly-field>
+          </mat-grid-tile>
+          <mat-grid-tile colspan="1">
+            <div *ngIf="field.props['removable'] !== false" class="col-2 text-right">
+              <button mat-raised-button type="button" (click)="remove(i)">Remove</button>
+            </div>
+          </mat-grid-tile>
+        </mat-grid-list>
       </div>
     </div> `,
 })

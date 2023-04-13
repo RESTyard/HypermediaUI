@@ -37,8 +37,8 @@ export class ParameterActionComponent implements OnInit {
         map: mappedField => {
           if(mappedField.key != undefined){
             mappedField.props.label = mappedField.key+"";
+            mappedField.defaultValue = defaultValues[mappedField.key+""];
           }
-          mappedField.defaultValue = defaultValues[mappedField.key+""];
           return mappedField;
         }
       })];
