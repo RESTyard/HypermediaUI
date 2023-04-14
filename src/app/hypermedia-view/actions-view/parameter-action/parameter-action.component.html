@@ -16,7 +16,7 @@
 
   <form [formGroup]="form" (ngSubmit)="onActionSubmitted()">
     <formly-form [fields]="formlyFields" [form]="form" [model]="model"></formly-form>
-    <button type="submit" class="btn btn-default">Submit</button>
+    <button mat-raised-button color="primary" type="submit" class="btn btn-default">Submit</button>
   </form>
 
   <!-- <button *ngIf="actionResultLocation !== null" mat-raised-button (click)="navigateLocation(actionResultLocation)" matTooltip="{{actionResultLocation}}">

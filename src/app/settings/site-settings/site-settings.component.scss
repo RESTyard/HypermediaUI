@@ -1,58 +1,66 @@
 @import '../../../styles/defaults.scss';
+
 #headerToolbar {
-    display: flex;
-    vertical-align: middle;
-    margin-bottom: $defaultSpacing;
+  display: flex;
+  vertical-align: middle;
+  margin-bottom: $defaultSpacing;
 }
 
 .hostTitle {
-    font-size: 16px;
-    margin-left: $defaultSpacing;
-    margin-top: 4px;
+  font-size: 16px;
+  margin-left: $defaultSpacing;
+  margin-top: 4px;
 }
 
 #headersTitle {
-    align-self: center;
-    margin-right: $defaultSpacing;
+  align-self: center;
+  margin-right: $defaultSpacing;
 }
 
 .newHostInfo {
-    color: grey;
+  color: grey;
 }
 
-.spacer{
-    flex: auto;
+.spacer {
+  flex: auto;
 }
 
 .siteHostField {
-    flex:60;
+  flex: 60;
 }
 
 #settingExpansionPanel {
-    margin-bottom: 6px;
+  margin-bottom: 6px;
 }
 
-#titleContainer{
-    display: flex;
+#titleContainer {
+  display: flex;
 }
 
-#headers{
-   display: flex;
-   align-items: center;
+#headers {
+  display: flex;
+  align-items: center;
 }
 
-.headerKeyField{
-    flex:20;
+.headerKeyField {
+  flex: 20;
 }
 
-.headerValueField{
-    flex:40;
+.headerValueField {
+  flex: 40;
 }
 
-.flexSpacer{
-    flex: 40;
+.flexSpacer {
+  flex: 40;
 }
 
-.deleteHeader{
-    margin-left: $defaultSpacing;
+.deleteHeader {
+  margin-left: $defaultSpacing;
+  margin-bottom: $defaultSpacing*2;
+}
+
+.headerFormGroup {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 }

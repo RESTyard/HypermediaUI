@@ -49,7 +49,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     MatTabsModule,
     MatSlideToggleModule,
     MatListModule,
-    MatTooltipModule
+    MatTooltipModule,
   ],
   exports: [
     SettingsMenuComponent

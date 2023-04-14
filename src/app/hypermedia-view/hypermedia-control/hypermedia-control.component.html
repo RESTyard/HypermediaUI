@@ -6,7 +6,7 @@
     <span *ngIf="GeneralSettings.showHostInformation" id="CurrentEntryPoint" matTooltip="{{CurrentEntryPoint}}" [ngClass]="{'isInsecure': IsInsecureConnection}">{{CurrentHost}}</span>
     <span *ngIf="GeneralSettings.showHostInformation" class="spacer"></span>
   <app-settings-menu></app-settings-menu>
-  <button mat-button matTooltip="Exit API" (click)="navigateMainPage()">
+  <button mat-icon-button matTooltip="Exit API" (click)="navigateMainPage()">
     <mat-icon class="icon">exit_to_app</mat-icon>
   </button>
 </mat-toolbar>

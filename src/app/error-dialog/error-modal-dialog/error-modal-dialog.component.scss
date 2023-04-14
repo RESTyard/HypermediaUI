@@ -30,3 +30,8 @@ button {
 app-problem-details-view{
   background-color: white;
 }
+
+#buttonRow {
+  margin-left: $defaultSpacing;
+  margin-bottom: $defaultSpacing;
+}
