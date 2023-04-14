@@ -3,6 +3,9 @@
 .container {
   margin-top: $defaultContainerSpacing;
   padding: 0;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 }
 
 .buttonContainer:hover .CopyToClipboardButton{
@@ -13,17 +16,19 @@
   opacity: 0.8;
 }
 
-.buttonContainer .CopyToClipboardButton {
+.CopyToClipboardButton  {
   opacity: 0;
 }
+
+.buttonContainer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
 
 .CopyToClipboardButton{
    padding: 0px;
    margin: 0px;
    max-height: 24px;
 }
-
-::ng-deep .mat-mdc-icon-button {
-  font-size: 10px;
-}
-
