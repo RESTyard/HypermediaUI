@@ -11,12 +11,12 @@ import {EmbeddedEntity} from './embedded-entity';
 import {ObservableLruCache} from '../api-access/observable-lru-cache';
 import {Injectable} from '@angular/core';
 import {map} from 'rxjs';
+import {MediaTypes} from "../MediaTypes";
 
 @Injectable()
 export class SirenDeserializer {
-  private readonly waheActionTypes = ['application/json', 'multipart/form-data'];
-  private static jsonMediaType = 'application/json';
-  private static formDataMediaType = 'multipart/form-data';
+  private readonly waheActionTypes = [MediaTypes.Json, MediaTypes.FormData];
+
   private static httpInputTypeFile = 'file';
   constructor(
      private httpClient: HttpClient,
@@ -70,7 +70,7 @@ export class SirenDeserializer {
 
     const links: any[] = raw.links;
     links.forEach(link => {
-      result.push(new HypermediaLink([...link.rel], link.href));
+      result.push(new HypermediaLink([...link.rel], link.href, link.type));
     });
 
     return result;
@@ -250,7 +250,7 @@ export class SirenDeserializer {
     }
 
     switch (hypermediaAction.fieldType) {
-      case SirenDeserializer.jsonMediaType:
+      case MediaTypes.Json:
         this.FillJsonParameterInformation(hypermediaAction, action, actionField);
         break;
       case SirenDeserializer.httpInputTypeFile:

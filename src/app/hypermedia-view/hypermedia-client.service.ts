@@ -25,6 +25,7 @@ import { SettingsService } from '../settings/services/settings.service';
 import { generate } from 'rxjs/internal/observable/generate';
 
 import { ProblemDetailsError } from '../error-dialog/problem-details-error';
+import {MediaTypes} from "./MediaTypes";
 
 const problemDetailsMimeType = "application/problem+json";
 @Injectable()
@@ -37,10 +38,6 @@ export class HypermediaClientService {
   // indicate that a http request is pending
   public isBusy$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   private busyRequestsCounter = 0;
-
-  private static sirenMediaType = 'application/vnd.siren+json';
-  private static jsonMediaType = 'application/json';
-  private static formDataMediaType = 'multipart/form-data';
 
   constructor(
     private httpClient: HttpClient,
@@ -86,7 +83,7 @@ export class HypermediaClientService {
   Navigate(url: string) {
     this.apiPath.addStep(url);
 
-    const headers = new HttpHeaders().set('Accept', HypermediaClientService.sirenMediaType);
+    const headers = new HttpHeaders().set('Accept', MediaTypes.Siren);
 
     this.AddBusyRequest();
     this.httpClient
@@ -136,7 +133,7 @@ export class HypermediaClientService {
     if (withContentType) {
       headers.set('Content-Type', withContentType);
     }
-    headers.set('Accept', HypermediaClientService.sirenMediaType);
+    headers.set('Accept', MediaTypes.Siren);
 
     return headers;
   }
@@ -153,7 +150,7 @@ export class HypermediaClientService {
 
   private ExecuteRequest(action: HypermediaAction, headers: any, body: any | null) {
     this.AddBusyRequest()
-    
+
     return this.httpClient.request(
       action.method,
       action.href,
