@@ -9,13 +9,23 @@
         </span>
 
       </button>
-      <button mat-icon-button 
-              class="CopyToClipboardButton hoverButton"
+      <button mat-icon-button
+              class="CopyToClipboardButton"
               (click)="copyToClipBoard(link)"
-              matTooltip="Copy to clipboard"
+              matTooltip="Copy URL to clipboard"
               color="primary">
         <mat-icon>assignment</mat-icon>
       </button>
+
+      <a mat-icon-button
+         *ngIf="link.type !== MediaTypes.Siren && link.type != undefined"
+         class="CopyToClipboardButton"
+         [href]="link.url"
+         [attr.download]
+         matTooltip="Download">
+        <mat-icon color="primary" >download</mat-icon>
+      </a>
+
     </span>
 
   </span>

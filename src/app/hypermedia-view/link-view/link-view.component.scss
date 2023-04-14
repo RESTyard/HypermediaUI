@@ -18,6 +18,7 @@
 
 .CopyToClipboardButton  {
   opacity: 0;
+  background-color: transparent;
 }
 
 .buttonContainer {
@@ -26,9 +27,3 @@
   align-items: center;
 }
 
-
-.CopyToClipboardButton{
-   padding: 0px;
-   margin: 0px;
-   max-height: 24px;
-}
