@@ -33,9 +33,11 @@ export class ParameterActionComponent implements OnInit {
     this.action.waheActionParameterJsonSchema.subscribe(x => {
       this.formlyFields = [this.formlyJsonschema.toFieldConfig(x, {
         map: mappedField => {
-          if(mappedField.key != undefined){
+          if(mappedField.key){
             mappedField.props.label = mappedField.key+"";
-            mappedField.defaultValue = this.action.defaultValues[mappedField.key+""];
+          }
+          if(this.action.defaultValues && this.action.defaultValues[mappedField.key + '']) {
+            mappedField.defaultValue = this.action.defaultValues[mappedField.key + ''];
           }
           return mappedField;
         }
