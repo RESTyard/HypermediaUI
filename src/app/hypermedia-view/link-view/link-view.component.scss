@@ -1,7 +1,6 @@
 @import '../../../styles/defaults.scss';
 
 .container {
-  margin-top: $defaultContainerSpacing;
   padding: 0;
   display: flex;
   flex-direction: row;
@@ -25,5 +24,11 @@
   display: flex;
   flex-direction: row;
   align-items: center;
+  margin-right: $defaultSpacing;
 }
 
+.mat-button-toggle {
+  background-color: #4456b2;
+  color: white;
+  height: 48px;
+}
