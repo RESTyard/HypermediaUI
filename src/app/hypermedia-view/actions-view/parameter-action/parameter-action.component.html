@@ -16,7 +16,31 @@
 
   <form [formGroup]="form" (ngSubmit)="onActionSubmitted()">
     <formly-form [fields]="formlyFields" [form]="form" [model]="model"></formly-form>
-    <button mat-raised-button color="primary" type="submit" class="btn btn-default">Submit</button>
+    <div class="buttonRow">
+      <button mat-raised-button color="primary" type="submit">Submit</button>
+
+      <div class="resultContainer">
+        <!-- result icon -->
+        <div class="resultIconContainer" [ngSwitch]="actionResult" *ngIf="executed">
+          <mat-icon *ngSwitchCase="ActionResultsEnum.ok" class="containerElement" color="primary"
+                    matTooltip={{actionMessage}}>done</mat-icon>
+          <mat-icon *ngSwitchCase="ActionResultsEnum.error" class="containerElement hoverButton" color="warn" [matMenuTriggerFor]="errorPopup"
+                    matTooltip={{actionMessage}}>error</mat-icon>
+          <mat-progress-spinner [diameter]="26" *ngSwitchCase="ActionResultsEnum.pending" mode="indeterminate" color="accent"></mat-progress-spinner>
+          <mat-icon *ngSwitchCase="ActionResultsEnum.undefined" class="containerElement" color="primary"
+                    matTooltip={{actionMessage}}>question_mark</mat-icon>
+        </div>
+        <!-- result button -->
+        <button *ngIf="actionResultLocation !== null"
+                class="containerElement"
+                mat-raised-button
+                (click)="navigateLocation(actionResultLocation)"
+                color="accent"
+                matTooltip="Go to result: {{actionResultLocation}}">
+          <mat-icon class="icon" color="primary">start</mat-icon>
+        </button>
+      </div>
+    </div>
   </form>
 
   <!-- <button *ngIf="actionResultLocation !== null" mat-raised-button (click)="navigateLocation(actionResultLocation)" matTooltip="{{actionResultLocation}}">
@@ -26,33 +50,12 @@
 
   <!-- <app-raw-view [rawObject]="action.waheActionParameterJsonSchema | async"></app-raw-view> -->
 
-  <div class="resultContainer">
 
-    <!-- result icon -->
-    <div class="resultIconContainer" [ngSwitch]="actionResult" *ngIf="executed">
-      <mat-icon *ngSwitchCase="ActionResultsEnum.ok" class="containerElement" color="primary"
-                matTooltip={{actionMessage}}>done</mat-icon>
-      <mat-icon *ngSwitchCase="ActionResultsEnum.error" class="containerElement hoverButton" color="warn" [matMenuTriggerFor]="errorPopup"
-                matTooltip={{actionMessage}}>error</mat-icon>
-      <mat-progress-spinner [diameter]="26" *ngSwitchCase="ActionResultsEnum.pending" mode="indeterminate" color="accent"></mat-progress-spinner>
-      <mat-icon *ngSwitchCase="ActionResultsEnum.undefined" class="containerElement" color="primary"
-                matTooltip={{actionMessage}}>question_mark</mat-icon>
+
+  <mat-menu #errorPopup="matMenu">
+    <div (click)="$event.stopPropagation()">
+      <app-problem-details-view *ngIf="problemDetailsError" [problemDetailsError]="problemDetailsError"></app-problem-details-view>
     </div>
-    <mat-menu #errorPopup="matMenu">
-      <div (click)="$event.stopPropagation()">
-        <app-problem-details-view *ngIf="problemDetailsError" [problemDetailsError]="problemDetailsError"></app-problem-details-view>
-      </div>
-    </mat-menu>
-
-    <!-- result button -->
-    <button *ngIf="actionResultLocation !== null"
-            class="containerElement"
-            mat-raised-button
-            (click)="navigateLocation(actionResultLocation)"
-            color="accent"
-            matTooltip="Go to result: {{actionResultLocation}}">
-      <mat-icon class="icon" color="primary">start</mat-icon>
-    </button>
-  </div>
+  </mat-menu>
 
 </mat-expansion-panel>

@@ -4,9 +4,9 @@ mat-panel-title {
   align-items: center;
 }
 
-.resultContainer {
-  margin-top: $defaultSpacing;
-}
+//.resultContainer {
+//  margin-top: $defaultSpacing;
+//}
 
 .hoverButton:hover{
   opacity: 0.8;
@@ -15,3 +15,19 @@ mat-panel-title {
 .mat-expansion-panel-header .mat-expansion-panel-header-title {
   max-width: fit-content;
 }
+.buttonRow {
+  margin-top: $defaultSpacing;
+  height: $defaultRowHeigth;
+  display: flex;
+  flex-direction: row;
+}
+
+.resultIconContainer {
+  display: flex;
+  align-items: center;
+  height: $defaultRowHeigth;
+  margin-right: $defaultSpacing+$defaultSpacing;
+  margin-left:  $defaultSpacing;
+  padding: 0;
+}
+
