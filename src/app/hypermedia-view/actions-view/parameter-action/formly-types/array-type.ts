@@ -7,7 +7,7 @@ import {FieldArrayType} from '@ngx-formly/core';
       <legend *ngIf="props.label">{{ props.label }}</legend>
       <p *ngIf="props.description">{{ props.description }}</p>
       <div class="d-flex flex-row-reverse">
-        <button mat-button type="button" (click)="add()">Add</button>
+        <button mat-button style="background-color: aqua" type="button" (click)="add()">Add</button>
       </div>
       <div class="alert alert-danger" role="alert" *ngIf="showError && formControl.errors">
         <formly-validation-message [field]="field"></formly-validation-message>
@@ -19,7 +19,7 @@ import {FieldArrayType} from '@ngx-formly/core';
           </mat-grid-tile>
           <mat-grid-tile colspan="1">
             <div *ngIf="field.props['removable'] !== false" class="col-2 text-right">
-              <button mat-button type="button" (click)="remove(i)">Remove</button>
+              <button style="background-color: red" mat-button type="button" (click)="remove(i)">Remove</button>
             </div>
           </mat-grid-tile>
         </mat-grid-list>
