@@ -15,7 +15,7 @@ import {MediaTypes} from "../MediaTypes";
 
 @Injectable()
 export class SirenDeserializer {
-  private readonly waheActionTypes = [MediaTypes.Json, MediaTypes.FormData];
+  private readonly waheActionTypes = [MediaTypes.Json, MediaTypes.FormData, MediaTypes.OctetStream];
 
   private static httpInputTypeFile = 'file';
   constructor(

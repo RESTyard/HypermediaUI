@@ -182,12 +182,14 @@ export class HypermediaClientService {
 
   executeAction(action: HypermediaAction, actionResult: (actionResults: ActionResults, resultLocation: string | null, content: any, problemDetailsError: ProblemDetailsError | null) => void): any {
     let requestBody = null;
+
     switch (action.actionType){
       case ActionType.NoParameters: {
         break;
       }
       case ActionType.FileUpload: {
-        requestBody = action.formData;
+        requestBody = this.BuildBodyForFileUpload(action)
+
         break;
       }
       case ActionType.JsonObjectParameters: {
@@ -208,6 +210,27 @@ export class HypermediaClientService {
         next: (response: HttpResponse<any>) => this.OnActionResponse(response, actionResult),
         error: (errorResponse: HttpErrorResponse) => this.HandleActionError(errorResponse, actionResult)
       });
+  }
+
+  private BuildBodyForFileUpload(action: HypermediaAction): any {
+    if (action.files.length < 1) {
+      throw new Error(`Can not execute file upload. No file specified`)
+    }
+
+    switch (action.type) {
+
+      case MediaTypes.FormData:
+        let formData = new FormData();
+        action.files.forEach((file) => { formData.append('files', file); });
+        return formData;
+      case MediaTypes.OctetStream:
+        if (action.files.length > 1) {
+          throw new Error(`Can not execute file upload as ${MediaTypes.OctetStream} wit multiple files.`)
+        }
+        return action.files[0];
+      default:
+        throw new Error(`Can not execute file upload for encoding type: ${action.type}`)
+    }
   }
 
   private MapHttpErrorResponseToProblemDetails(errorResponse: HttpErrorResponse): ProblemDetailsError {

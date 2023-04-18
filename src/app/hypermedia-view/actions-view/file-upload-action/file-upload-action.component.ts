@@ -4,7 +4,6 @@ import {NgxDropzoneChangeEvent} from 'ngx-dropzone';
 import {ActionResults, HypermediaClientService} from '../../hypermedia-client.service';
 import {ProblemDetailsError} from '../../../error-dialog/problem-details-error';
 import {MatSnackBar} from '@angular/material/snack-bar';
-import {RejectedFile} from "ngx-dropzone/lib/ngx-dropzone.service";
 
 @Component({
   selector: 'app-file-upload-action',
@@ -68,10 +67,7 @@ export class FileUploadActionComponent implements OnInit {
       return;
     }
 
-    let formData = new FormData();
-    this.files.forEach((file) => { formData.append('files', file); });
-    
-    this.action.formData = formData;
+    this.action.files = this.files;
     this.actionResult= ActionResults.pending;
     this.executed = true;
 

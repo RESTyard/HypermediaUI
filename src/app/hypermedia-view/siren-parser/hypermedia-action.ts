@@ -18,7 +18,7 @@ export class HypermediaAction {
   public parameters: string | undefined;
   public defaultValues: object | undefined;
 
-  public formData: FormData | undefined;
+  public files: File[] = [];
   public FileUploadConfiguration: FileUploadConfiguration = new FileUploadConfiguration();
 
   constructor() { }
