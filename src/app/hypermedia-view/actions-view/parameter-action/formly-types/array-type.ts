@@ -31,7 +31,7 @@ import {style} from '@angular/animations';
             <div class="col-24">
               <formly-field [field]="field"></formly-field>
             </div>
-            <div *ngIf="field.props['removable'] !== false">
+            <div class="delete-button" *ngIf="field.props['removable'] !== false">
               <button type="button" (click)="remove(i)" mat-flat-button>
                 <mat-icon fontSet="material-icons-outlined">delete</mat-icon>
               </button>
