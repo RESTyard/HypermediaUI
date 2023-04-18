@@ -1,6 +1,5 @@
 import {Component} from '@angular/core';
 import {FieldArrayType} from '@ngx-formly/core';
-import {style} from '@angular/animations';
 
 @Component({selector: 'formly-array-type',
   template: `
@@ -26,16 +25,14 @@ import {style} from '@angular/animations';
           <formly-validation-message [field]="field"></formly-validation-message>
         </div>
 
-        <mat-card-content *ngIf="field.fieldGroup.length != 0">
-          <div *ngFor="let field of field.fieldGroup; let i = index" class="row">
-            <div class="col-24">
-              <formly-field [field]="field"></formly-field>
-            </div>
-            <div class="delete-button" *ngIf="field.props['removable'] !== false">
-              <button type="button" (click)="remove(i)" mat-flat-button>
-                <mat-icon fontSet="material-icons-outlined">delete</mat-icon>
-              </button>
-            </div>
+        <mat-card-content *ngFor="let field of field.fieldGroup; let i = index" class="row">
+          <div class="col-24">
+            <formly-field [field]="field"></formly-field>
+          </div>
+          <div *ngIf="field.props['removable'] !== false">
+            <button class="delete-button" type="button" (click)="remove(i)" mat-flat-button>
+              <mat-icon fontSet="material-icons-outlined">delete</mat-icon>
+            </button>
           </div>
         </mat-card-content>
       </mat-card>
