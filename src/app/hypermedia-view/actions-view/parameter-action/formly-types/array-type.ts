@@ -12,7 +12,7 @@ import {FieldArrayType} from '@ngx-formly/core';
           <mat-card-actions>
             <div style="margin-bottom: 3px;">
               <button type="button" (click)="add()" mat-flat-button>
-                <mat-icon id="addHeaderButton">add</mat-icon>
+                <mat-icon>add</mat-icon>
               </button>
             </div>
           </mat-card-actions>
