@@ -25,8 +25,7 @@
 
 .embeddedLinkEntityCard {
   margin: $defaultSpacing 0;
-  padding-top: $defaultSpacing;
-  padding-bottom: $defaultSpacing;
+  padding: $defaultSpacing;
   display: grid;
   grid-template-columns: 1fr 1fr auto auto;
   align-items: center;
