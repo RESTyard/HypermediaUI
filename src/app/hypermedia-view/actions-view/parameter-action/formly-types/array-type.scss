@@ -1,12 +1,16 @@
-.form-field-container {
+.row {
   display: flex;
   flex-direction: row;
 }
 
-.col-2 {
-  flex: 1;
+.col-24 {
+  flex-grow: 24;
 }
 
-.col-10 {
-  flex: 19;
+.mat-icon {
+  margin: 0 0 0 0;
+}
+
+.delete-button {
+  margin-left: 3px;
 }
