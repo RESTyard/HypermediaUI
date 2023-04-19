@@ -83,12 +83,15 @@ export class HypermediaClientService {
   Navigate(url: string) {
     this.apiPath.addStep(url);
 
+    // todo use media type of link if exists in siren, maybe check for supported types?
     const headers = new HttpHeaders().set('Accept', MediaTypes.Siren);
 
     this.AddBusyRequest();
     this.httpClient
       .get(url, {
-        headers: headers
+        headers: headers,
+        observe: 'response',
+        // responseType:'blob' // use for generic access
       })
       .pipe(
         tap({
@@ -96,17 +99,18 @@ export class HypermediaClientService {
           error: () => this.RemoveBusyRequest()
         }))
       .subscribe({
-        next: response => {
+        next: response =>
+        {
           this.router.navigate(['hui'], {
             queryParams: {
               apiPath: this.apiPath.fullPath
             }
           });
 
-          const sirenClientObject = this.MapResponse(response);
+          const sirenClientObject = this.MapResponse(response.body);
 
           this.currentClientObject$.next(sirenClientObject);
-          this.currentClientObjectRaw$.next(response);
+          this.currentClientObjectRaw$.next(response.body);
           this.currentNavPaths$.next(this.apiPath.fullPath);
         },
         error: (err: HttpErrorResponse) => { throw this.MapHttpErrorResponseToProblemDetails(err); }
@@ -234,6 +238,17 @@ export class HypermediaClientService {
   }
 
   private MapHttpErrorResponseToProblemDetails(errorResponse: HttpErrorResponse): ProblemDetailsError {
+    if (errorResponse.error.error instanceof SyntaxError) {
+      // we did not receive a json
+      console.error('Content error:', errorResponse.error.message);
+      return new ProblemDetailsError({
+        type: "Client.ContentError",
+        title: "Content error",
+        detail: "Server did not respond with expected content (json)",
+        status: 406,
+      });
+    }
+
     if (errorResponse.error instanceof Error) {
       // A client-side or network error occurred. Handle it accordingly.
       console.error('Client-side error occurred:', errorResponse.error.message);
