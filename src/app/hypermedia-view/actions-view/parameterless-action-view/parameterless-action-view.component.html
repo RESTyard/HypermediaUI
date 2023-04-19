@@ -1,10 +1,10 @@
-<mat-card class="action-container" fxLayout="row" fxLayoutAlign="start center">
+<mat-card appearance="outlined" class="action-container">
 
   <!-- execute button -->
-  <div fxLayout="row" class="contentRow">
-    <button class="executeButton containerElement" mat-raised-button (click)="executeAction()"
+  <div class="contentRow">
+    <button class="executeButton containerElement" mat-raised-button color="primary" (click)="executeAction()"
             matTooltip="{{action.title}}">
-      <mat-icon class="icon" color="primary">play_circle_outline</mat-icon>
+      <mat-icon class="icon" color="secondary">play_circle_outline</mat-icon>
       {{action.name}}
     </button>
   </div>
@@ -26,12 +26,13 @@
 
   <!-- result button -->
   <button *ngIf="actionResultLocation !== null"
-          class="containerElement"
+          class="containerElement resultLocationButton"
           mat-raised-button
           (click)="navigateLocation(actionResultLocation)"
           color="accent"
           matTooltip="Go to result: {{actionResultLocation}}">
     <mat-icon class="icon" color="primary">start</mat-icon>
+    Result
   </button>
 
   <!-- description -->

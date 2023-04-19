@@ -1,22 +1,31 @@
 <div class="container">
   <span *ngFor="let link of links">
-
-    <span class="buttonContainer">
-      <button mat-raised-button (click)="navigateLink(link)" matTooltip="{{link.url}}" color="primary">
-        <mat-icon>play_arrow</mat-icon>
+    <mat-button-toggle-group class="buttonContainer">
+      <mat-button-toggle (click)="navigateLink(link)" matTooltip="{{link.url}}">
+        <mat-icon >play_arrow</mat-icon>
         <span>
           {{link.relations.join(',')}}
         </span>
+      </mat-button-toggle>
+      <mat-button-toggle [matMenuTriggerFor]="dropdownMenuOne">
+        <mat-icon>arrow_drop_down</mat-icon>
+      </mat-button-toggle>
+    </mat-button-toggle-group>
 
-      </button>
-      <button mat-icon-button 
-              class="CopyToClipboardButton hoverButton"
-              (click)="copyToClipBoard(link)"
-              matTooltip="Copy to clipboard"
-              color="primary">
-        <mat-icon>assignment</mat-icon>
-      </button>
-    </span>
-
+    <mat-menu #dropdownMenuOne="matMenu">
+            <button  mat-menu-item
+                    (click)="copyToClipBoard(link)"
+                    color="primary">
+              <mat-icon color="primary">assignment</mat-icon>
+              Copy URL to clipboard
+            </button>
+            <a  mat-menu-item
+               *ngIf="link.type !== MediaTypes.Siren && link.type != undefined"
+               [href]="link.url"
+               [attr.download]>
+              <mat-icon color="primary" >download</mat-icon>
+              Download
+            </a>
+    </mat-menu>
   </span>
 </div>

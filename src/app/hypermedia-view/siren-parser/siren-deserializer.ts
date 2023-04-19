@@ -1,21 +1,23 @@
-import { HttpClient, HttpErrorResponse, HttpResponseBase, HttpResponse, HttpHeaders } from '@angular/common/http';
-import { SirenClientObject } from './siren-client-object';
-import { HypermediaLink } from './hypermedia-link';
-import { PropertyInfo, PropertyTypes } from './property-info';
-import { HypermediaAction, HttpMethodTypes } from './hypermedia-action';
-import { ReflectionHelpers } from './reflection-helpers';
-import { SchemaSimplifier } from './schema-simplifier';
-import { EmbeddedLinkEntity } from './embedded-link-entity';
-import { IEmbeddedEntity, ISirenClientObject } from './entity-interfaces';
-import { EmbeddedEntity } from './embedded-entity';
-import { ObservableLruCache } from '../api-access/observable-lru-cache';
-import { Injectable } from '@angular/core';
-import {map} from "rxjs";
+import {HttpClient} from '@angular/common/http';
+import {SirenClientObject} from './siren-client-object';
+import {HypermediaLink} from './hypermedia-link';
+import {PropertyInfo, PropertyTypes} from './property-info';
+import {ActionType, HttpMethodTypes, HypermediaAction} from './hypermedia-action';
+import {ReflectionHelpers} from './reflection-helpers';
+import {SchemaSimplifier} from './schema-simplifier';
+import {EmbeddedLinkEntity} from './embedded-link-entity';
+import {IEmbeddedEntity, ISirenClientObject} from './entity-interfaces';
+import {EmbeddedEntity} from './embedded-entity';
+import {ObservableLruCache} from '../api-access/observable-lru-cache';
+import {Injectable} from '@angular/core';
+import {map} from 'rxjs';
+import {MediaTypes} from "../MediaTypes";
 
 @Injectable()
 export class SirenDeserializer {
-  private readonly waheActionType = 'application/json';
+  private readonly waheActionTypes = [MediaTypes.Json, MediaTypes.FormData, MediaTypes.OctetStream];
 
+  private static httpInputTypeFile = 'file';
   constructor(
      private httpClient: HttpClient,
       private schemaCache: ObservableLruCache<object>,
@@ -40,18 +42,24 @@ export class SirenDeserializer {
   }
 
   private deserializeEntity(raw: any, result: ISirenClientObject) {
-    result.classes = [...(<string[]>raw.class)]; // todo handle undefined
-    result.title = raw.title;
+    if (ReflectionHelpers.hasFilledArrayProperty(raw, 'class')) {
+      result.classes = [...(<string[]>raw.class)];
+    }
+
+    if (ReflectionHelpers.hasFilledProperty(raw, 'title')) {
+      result.title = raw.title;
+    }
+
     result.links = this.deserializeLinks(raw);
-    result.properties = this.deserializeProperties(raw);
+    result.properties = this.deserializeProperties(raw); // todo do not create info objects here, migth not be needed
     result.actions = this.deserializeActions(raw);
 
-    // todo preserve order of embeddedLinkEntitys and embeddedEntity, splitting types changes order
-    result.embeddedLinkEntities = this.deserializeEmbeddedLinkEntity(raw.entities);
-    result.embeddedEntities = this.deserializeEmbeddedEntitys(raw.entities);
+    // todo preserve order of embeddedLinkEntitys and embeddedEntity, splitting formly-types changes order
+    if (ReflectionHelpers.hasFilledArrayProperty(raw, 'entities')) {
+      result.embeddedLinkEntities = this.deserializeEmbeddedLinkEntity(raw.entities);
+      result.embeddedEntities = this.deserializeEmbeddedEntitys(raw.entities);
+    }
   }
-
-
 
   private deserializeLinks(raw: any): HypermediaLink[] {
     const result = new Array<HypermediaLink>();
@@ -62,7 +70,7 @@ export class SirenDeserializer {
 
     const links: any[] = raw.links;
     links.forEach(link => {
-      result.push(new HypermediaLink([...link.rel], link.href));
+      result.push(new HypermediaLink([...link.rel], link.href, link.type));
     });
 
     return result;
@@ -155,16 +163,15 @@ export class SirenDeserializer {
 
   deserializeActionParameters(action: any, hypermediaAction: HypermediaAction) {
     if (!ReflectionHelpers.hasFilledArrayProperty(action, 'fields') || action.fields.length === 0) {
-      hypermediaAction.isParameterLess = true;
+      hypermediaAction.actionType = ActionType.NoParameters;
       return;
     } else {
-      hypermediaAction.isParameterLess = false;
       this.parseWaheStyleParameters(action, hypermediaAction);
     }
   }
 
   private getMethod(action: any): HttpMethodTypes {
-    let method = HttpMethodTypes[<string>action.method];
+    let method = HttpMethodTypes[action.method as keyof typeof HttpMethodTypes];
 
     // default value for siren is GET
     if (!method) {
@@ -218,8 +225,8 @@ export class SirenDeserializer {
   }
 
   parseWaheStyleParameters(action: any, hypermediaAction: HypermediaAction) {
-    if (!ReflectionHelpers.hasProperty(action, 'type') || action.type !== this.waheActionType) {
-      throw new Error(`Only suporting actions with type="${this.waheActionType}". [action ${action.name}]`); // todo parse standard siren
+    if (!ReflectionHelpers.hasProperty(action, 'type') || !this.waheActionTypes.includes(action.type)) {
+      throw new Error(`Only supporting actions with types="${this.waheActionTypes.join()}". [action ${action.name}]`); // todo parse standard siren
     }
 
     if (!ReflectionHelpers.hasFilledArrayProperty(action, 'fields')) {
@@ -230,24 +237,60 @@ export class SirenDeserializer {
       throw new Error(`Action field may only contain one entry. [action ${action.name}]`);
     }
 
-    hypermediaAction.waheActionParameterName = action.fields[0].name;
-    hypermediaAction.waheActionParameterClasses = [...action.fields[0].class];
-    if (hypermediaAction.waheActionParameterClasses.length !== 1) {
-      throw new Error(`Action field may only contain one class. [action ${action.name}]`);
-    }
+    const actionField = action.fields[0];
+    hypermediaAction.waheActionParameterName = actionField.name;
 
-    if (!action.fields[0].name) {
+    hypermediaAction.fieldType = actionField.type;
+    if (!actionField.name) {
       throw new Error(`Action field must contain a name. [action ${action.name}]`);
     }
-    hypermediaAction.waheActionParameterName = action.fields[0].name;
+    hypermediaAction.waheActionParameterName = actionField.name;
+    if (actionField.class) {
+      hypermediaAction.waheActionParameterClasses = [...actionField.class];
+    }
+
+    switch (hypermediaAction.fieldType) {
+      case MediaTypes.Json:
+        this.FillJsonParameterInformation(hypermediaAction, action, actionField);
+        break;
+      case SirenDeserializer.httpInputTypeFile:
+        this.FillFileUploadInformation(hypermediaAction, action, actionField);
+        break;
+      default:
+    }
+
+  }
+
+  private FillFileUploadInformation(hypermediaAction: HypermediaAction, action: any, actionField) {
+    hypermediaAction.actionType = ActionType.FileUpload;
+
+    if (actionField.maxFileSizeBytes) {
+      hypermediaAction.FileUploadConfiguration.MaxFileSizeBytes = actionField.maxFileSizeBytes;
+    }
+
+    if (actionField.allowMultiple) {
+      hypermediaAction.FileUploadConfiguration.AllowMultiple = actionField.allowMultiple;
+    }
+
+    if (actionField.accept) {
+      hypermediaAction.FileUploadConfiguration.Accept = actionField.accept.split(",");
+    }
+  }
+
+  private FillJsonParameterInformation(hypermediaAction: HypermediaAction, action: any, actionField: any) {
+    hypermediaAction.actionType = ActionType.JsonObjectParameters;
+
+    if (hypermediaAction.waheActionParameterClasses.length !== 1) {
+      throw new Error(`Action field must contain one class. [action ${action.name}]`);
+    }
 
     //Map default values if exist
-    hypermediaAction.defaultValues = action.fields[0]?.value;
+    hypermediaAction.defaultValues = actionField?.value;
 
     this.getActionParameterJsonSchema(hypermediaAction.waheActionParameterClasses[0], hypermediaAction);
   }
 
-  // todo handle error
+// todo handle error
   getActionParameterJsonSchema(schemaUrl: string, hypermediaAction: HypermediaAction) {
     const cached = this.schemaCache.getItem(schemaUrl);
     if (cached) {

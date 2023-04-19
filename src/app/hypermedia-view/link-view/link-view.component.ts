@@ -2,6 +2,7 @@ import { HypermediaClientService } from '../hypermedia-client.service';
 import { Component, OnInit, Input } from '@angular/core';
 import { HypermediaLink } from '../siren-parser/hypermedia-link';
 import { ClipboardService } from 'ngx-clipboard';
+import {MediaTypes} from "../MediaTypes";
 
 @Component({
   selector: 'app-link-view',
@@ -11,6 +12,8 @@ import { ClipboardService } from 'ngx-clipboard';
 export class LinkViewComponent implements OnInit {
 
   @Input() links: HypermediaLink[];
+
+  protected readonly MediaTypes = MediaTypes;
 
   constructor(private hypermediaClient: HypermediaClientService, private clipboardService: ClipboardService) { }
 

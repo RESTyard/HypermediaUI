@@ -1,21 +1,22 @@
-<div class="header">
+<div id="container">
+  <div class="header">
   <span class="title">
     Settings
   </span>
 
-  <span class="spacer"></span>
+    <span class="spacer"></span>
 
-  <button mat-icon-button mat-dialog-close>
-    <mat-icon matTooltip="Close settings" id="exitButton">close</mat-icon>
-  </button>
+    <button mat-icon-button mat-dialog-close>
+      <mat-icon matTooltip="Close settings" id="exitButton">close</mat-icon>
+    </button>
+  </div>
+
+  <mat-tab-group dynamicHeight >
+    <mat-tab label="General">
+      <app-general-settings-page class="tab-content"></app-general-settings-page>
+    </mat-tab>
+    <mat-tab label="Sites">
+      <app-site-settings-page class="tab-content"></app-site-settings-page>
+    </mat-tab>
+  </mat-tab-group>
 </div>
-
-<mat-tab-group>
-  <mat-tab label="General">
-    <app-general-settings-page></app-general-settings-page>
-  </mat-tab>
-  <mat-tab label="Sites">
-    <app-site-settings-page></app-site-settings-page>
-  </mat-tab>
-</mat-tab-group>
-

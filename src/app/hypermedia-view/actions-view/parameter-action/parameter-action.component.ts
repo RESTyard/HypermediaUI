@@ -2,6 +2,9 @@ import { Component, OnInit, Input } from '@angular/core';
 import { ProblemDetailsError } from 'src/app/error-dialog/problem-details-error';
 import { ActionResults, HypermediaClientService } from '../../hypermedia-client.service';
 import { HypermediaAction } from '../../siren-parser/hypermedia-action';
+import {FormlyFieldConfig} from '@ngx-formly/core';
+import {FormGroup} from '@angular/forms';
+import {FormlyJsonschema} from '@ngx-formly/core/json-schema';
 
 @Component({
   selector: 'app-parameter-action',
@@ -20,18 +23,34 @@ export class ParameterActionComponent implements OnInit {
   executed: boolean = false; // TODO show multiple executions as list
   problemDetailsError: ProblemDetailsError| null = null
 
-  constructor(private hypermediaClientService: HypermediaClientService) { }
+  formlyFields: FormlyFieldConfig[] = null;
+  form: FormGroup = new FormGroup({});
+  model: any;
+
+  constructor(private hypermediaClientService: HypermediaClientService, private formlyJsonschema: FormlyJsonschema) { }
 
   ngOnInit() {
-    // This is a workaround if we do not find a built-in way to configure json-schema-form to allow empty array as default value
-    let defaultValues:any = this.action.defaultValues;
-    if (defaultValues) {
-      this.RemoveEmptyArraysFromDefaults(defaultValues);
-    }
+    this.action.waheActionParameterJsonSchema.subscribe(x => {
+      this.formlyFields = [this.formlyJsonschema.toFieldConfig(x, {
+        map: mappedField => {
+          if(mappedField.key){
+            mappedField.props.label = mappedField.key+"";
+          }
+          if(this.action.defaultValues && this.action.defaultValues[mappedField.key + '']) {
+            mappedField.defaultValue = this.action.defaultValues[mappedField.key + ''];
+          }
+          return mappedField;
+        }
+      })];
+    });
   }
 
-    public onActionSubmitted(formParameters: any) {
-    this.action.parameters = formParameters;
+  public onActionSubmitted() {
+    if(!this.form.valid){
+      console.log('not valid')
+      return;
+    }
+    this.action.parameters = this.form.value;
     this.actionResult= ActionResults.pending;
     this.executed = true;
 
@@ -50,7 +69,7 @@ export class ParameterActionComponent implements OnInit {
           this.actionMessage = '';
         }
 
-        // todo handle if has content AND location
+        // todo handle if it has content AND location
         this.actionResultLocation = resultLocation;
       });
   }
@@ -58,26 +77,5 @@ export class ParameterActionComponent implements OnInit {
   navigateLocation(location: string) {
     this.hypermediaClientService.Navigate(location);
   }
-
-  private RemoveEmptyArraysFromDefaults(objectToClean: any, nestingCounter = 0) {
-    if (objectToClean === null) {
-      return;
-    }
-
-    if (nestingCounter == 50) {
-      throw new Error("Cleaning up default values went too deep. Object most probably contains a loop.")
-    }
-
-    for (let key in objectToClean) {
-      let value = objectToClean[key];
-      
-      if (Array.isArray(value) && value.length == 0) {
-        delete objectToClean[key];
-      }
-      
-      if (typeof value === 'object') {
-        this.RemoveEmptyArraysFromDefaults(value, nestingCounter + 1);
-      }
-    }
-  }
 }
+

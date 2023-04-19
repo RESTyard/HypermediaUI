@@ -1,8 +1,10 @@
 @import '../../../styles/defaults.scss';
 
 .container {
-  margin-top: $defaultContainerSpacing;
   padding: 0;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 }
 
 .buttonContainer:hover .CopyToClipboardButton{
@@ -13,17 +15,20 @@
   opacity: 0.8;
 }
 
-.buttonContainer .CopyToClipboardButton {
+.CopyToClipboardButton  {
   opacity: 0;
+  background-color: transparent;
 }
 
-.CopyToClipboardButton{
-   padding: 0px;
-   margin: 0px;
-   max-height: 24px;
+.buttonContainer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-right: $defaultSpacing;
 }
 
-::ng-deep .mat-icon-button {
-  font-size: 10px;
+.mat-button-toggle {
+  background-color: #4456b2;
+  color: white;
+  height: 48px;
 }
-

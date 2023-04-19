@@ -1,0 +1,48 @@
+@import '../../../../styles/defaults.scss';
+
+.error-snackbar {
+  background-color: #f44336; /* set the background color to red */
+  color: #fff; /* set the text color to white */
+  font-size: 14px; /* set the font size */
+}
+
+.dropzone-container {
+}
+
+.file-name {
+  display: inline-block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 150px;
+}
+
+.containerElement {
+  margin-right: $defaultSpacing;
+}
+
+.resultIconContainer {
+  display: flex;
+  align-items: center;
+  height: $defaultRowHeigth;
+  margin-right: $defaultSpacing+$defaultSpacing;
+  margin-left:  $defaultSpacing;
+  padding: 0;
+}
+
+.mat-expansion-panel-header-title {
+  max-width: fit-content;
+}
+
+.buttonRow {
+  margin-top: $defaultSpacing;
+  height: $defaultRowHeigth;
+  display: flex;
+  flex-direction: row;
+}
+
+.fileIcon {
+  font-size: 64px;
+  height: 64px ;
+  width: 64px;
+}

@@ -1,21 +1,25 @@
 @import '../../../styles/defaults.scss';
+
 .title {
   align-self: center;
   font-size: x-large;
-  margin-right: $defaultSpacing*2;
 }
 
 .header {
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-start;
-    align-items: center;
-  }
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+}
 
-  #saveButton{
-    margin-right: $defaultSpacing;
-  }
+#saveButton {
+  margin-right: $defaultSpacing;
+}
 
-  .spacer{
-    flex: auto;
-  }
+.spacer {
+  flex: auto;
+}
+
+#container {
+  padding:$defaultSpacing;
+}

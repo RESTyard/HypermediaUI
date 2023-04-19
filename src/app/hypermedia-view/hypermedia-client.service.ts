@@ -17,7 +17,7 @@ import { SirenDeserializer } from './siren-parser/siren-deserializer';
 import { MockResponses } from './mockResponses';
 import { ObservableLruCache } from './api-access/observable-lru-cache';
 import { SirenClientObject } from './siren-parser/siren-client-object';
-import { HypermediaAction, HttpMethodTypes } from './siren-parser/hypermedia-action';
+import {HypermediaAction, HttpMethodTypes, ActionType} from './siren-parser/hypermedia-action';
 import { SirenHelpers } from './SirenHelpers';
 import { ApiPath } from './api-path';
 
@@ -25,6 +25,7 @@ import { SettingsService } from '../settings/services/settings.service';
 import { generate } from 'rxjs/internal/observable/generate';
 
 import { ProblemDetailsError } from '../error-dialog/problem-details-error';
+import {MediaTypes} from "./MediaTypes";
 
 const problemDetailsMimeType = "application/problem+json";
 @Injectable()
@@ -37,9 +38,6 @@ export class HypermediaClientService {
   // indicate that a http request is pending
   public isBusy$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   private busyRequestsCounter = 0;
-
-  private static sirenMediaType = 'application/vnd.siren+json';
-  private static jsonMediaType = 'application/json';
 
   constructor(
     private httpClient: HttpClient,
@@ -85,12 +83,15 @@ export class HypermediaClientService {
   Navigate(url: string) {
     this.apiPath.addStep(url);
 
-    const headers = new HttpHeaders().set('Accept', HypermediaClientService.sirenMediaType);
+    // todo use media type of link if exists in siren, maybe check for supported types?
+    const headers = new HttpHeaders().set('Accept', MediaTypes.Siren);
 
     this.AddBusyRequest();
     this.httpClient
       .get(url, {
-        headers: headers
+        headers: headers,
+        observe: 'response',
+        // responseType:'blob' // use for generic access
       })
       .pipe(
         tap({
@@ -98,17 +99,18 @@ export class HypermediaClientService {
           error: () => this.RemoveBusyRequest()
         }))
       .subscribe({
-        next: response => {
+        next: response =>
+        {
           this.router.navigate(['hui'], {
             queryParams: {
               apiPath: this.apiPath.fullPath
             }
           });
 
-          const sirenClientObject = this.MapResponse(response);
+          const sirenClientObject = this.MapResponse(response.body);
 
           this.currentClientObject$.next(sirenClientObject);
-          this.currentClientObjectRaw$.next(response);
+          this.currentClientObjectRaw$.next(response.body);
           this.currentNavPaths$.next(this.apiPath.fullPath);
         },
         error: (err: HttpErrorResponse) => { throw this.MapHttpErrorResponseToProblemDetails(err); }
@@ -135,7 +137,7 @@ export class HypermediaClientService {
     if (withContentType) {
       headers.set('Content-Type', withContentType);
     }
-    headers.set('Accept', HypermediaClientService.sirenMediaType);
+    headers.set('Accept', MediaTypes.Siren);
 
     return headers;
   }
@@ -152,6 +154,7 @@ export class HypermediaClientService {
 
   private ExecuteRequest(action: HypermediaAction, headers: any, body: any | null) {
     this.AddBusyRequest()
+
     return this.httpClient.request(
       action.method,
       action.href,
@@ -182,29 +185,70 @@ export class HypermediaClientService {
   }
 
   executeAction(action: HypermediaAction, actionResult: (actionResults: ActionResults, resultLocation: string | null, content: any, problemDetailsError: ProblemDetailsError | null) => void): any {
-    let parameters = null;
-    let parameterMediaType = null;
-    if (!action.isParameterLess) {
-      parameterMediaType = HypermediaClientService.jsonMediaType;
+    let requestBody = null;
 
-      if (this.settingsService.CurrentSettings.GeneralSettings.useEmbeddingPropertyForActionParameters) {
-        parameters = this.createWaheStyleActionParameters(action);
-      } else {
-        parameters = action.parameters;
+    switch (action.actionType){
+      case ActionType.NoParameters: {
+        break;
+      }
+      case ActionType.FileUpload: {
+        requestBody = this.BuildBodyForFileUpload(action)
+
+        break;
+      }
+      case ActionType.JsonObjectParameters: {
+        if (this.settingsService.CurrentSettings.GeneralSettings.useEmbeddingPropertyForActionParameters) {
+          requestBody = this.createWaheStyleActionParameters(action);
+        } else {
+          requestBody = action.parameters;
+        }
+        break;
       }
     }
 
-    const headers = this.createHeaders(parameterMediaType)
+    const headers = this.createHeaders(action.type)
 
     // todo if action responds with a action resource, process body
-    this.ExecuteRequest(action, headers, parameters)
+    this.ExecuteRequest(action, headers, requestBody)
       .subscribe({
         next: (response: HttpResponse<any>) => this.OnActionResponse(response, actionResult),
         error: (errorResponse: HttpErrorResponse) => this.HandleActionError(errorResponse, actionResult)
       });
   }
 
+  private BuildBodyForFileUpload(action: HypermediaAction): any {
+    if (action.files.length < 1) {
+      throw new Error(`Can not execute file upload. No file specified`)
+    }
+
+    switch (action.type) {
+
+      case MediaTypes.FormData:
+        let formData = new FormData();
+        action.files.forEach((file) => { formData.append('files', file); });
+        return formData;
+      case MediaTypes.OctetStream:
+        if (action.files.length > 1) {
+          throw new Error(`Can not execute file upload as ${MediaTypes.OctetStream} wit multiple files.`)
+        }
+        return action.files[0];
+      default:
+        throw new Error(`Can not execute file upload for encoding type: ${action.type}`)
+    }
+  }
+
   private MapHttpErrorResponseToProblemDetails(errorResponse: HttpErrorResponse): ProblemDetailsError {
+    if (errorResponse.error.error instanceof SyntaxError) {
+      // we did not receive a json
+      console.error('Content error:', errorResponse.error.message);
+      return new ProblemDetailsError({
+        type: "Client.ContentError",
+        title: "Content error",
+        detail: "Server did not respond with expected content (json)",
+        status: 406,
+      });
+    }
+
     if (errorResponse.error instanceof Error) {
       // A client-side or network error occurred. Handle it accordingly.
       console.error('Client-side error occurred:', errorResponse.error.message);
@@ -217,7 +261,7 @@ export class HypermediaClientService {
     }
 
     // https://stackoverflow.com/questions/54922985/getting-status-code-0-angular-httpclient
-    // statuscoe 0 clientside or network error 
+    // statuscoe 0 clientside or network error
     if (errorResponse.status === 0) {
       let message = errorResponse.error.message ? ": " + errorResponse.error.message : "";
       console.error(`Client-side error occurred ${message}`, errorResponse.error);

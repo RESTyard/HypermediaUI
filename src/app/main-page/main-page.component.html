@@ -21,7 +21,7 @@
           <mat-error *ngIf="urlFormControl.hasError('pattern')">
             Check your URL
           </mat-error>
-          <button mat-button type="reset" [disabled]="!urlFormControl.value" matSuffix mat-icon-button
+          <button type="reset" [disabled]="!urlFormControl.value" matSuffix mat-icon-button
                   aria-label="Clear"
                   (click)="urlFormControl.reset()">
             <mat-icon class="icon">close</mat-icon>

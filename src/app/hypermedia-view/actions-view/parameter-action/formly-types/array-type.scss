@@ -1,0 +1,20 @@
+.row {
+  display: flex;
+  flex-direction: row;
+}
+
+.col-24 {
+  flex-grow: 24;
+}
+
+.delete-button {
+  margin-top: 12px;
+}
+
+.mat-icon {
+  margin: 0 0 0 0;
+}
+
+.delete-button {
+  margin-left: 3px;
+}

@@ -2,7 +2,7 @@
 
 <div class="closable message-dialog">
 
-  <mat-card>
+  <mat-card appearance="outlined">
     <!-- default error box -->
     <div *ngIf="!problemDetailsError">
       <mat-card-title>{{ title }}</mat-card-title>
@@ -13,13 +13,12 @@
       <app-problem-details-view [problemDetailsError]="problemDetailsError"></app-problem-details-view>
     </div>
 
-    <mat-card-content>
-      <button
-              (click)="reload.emit()"
+    <div id="buttonRow">
+      <button (click)="reload.emit()"
               mat-raised-button
               [color]="color"
               i18n="errorDialog.refreshButton|The text of the close button in the error dialog@@errorDialogCloseButton">
-        <mat-icon>refresh</mat-icon>
+        <mat-icon class="icon">refresh</mat-icon>
         Reload page
       </button>
 
@@ -38,6 +37,6 @@
         <mat-icon class="icon">exit_to_app</mat-icon>
         Exit API
       </button>
-    </mat-card-content>
+    </div>
   </mat-card>
 </div>

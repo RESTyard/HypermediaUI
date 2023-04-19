@@ -21,7 +21,7 @@
   </ng-container>
 
   <ng-container *ngFor="let embeddedLinkEntity of embeddedLinkEntities; let idx = index">
-     <mat-card  class="embeddedLinkEntityCard" >
+     <mat-card  appearance="outlined"  class="embeddedLinkEntityCard" >
         <span>
           {{idx + 1 + embeddedEntities?.length}}: {{embeddedLinkEntity.relations.join(",")}}
         </span>
@@ -36,8 +36,6 @@
         <button class="entityLinkButton" mat-raised-button (click)="navigateHref(embeddedLinkEntity.href)" matTooltip="{{embeddedLinkEntity.href}}" color="primary">
             <mat-icon>play_arrow</mat-icon>
         </button>
-
-
     </mat-card>
   </ng-container>
 </div>
