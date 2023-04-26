@@ -238,7 +238,7 @@ export class HypermediaClientService {
   }
 
   private MapHttpErrorResponseToProblemDetails(errorResponse: HttpErrorResponse): ProblemDetailsError {
-    if (errorResponse.error.error instanceof SyntaxError) {
+    if (errorResponse.error && errorResponse.error.error instanceof SyntaxError) {
       // we did not receive a json
       console.error('Content error:', errorResponse.error.message);
       return new ProblemDetailsError({
@@ -261,7 +261,7 @@ export class HypermediaClientService {
     }
 
     // https://stackoverflow.com/questions/54922985/getting-status-code-0-angular-httpclient
-    // statuscoe 0 clientside or network error
+    // status code 0 clientside or network error
     if (errorResponse.status === 0) {
       let message = errorResponse.error.message ? ": " + errorResponse.error.message : "";
       console.error(`Client-side error occurred ${message}`, errorResponse.error);
