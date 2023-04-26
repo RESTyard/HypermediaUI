@@ -31,6 +31,9 @@ mat-panel-title {
 }
 
 .resultIconContainer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
   margin-right: $defaultSpacing;
 }
 
