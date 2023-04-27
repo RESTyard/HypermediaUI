@@ -6,6 +6,7 @@
 .entityTitle {
     font-size: 20px;
     font-weight: bold;
+    margin-bottom: $defaultSpacing;
 }
 
 @mixin entity-view-theme($theme) {
