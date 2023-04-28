@@ -27,4 +27,8 @@ export class LinkViewComponent implements OnInit {
   copyToClipBoard(hypermediaLink: HypermediaLink) {
     this.clipboardService.copyFromContent(hypermediaLink.url);
   }
+
+  download(hypermediaLink: HypermediaLink) {
+    this.hypermediaClient.DownloadAsFile(hypermediaLink.url);
+  }
 }

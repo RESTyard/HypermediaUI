@@ -1,28 +1,23 @@
-import { HypermediaLink } from './siren-parser/hypermedia-link';
+
 import { Injectable } from '@angular/core';
 import {
   HttpClient,
   HttpErrorResponse,
-  HttpResponseBase,
   HttpResponse,
   HttpHeaders,
-  HttpEvent
 } from '@angular/common/http';
 import { Router } from '@angular/router';
 
 import { Observable, BehaviorSubject, map, catchError, Subject, tap } from 'rxjs';
-
+import { saveAs } from 'file-saver';
 
 import { SirenDeserializer } from './siren-parser/siren-deserializer';
-import { MockResponses } from './mockResponses';
 import { ObservableLruCache } from './api-access/observable-lru-cache';
 import { SirenClientObject } from './siren-parser/siren-client-object';
 import {HypermediaAction, HttpMethodTypes, ActionType} from './siren-parser/hypermedia-action';
-import { SirenHelpers } from './SirenHelpers';
 import { ApiPath } from './api-path';
 
 import { SettingsService } from '../settings/services/settings.service';
-import { generate } from 'rxjs/internal/observable/generate';
 
 import { ProblemDetailsError } from '../error-dialog/problem-details-error';
 import {MediaTypes} from "./MediaTypes";
@@ -115,6 +110,28 @@ export class HypermediaClientService {
         },
         error: (err: HttpErrorResponse) => { throw this.MapHttpErrorResponseToProblemDetails(err); }
       });
+  }
+
+  DownloadAsFile(downloadUrl: string) {
+    // this will break for large files
+    // consider https://github.com/jimmywarting/StreamSaver.js
+    this.httpClient
+      .get(downloadUrl, {
+        observe: 'response',
+        responseType: 'blob'
+      })
+      .subscribe(response => {
+        let fileName = response.headers.get('content-disposition')
+          ?.split(';')[1]
+          .split('=')[1];
+        if (!fileName) {
+          console.log('Could not get file name form response. Use default.');
+          fileName = "download.dat"
+        }
+
+        let blob = response.body;
+        saveAs(blob, fileName)
+      })
   }
 
   private AddBusyRequest() {
