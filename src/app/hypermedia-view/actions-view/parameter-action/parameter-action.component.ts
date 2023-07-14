@@ -36,7 +36,7 @@ export class ParameterActionComponent implements OnInit {
           if(mappedField.key){
             mappedField.props.label = mappedField.key+"";
           }
-          if(this.action.defaultValues && this.action.defaultValues[mappedField.key + '']) {
+          if(this.action.defaultValues && this.action.defaultValues.hasOwnProperty(mappedField.key + '')) {
             mappedField.defaultValue = this.action.defaultValues[mappedField.key + ''];
           }
           return mappedField;
