@@ -2,7 +2,7 @@ import { ReflectionHelpers } from './reflection-helpers';
 import { find } from 'simple-object-query';
 
 export class SchemaSimplifier {
-   simplifySchema(response: any) {
+  simplifySchema(response: any) {
     // normalize schema so ui component can render propperly, if component improves this may be vanish:
     // sub schemas, definitions + ref: not resolved
     // format: unknown "int32", "int64"
@@ -12,6 +12,7 @@ export class SchemaSimplifier {
     this.fixNullablesInOneOf(response);
     this.flatenOneOf(response);
     this.fixUnknownFormats(response);
+    this.insertTypeEqualsObjectForAnyOf(response);
 
     // angular2-json-schema-form: 0.7.0-alpha.1 leaves schema version in schema object when translating from schema 4 to 6
     // until fixed remove schema version
@@ -31,15 +32,17 @@ export class SchemaSimplifier {
         continue;
       }
 
-      if (propertyName === 'format' && (object[propertyName] === 'int32' || object[propertyName] === 'int64')) {
+      if (
+        propertyName === 'format' &&
+        (object[propertyName] === 'int32' || object[propertyName] === 'int64')
+      ) {
         delete object[propertyName];
       }
 
       // recursion
-      if (typeof (object[propertyName]) === 'object') {
+      if (typeof object[propertyName] === 'object') {
         this.fixUnknownFormats(object[propertyName]);
       }
-
     }
   }
 
@@ -57,7 +60,9 @@ export class SchemaSimplifier {
       const oneOf = properties[propertyName].oneOf;
       if (oneOf && Array.isArray(oneOf)) {
         if (oneOf.length > 1) {
-          throw new Error('Can not flatten oneOf in schema because mre than one element remaining.');
+          throw new Error(
+            'Can not flatten oneOf in schema because mre than one element remaining.',
+          );
         }
 
         const containedSchema = oneOf[0];
@@ -72,7 +77,6 @@ export class SchemaSimplifier {
         this.flatenOneOf(properties[propertyName]);
       }
     }
-
   }
 
   private fixNullablesInOneOf(schema: any) {
@@ -91,7 +95,7 @@ export class SchemaSimplifier {
         this.removeNullType(oneOf);
 
         // recursion
-        oneOf.forEach(element => {
+        oneOf.forEach((element) => {
           this.fixNullablesInOneOf(element);
         });
       }
@@ -102,7 +106,7 @@ export class SchemaSimplifier {
     let nullTypeCount = 0;
     let nullTypeItemIndex = -1;
     let index = 0;
-    oneOf.forEach(item => {
+    oneOf.forEach((item) => {
       const type = item.type;
       if (type && type === 'null') {
         nullTypeCount++;
@@ -128,7 +132,7 @@ export class SchemaSimplifier {
     const maxTrys = 50;
     while (iteration < maxTrys) {
       const foundRefs = <Array<any>>find(schema, {
-        '$ref': /\.*/
+        $ref: /\.*/,
       });
 
       if (foundRefs.length === 0) {
@@ -149,8 +153,11 @@ export class SchemaSimplifier {
   }
 
   private ReplaceRefs(foundRefs: any[], schema: any) {
-    foundRefs.forEach(refParent => {
-      const definitionKey = (<string>refParent.$ref).replace('#/definitions/', '');
+    foundRefs.forEach((refParent) => {
+      const definitionKey = (<string>refParent.$ref).replace(
+        '#/definitions/',
+        '',
+      );
       const replacement = schema.definitions[definitionKey];
       if (!replacement) {
         throw new Error(`Can not resolve schema reference: ${refParent.$ref}`);
@@ -158,5 +165,21 @@ export class SchemaSimplifier {
       delete refParent.$ref;
       Object.assign(refParent, replacement);
     });
+  }
+
+  private insertTypeEqualsObjectForAnyOf(schema: any): void {
+    if (typeof schema !== 'object' || schema === null) {
+      return;
+    }
+
+    if (schema.hasOwnProperty('anyOf') && !schema.hasOwnProperty('type')) {
+      schema['type'] = 'object';
+      schema['uniqueItems'] = true;
+    }
+
+    for (const propertyName in schema) {
+      // Recursive call for each property
+      this.insertTypeEqualsObjectForAnyOf(schema[propertyName]);
+    }
   }
 }
