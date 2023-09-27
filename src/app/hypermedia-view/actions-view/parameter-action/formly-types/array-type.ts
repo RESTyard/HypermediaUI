@@ -49,9 +49,12 @@ import { FieldArrayType } from '@ngx-formly/core';
   styleUrls: ['./array-type.scss'],
 })
 export class ArrayTypeComponent extends FieldArrayType {
+  ngOnInit() {
+    console.log(this);
+  }
   getLabel(field: any): string {
-    if (field.parent.type === 'array' && !isNaN(Number(field.parent.key))) {
-      return `[${field.parent.key}, ${field.key}]`;
+    if (field?.parent?.type === 'array' && !isNaN(Number(field?.parent?.key))) {
+      return `[${field?.parent?.key}, ${field.key}]`;
     }
     return '';
   }
