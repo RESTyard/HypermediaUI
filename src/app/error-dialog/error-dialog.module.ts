@@ -20,23 +20,17 @@ import { NgxJsonViewerModule } from 'ngx-json-viewer';
     MatDividerModule,
     MatIconModule,
     MatExpansionModule,
-    NgxJsonViewerModule
+    NgxJsonViewerModule,
   ],
   providers: [
     {
       provide: ErrorHandler,
-      useClass: GlobalErrorHandler
+      useClass: GlobalErrorHandler,
     },
     ErrorDialogPresenter,
-    ErrorDialogContainerProvider
+    ErrorDialogContainerProvider,
   ],
-  exports: [
-    ProblemDetailsViewComponent
-  ],
-  declarations: [
-    ErrorModalDialogComponent,
-    ProblemDetailsViewComponent
-  ],
-  entryComponents: [ErrorModalDialogComponent]
+  exports: [ProblemDetailsViewComponent],
+  declarations: [ErrorModalDialogComponent, ProblemDetailsViewComponent],
 })
-export class ErrorDialogModule { }
+export class ErrorDialogModule {}
