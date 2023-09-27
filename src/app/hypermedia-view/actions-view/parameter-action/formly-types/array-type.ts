@@ -29,8 +29,8 @@ import { FieldArrayType } from '@ngx-formly/core';
         *ngFor="let field of field.fieldGroup; let i = index"
         class="row"
       >
-        <div>
-          {{ getLabel(field) }}
+        <div class="row">
+          <label class="label-container"> {{ getLabel(field) }} </label>
           <formly-field [field]="field"></formly-field>
         </div>
         <div *ngIf="field.props['removable'] !== false">
