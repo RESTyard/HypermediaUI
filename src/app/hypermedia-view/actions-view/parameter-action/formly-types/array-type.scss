@@ -8,15 +8,43 @@
   margin-top: 15%;
 }
 
-.delete-button {
-  margin-top: 12px;
-}
-
 .mat-icon {
   margin: 0 0 0 0;
 }
 
 .delete-button {
-  margin-left: 3px;
+  margin-left: 30px;
+  margin-top: 12px;
 }
 
+.header-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.centered-legend {
+  font-weight: bold;
+  flex-grow: 1;
+  text-align: center;
+}
+
+#addButton:hover, #deleteButton:hover {
+  background-color: gray;
+}
+
+.description {
+  width: 80%;
+  margin-left: 10%;
+  text-align: center;
+}
+
+mat-card {
+  border-top: 1px solid lightgray;
+}
