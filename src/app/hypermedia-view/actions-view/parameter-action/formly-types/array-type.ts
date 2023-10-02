@@ -8,13 +8,13 @@ import { FieldArrayType } from '@ngx-formly/core';
       <div class="header-container">
         <mat-card-header class="header-content">
           <legend class="title" *ngIf="props.label">
-            {{ props.label }}
+            {{ props.label}}
           </legend>
-          <div style="margin-bottom: 3px; margin-left: 50px;">
+          <div style="margin-bottom: 3px; margin-left: 0px;">
             <mat-icon id="addButton" (click)="add()">add</mat-icon>
           </div>
         </mat-card-header>
-        <mat-card-title class="description">
+        <mat-card-title class="description" style="margin-left: 18px;">
           <p *ngIf="props.description">{{ props.description }}</p>
         </mat-card-title>
       </div>
@@ -25,8 +25,7 @@ import { FieldArrayType } from '@ngx-formly/core';
 
       <mat-card-content
         *ngFor="let field of field.fieldGroup; let i = index"
-        class="row"
-      >
+        class="row">
         <div class="row">
           <label class="label-container"> {{ getLabel(field) }} </label>
           <formly-field [field]="field"></formly-field>
