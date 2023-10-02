@@ -12,7 +12,7 @@ export class SchemaSimplifier {
     this.fixNullablesInOneOf(response);
     this.flatenOneOf(response);
     this.fixUnknownFormats(response);
-    this.simplifyAnyOfNumberAndInteger(response);
+    this.simplifyAnyOf(response);
 
     // angular2-json-schema-form: 0.7.0-alpha.1 leaves schema version in schema object when translating from schema 4 to 6
     // until fixed remove schema version
@@ -167,7 +167,7 @@ export class SchemaSimplifier {
     });
   }
 
-  private simplifyAnyOfNumberAndInteger(schema: any): void {
+  private simplifyAnyOf(schema: any): void {
     if (typeof schema !== 'object' || schema === null) {
       return;
     }
@@ -179,12 +179,14 @@ export class SchemaSimplifier {
       if (anyOfNumber.length > 0 && anyOfInteger.length > 0) {
         schema['type'] = 'number';
         delete schema.anyOf;
+      } else {
+        schema['type'] = 'object';
       }
     }
 
     for (const propertyName in schema) {
       // Recursive call for each property
-      this.simplifyAnyOfNumberAndInteger(schema[propertyName]);
+      this.simplifyAnyOf(schema[propertyName]);
     }
   }
 }

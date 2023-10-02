@@ -7,12 +7,12 @@ import { FieldArrayType } from '@ngx-formly/core';
     <mat-card style="margin: 10px 0 0 0" appearance="raised">
       <div class="header-container">
         <mat-card-header class="header-content">
-          <div style="margin-bottom: 3px;">
-            <mat-icon id="addButton" (click)="add()">add</mat-icon>
-          </div>
-          <legend class="centered-legend" *ngIf="props.label">
+          <legend class="legend" *ngIf="props.label">
             {{ props.label }}
           </legend>
+          <div style="margin-bottom: 3px; margin-left: 50px;">
+            <mat-icon id="addButton" (click)="add()">add</mat-icon>
+          </div>
         </mat-card-header>
         <mat-card-title class="description">
           <p *ngIf="props.description">{{ props.description }}</p>
