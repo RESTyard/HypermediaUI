@@ -7,7 +7,7 @@ import { FieldArrayType } from '@ngx-formly/core';
     <mat-card style="margin: 10px 0 0 0" appearance="raised">
       <div class="header-container">
         <mat-card-header class="header-content">
-          <legend class="legend" *ngIf="props.label">
+          <legend class="title" *ngIf="props.label">
             {{ props.label }}
           </legend>
           <div style="margin-bottom: 3px; margin-left: 50px;">
@@ -34,8 +34,8 @@ import { FieldArrayType } from '@ngx-formly/core';
         <div *ngIf="field.props['removable'] !== false">
           <div class="delete-button" id="deleteButton">
             <mat-icon class="material-icons-outlined" (click)="remove(i)"
-              >delete</mat-icon
-            >
+              >delete
+            </mat-icon>
           </div>
         </div>
       </mat-card-content>
