@@ -180,6 +180,7 @@ export class SchemaSimplifier {
         schema['type'] = 'number';
         delete schema.anyOf;
       } else {
+        // formly requires type object to diplay the type selector nad value input
         schema['type'] = 'object';
       }
     }
