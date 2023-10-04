@@ -1,8 +1,12 @@
 <mat-expansion-panel>
   <mat-expansion-panel-header>
     <mat-panel-title>
-      <mat-icon class="icon" color="primary">play_circle_outline</mat-icon>
-      <div>{{action.name}}</div>
+      <button class="executeButton containerElement" mat-raised-button color="primary" 
+            matTooltip="{{action.title}}">
+      <mat-icon class="icon" color="secondary">play_circle_outline</mat-icon>
+      {{action.name}}
+    </button>
+    <mat-icon class="icon" color="primary" style="margin-left: 4px;">expand_more</mat-icon>
     </mat-panel-title>
     <mat-panel-description>
       {{action.title}}

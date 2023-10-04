@@ -2,7 +2,6 @@ import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
-import { PrettyJsonModule } from 'angular2-prettyjson';
 
 import { ActionsViewComponent } from './actions-view/actions-view.component';
 import { ParameterActionComponent } from './actions-view/parameter-action/parameter-action.component';
@@ -101,7 +100,6 @@ import {MatButtonToggleModule} from "@angular/material/button-toggle";
         }),
         FormlyMaterialModule,
 
-        PrettyJsonModule,
         ClipboardModule,
         FormsModule,
         SettingsModule,
