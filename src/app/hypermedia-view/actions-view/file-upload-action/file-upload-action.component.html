@@ -1,8 +1,15 @@
 <mat-expansion-panel>
   <mat-expansion-panel-header>
     <mat-panel-title>
-      <mat-icon class="icon" color="primary">cloud_upload</mat-icon>&nbsp;
-      <div>{{action.name}}</div>
+      <!-- <mat-icon class="icon" color="primary">cloud_upload</mat-icon>&nbsp;
+      <div>{{action.name}}</div> -->
+      <button class="executeButton" 
+              mat-raised-button color="primary" 
+              matTooltip="{{action.title}}">
+      <mat-icon class="icon" >cloud_upload</mat-icon>
+      {{action.name}}
+      </button>
+      <mat-icon class="icon" color="primary" style="margin-left: 4px;">expand_more</mat-icon>
     </mat-panel-title>
     <mat-panel-description>
       {{action.title}}
