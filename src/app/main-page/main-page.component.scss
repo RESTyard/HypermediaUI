@@ -3,34 +3,32 @@
 .mainGrid {
     display: grid;
     grid-template-columns: 1fr;
-    grid-template-rows: 1fr 1fr auto;
+    grid-template-rows: 2fr 1fr auto;
     padding: $defaultSpacing;
     height: 100%;
 }
 
+.containerForm{
+  grid-row: 2;
+  justify-self: center;
+  width: 60%;
+  min-width: 400px;
+  display: grid;
+}
+
 .apiEntryFormField {
-  width: 400px;
+  width: 100%;
 }
 
 mat-error {
   color: orange;
 }
 
-.spacer{
-  grid-row: 1;
-}
-.containerForm{
-  justify-self: center;
-  grid-row: 2;
-  .containerSubmit {
-    display: flex;
-    justify-content: center;
-  }
-}
-
 .navigateButton{
-  justify-self: center;
   grid-row: 3;
+  justify-self: center;
+  margin-top: $defaultSpacing; 
+ 
 }
 
 .appIcon {
