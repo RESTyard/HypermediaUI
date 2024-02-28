@@ -4,13 +4,14 @@ import { find } from 'simple-object-query';
 export class SchemaSimplifier {
   simplifySchema(response: any) {
     // normalize schema so ui component can render propperly, if component improves this may be vanish:
-    // sub schemas, definitions + ref: not resolved
-    // format: unknown "int32", "int64"
     // oneOf: not handled-> will not show
 
-    this.resolveLocalReferences(response);
+    // sub schemas, definitions + ref: not resolved
+    this.resolveLocalReferences(response); // formly is capable of references so we could remove, but ther is an issue with arrays
     this.fixNullablesInOneOf(response);
     this.flatenOneOf(response);
+
+    // format: unknown "int32", "int64"
     this.fixUnknownFormats(response);
     this.simplifyAnyOf(response);
 
@@ -154,16 +155,35 @@ export class SchemaSimplifier {
 
   private ReplaceRefs(foundRefs: any[], schema: any) {
     foundRefs.forEach((refParent) => {
-      const definitionKey = (<string>refParent.$ref).replace(
-        '#/definitions/',
-        '',
-      );
-      const replacement = schema.definitions[definitionKey];
-      if (!replacement) {
-        throw new Error(`Can not resolve schema reference: ${refParent.$ref}`);
+      // inline subschema keyword used in draft 2019-09 
+      if (schema.$defs) {
+        const defsKey = (<string>refParent.$ref).replace(
+          '#/$defs/',
+          '',
+        );
+        const defsReplacement = schema.$defs[defsKey];
+        if (defsReplacement) {
+          delete refParent.$ref;
+          Object.assign(refParent, defsReplacement);
+          return
+        }
       }
-      delete refParent.$ref;
-      Object.assign(refParent, replacement);
+
+      // inline subschema keyword used in drafts 06 and 07 
+      if (schema.definitions) {
+        const definitionsKey = (<string>refParent.$ref).replace(
+          '#/definitions/',
+          '',
+        );
+        const definitionsReplacement = schema.definitions[definitionsKey];
+        if (definitionsReplacement) {
+          delete refParent.$ref;
+          Object.assign(refParent, definitionsReplacement);
+          return
+        }
+    }
+
+      throw new Error(`Can not resolve schema reference: ${refParent.$ref}`);
     });
   }
 
