@@ -154,16 +154,31 @@ export class SchemaSimplifier {
 
   private ReplaceRefs(foundRefs: any[], schema: any) {
     foundRefs.forEach((refParent) => {
-      const definitionKey = (<string>refParent.$ref).replace(
+      // inline subschema keyword used in draft 2019-09 
+      const defsKey = (<string>refParent.$ref).replace(
+        '#/$defs/',
+        '',
+      );
+      const defsReplacement = schema.$defs[defsKey];
+      if (defsReplacement) {
+        delete refParent.$ref;
+        Object.assign(refParent, defsReplacement);
+        return
+      }
+
+      // inline subschema keyword used in drafts 06 and 07 
+      const definitionsKey = (<string>refParent.$ref).replace(
         '#/definitions/',
         '',
       );
-      const replacement = schema.definitions[definitionKey];
-      if (!replacement) {
-        throw new Error(`Can not resolve schema reference: ${refParent.$ref}`);
+      const definitionsReplacement = schema.definitions[definitionsKey];
+      if (definitionsReplacement) {
+        delete refParent.$ref;
+        Object.assign(refParent, definitionsReplacement);
+        return
       }
-      delete refParent.$ref;
-      Object.assign(refParent, replacement);
+
+      throw new Error(`Can not resolve schema reference: ${refParent.$ref}`);
     });
   }
 
