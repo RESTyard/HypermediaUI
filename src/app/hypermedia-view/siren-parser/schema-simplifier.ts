@@ -4,13 +4,14 @@ import { find } from 'simple-object-query';
 export class SchemaSimplifier {
   simplifySchema(response: any) {
     // normalize schema so ui component can render propperly, if component improves this may be vanish:
-    // sub schemas, definitions + ref: not resolved
-    // format: unknown "int32", "int64"
     // oneOf: not handled-> will not show
 
-    this.resolveLocalReferences(response);
+    // sub schemas, definitions + ref: not resolved
+    this.resolveLocalReferences(response); // formly is capable of references so we could remove, but ther is an issue with arrays
     this.fixNullablesInOneOf(response);
     this.flatenOneOf(response);
+
+    // format: unknown "int32", "int64"
     this.fixUnknownFormats(response);
     this.simplifyAnyOf(response);
 
