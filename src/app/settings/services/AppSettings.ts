@@ -1,6 +1,17 @@
 export class AppSettings {
     GeneralSettings: GeneralSettings = new GeneralSettings();
     SiteSettings: SiteSettings = new SiteSettings();
+
+    public constructor(init?: Partial<AppSettings>) {
+        Object.assign(this, init);
+        this.EnsureDefaults();
+    }
+    
+    public EnsureDefaults() {
+        if (!this.GeneralSettings.actionExecutionTimeoutMs) {
+            this.GeneralSettings.actionExecutionTimeoutMs = 60000;
+        }
+    }
 }
 
 export class GeneralSettings {
