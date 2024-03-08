@@ -9,5 +9,10 @@
     <mat-slide-toggle [formControl]="showEmptyLinks" [checked]="" color="primary">Show empty links</mat-slide-toggle><br>
     <mat-slide-toggle [formControl]="showEmptyActions" [checked]="" color="primary">Show empty actions</mat-slide-toggle><br>
     <mat-slide-toggle [formControl]="useEmbeddingPropertyForActionParameters" [checked]="" color="primary">Use embedding property for action parameters</mat-slide-toggle><br>
-    <mat-slide-toggle [formControl]="showHostInformation" [checked]="" color="primary">Show host information and security of connection</mat-slide-toggle>
+    <mat-slide-toggle [formControl]="showHostInformation" [checked]="" color="primary">Show host information and security of connection</mat-slide-toggle><br>
+    
+    <mat-form-field color="primary"  class="textinput">
+        <mat-label>Action execution timeout (ms)</mat-label>
+        <input type="number" matInput placeholder="ms" [formControl]="actionExecutionTimeoutMs" min="100" >
+    </mat-form-field>
 </div>

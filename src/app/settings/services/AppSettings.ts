@@ -21,6 +21,8 @@ export class GeneralSettings {
     useEmbeddingPropertyForActionParameters:boolean = true;
 
     showHostInformation:boolean = true;
+
+    actionExecutionTimeoutMs:number = 60000;
 }
 
 export class SiteSettings {
