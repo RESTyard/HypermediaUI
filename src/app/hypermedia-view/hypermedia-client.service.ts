@@ -8,7 +8,7 @@ import {
 } from '@angular/common/http';
 import { Router } from '@angular/router';
 
-import { Observable, BehaviorSubject, map, catchError, Subject, tap } from 'rxjs';
+import { Observable, BehaviorSubject, map, catchError, Subject, tap, timeout } from 'rxjs';
 import { saveAs } from 'file-saver';
 
 import { SirenDeserializer } from './siren-parser/siren-deserializer';
@@ -171,7 +171,6 @@ export class HypermediaClientService {
 
   private ExecuteRequest(action: HypermediaAction, headers: any, body: any | null) {
     this.AddBusyRequest()
-
     return this.httpClient.request(
       action.method,
       action.href,
@@ -181,6 +180,7 @@ export class HypermediaClientService {
         body: body
       })
       .pipe(
+        timeout(this.settingsService.CurrentSettings.GeneralSettings.actionExecutionTimeoutMs),
         tap({
           next: () => this.RemoveBusyRequest(),
           error: () => this.RemoveBusyRequest()

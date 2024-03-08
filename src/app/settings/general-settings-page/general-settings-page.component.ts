@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormControl } from '@angular/forms';
+import { FormBuilder, FormControl, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { GeneralSettings } from '../services/AppSettings';
 import { SettingsService } from '../services/settings.service';
@@ -22,6 +22,7 @@ export class GeneralSettingsPageComponent implements OnInit {
   showEmptyActions: FormControl<boolean>= new FormControl();
   useEmbeddingPropertyForActionParameters: FormControl<boolean>= new FormControl();
   showHostInformation: FormControl<boolean>= new FormControl();
+  actionExecutionTimeoutMs: FormControl<number>= new FormControl();
 
   constructor(private settingsService: SettingsService, private snackBar: MatSnackBar, private formBuilder: FormBuilder) {
     this.generalSettings = settingsService.CurrentSettings.GeneralSettings;
@@ -54,6 +55,17 @@ export class GeneralSettingsPageComponent implements OnInit {
 
     this.showHostInformation = new FormControl<boolean>(this.generalSettings.showHostInformation, { nonNullable: true });
     this.showHostInformation.valueChanges.subscribe(v => this.generalSettings.showHostInformation = v);
+
+    this.actionExecutionTimeoutMs = new FormControl<number>(this.generalSettings.actionExecutionTimeoutMs, {validators:Validators.required, nonNullable: true });
+    this.actionExecutionTimeoutMs.valueChanges.subscribe(v => {
+      if (v == null) {
+        this.generalSettings.actionExecutionTimeoutMs = 60000;
+      } 
+      else 
+      {
+        this.generalSettings.actionExecutionTimeoutMs = v;
+      }
+    });
   }
 
   saveSites(): void {
