@@ -1,4 +1,3 @@
-import { ReflectionHelpers } from './reflection-helpers';
 import { find } from 'simple-object-query';
 
 export class SchemaSimplifier {
@@ -18,6 +17,8 @@ export class SchemaSimplifier {
     // angular2-json-schema-form: 0.7.0-alpha.1 leaves schema version in schema object when translating from schema 4 to 6
     // until fixed remove schema version
     this.removeSchemaSpecification(response);
+    this.simplifyPrefixItems(response);
+    console.log('here', response);
   }
 
   private removeSchemaSpecification(schema: any) {
@@ -155,21 +156,18 @@ export class SchemaSimplifier {
 
   private ReplaceRefs(foundRefs: any[], schema: any) {
     foundRefs.forEach((refParent) => {
-      // inline subschema keyword used in draft 2019-09 
+      // inline subschema keyword used in draft 2019-09
       if (schema.$defs) {
-        const defsKey = (<string>refParent.$ref).replace(
-          '#/$defs/',
-          '',
-        );
+        const defsKey = (<string>refParent.$ref).replace('#/$defs/', '');
         const defsReplacement = schema.$defs[defsKey];
         if (defsReplacement) {
           delete refParent.$ref;
           Object.assign(refParent, defsReplacement);
-          return
+          return;
         }
       }
 
-      // inline subschema keyword used in drafts 06 and 07 
+      // inline subschema keyword used in drafts 06 and 07
       if (schema.definitions) {
         const definitionsKey = (<string>refParent.$ref).replace(
           '#/definitions/',
@@ -179,9 +177,9 @@ export class SchemaSimplifier {
         if (definitionsReplacement) {
           delete refParent.$ref;
           Object.assign(refParent, definitionsReplacement);
-          return
+          return;
         }
-    }
+      }
 
       throw new Error(`Can not resolve schema reference: ${refParent.$ref}`);
     });
@@ -208,6 +206,21 @@ export class SchemaSimplifier {
     for (const propertyName in schema) {
       // Recursive call for each property
       this.simplifyAnyOf(schema[propertyName]);
+    }
+  }
+
+  // formly does not support "prefixItems" property (introduced in json schema draft version 2020-12), so we replace it with "items" as used in previous versions
+  private simplifyPrefixItems(schema: any): void {
+    if (schema.hasOwnProperty('prefixItems')) {
+      schema['items'] = schema['prefixItems'];
+      delete schema['prefixItems'];
+    }
+
+    // recursively call for all properties of the schema
+    for (const prop in schema) {
+      if (typeof schema[prop] === 'object') {
+        this.simplifyPrefixItems(schema[prop]);
+      }
     }
   }
 }
