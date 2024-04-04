@@ -211,7 +211,7 @@ export class SchemaSimplifier {
 
   // formly does not support "prefixItems" property (introduced in json schema draft version 2020-12), so we replace it with "items" as used in previous versions
   private simplifyPrefixItems(schema: any): void {
-    if (schema.hasOwnProperty('prefixItems')) {
+    if (schema != null && schema.hasOwnProperty('prefixItems')) {
       schema['items'] = schema['prefixItems'];
       delete schema['prefixItems'];
     }
