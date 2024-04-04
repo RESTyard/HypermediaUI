@@ -18,7 +18,6 @@ export class SchemaSimplifier {
     // until fixed remove schema version
     this.removeSchemaSpecification(response);
     this.simplifyPrefixItems(response);
-    console.log('here', response);
   }
 
   private removeSchemaSpecification(schema: any) {
@@ -210,11 +209,16 @@ export class SchemaSimplifier {
   }
 
   // formly does not support "prefixItems" property (introduced in json schema draft version 2020-12), so we replace it with "items" as used in previous versions
-  private simplifyPrefixItems(schema: any): void {
+  private simplifyPrefixItems(schema: any) {
     if (schema === null) {
       return;
     }
+
     if (schema.hasOwnProperty('prefixItems')) {
+      if (schema.hasOwnProperty('items')) {
+        schema['additionalItems'] = schema['items'];
+        delete schema['items'];
+      }
       schema['items'] = schema['prefixItems'];
       delete schema['prefixItems'];
     }
