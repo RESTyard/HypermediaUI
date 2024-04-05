@@ -36,7 +36,6 @@ export class ParameterActionComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    console.log('action', this.action);
     this.action.waheActionParameterJsonSchema.subscribe((x) => {
       this.formlyFields = [
         this.formlyJsonschema.toFieldConfig(x, {
