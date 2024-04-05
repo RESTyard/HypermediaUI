@@ -8,7 +8,7 @@ import { FieldArrayType } from '@ngx-formly/core';
       <div class="header-container">
         <mat-card-header class="header-content">
           <legend class="title" *ngIf="props.label">
-            {{ props.label}}
+            {{ props.label }}
           </legend>
           <div style="margin-bottom: 3px; margin-left: 0px;">
             <mat-icon id="addButton" (click)="add()">add</mat-icon>
@@ -25,7 +25,8 @@ import { FieldArrayType } from '@ngx-formly/core';
 
       <mat-card-content
         *ngFor="let field of field.fieldGroup; let i = index"
-        class="row">
+        class="row"
+      >
         <div class="row">
           <label class="label-container"> {{ getLabel(field) }} </label>
           <formly-field [field]="field"></formly-field>
@@ -43,9 +44,6 @@ import { FieldArrayType } from '@ngx-formly/core';
   styleUrls: ['./array-type.scss'],
 })
 export class ArrayTypeComponent extends FieldArrayType {
-  ngOnInit() {
-    console.log(this);
-  }
   getLabel(field: any): string {
     if (field?.parent?.type === 'array' && !isNaN(Number(field?.parent?.key))) {
       return `[${field?.parent?.key}, ${field.key}]`;

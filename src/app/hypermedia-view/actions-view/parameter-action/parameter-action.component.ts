@@ -36,8 +36,8 @@ export class ParameterActionComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    console.log('action', this.action);
     this.action.waheActionParameterJsonSchema.subscribe((x) => {
-      console.log(x);
       this.formlyFields = [
         this.formlyJsonschema.toFieldConfig(x, {
           map: (mappedField) => {
@@ -55,7 +55,6 @@ export class ParameterActionComponent implements OnInit {
           },
         }),
       ];
-      console.log(this.formlyFields);
     });
   }
 
