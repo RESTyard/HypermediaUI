@@ -18,6 +18,7 @@ export class SchemaSimplifier {
     // until fixed remove schema version
     this.removeSchemaSpecification(response);
     this.simplifyPrefixItems(response);
+    console.log(response);
   }
 
   private removeSchemaSpecification(schema: any) {
@@ -80,52 +81,52 @@ export class SchemaSimplifier {
     }
   }
 
-  private fixNullablesInOneOf(schema: any) {
-    const properties = schema.properties;
-    if (!properties) {
+  private fixNullablesInOneOf(schema: any, parent: any = null) {
+    if (typeof schema !== 'object' || schema === null) {
       return;
     }
 
-    for (const propertyName in properties) {
-      if (!properties.hasOwnProperty(propertyName)) {
-        continue;
+    if (schema.hasOwnProperty('oneOf') && Array.isArray(schema.oneOf)) {
+      schema.oneOf = schema.oneOf.filter((item: any) => item.type !== 'null');
+      if (schema.oneOf.length === 1) {
+        let oneOf = schema.oneOf[0];
+        delete schema.oneOf;
+        let key = Object.keys(parent).find((key) => parent[key] === schema);
+        parent[key] = oneOf;
       }
+    }
 
-      const oneOf = properties[propertyName].oneOf;
-      if (oneOf && Array.isArray(oneOf)) {
-        this.removeNullType(oneOf);
-
-        // recursion
-        oneOf.forEach((element) => {
-          this.fixNullablesInOneOf(element);
-        });
+    // Recursion
+    for (const key in schema) {
+      if (Object.prototype.hasOwnProperty.call(schema, key)) {
+        this.fixNullablesInOneOf(schema[key], schema);
       }
     }
   }
 
-  private removeNullType(oneOf: Array<any>) {
-    let nullTypeCount = 0;
-    let nullTypeItemIndex = -1;
-    let index = 0;
-    oneOf.forEach((item) => {
-      const type = item.type;
-      if (type && type === 'null') {
-        nullTypeCount++;
-        nullTypeItemIndex = index;
-      }
-      index++;
-    });
-
-    if (nullTypeCount > 1) {
-      throw new Error(`Too much null types in schema (${nullTypeCount})`);
-    }
-
-    if (nullTypeItemIndex === -1) {
-      return;
-    }
-
-    oneOf.splice(nullTypeItemIndex, 1);
-  }
+  // private removeNullType(oneOf: Array<any>) {
+  //   let nullTypeCount = 0;
+  //   let nullTypeItemIndex = -1;
+  //   let index = 0;
+  //   oneOf.forEach((item) => {
+  //     const type = item.type;
+  //     if (type && type === 'null') {
+  //       nullTypeCount++;
+  //       nullTypeItemIndex = index;
+  //     }
+  //     index++;
+  //   });
+  //
+  //   if (nullTypeCount > 1) {
+  //     throw new Error(`Too much null types in schema (${nullTypeCount})`);
+  //   }
+  //
+  //   if (nullTypeItemIndex === -1) {
+  //     return;
+  //   }
+  //
+  //   oneOf.splice(nullTypeItemIndex, 1);
+  // }
 
   private resolveLocalReferences(schema: any) {
     // could have replaced a ref with something that contained a ref
