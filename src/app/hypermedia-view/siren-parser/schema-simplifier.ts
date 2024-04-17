@@ -18,7 +18,6 @@ export class SchemaSimplifier {
     // until fixed remove schema version
     this.removeSchemaSpecification(response);
     this.simplifyPrefixItems(response);
-    console.log(response);
   }
 
   private removeSchemaSpecification(schema: any) {
@@ -87,12 +86,24 @@ export class SchemaSimplifier {
     }
 
     if (schema.hasOwnProperty('oneOf') && Array.isArray(schema.oneOf)) {
+      let originalLength = schema.oneOf.length
       schema.oneOf = schema.oneOf.filter((item: any) => item.type !== 'null');
+      let nullWasRemoved = schema.oneOf.length != originalLength
       if (schema.oneOf.length === 1) {
         let oneOf = schema.oneOf[0];
         delete schema.oneOf;
         let key = Object.keys(parent).find((key) => parent[key] === schema);
-        parent[key] = oneOf;
+        if (!key) {
+          console.log(`Could not minify oneof`)
+        } else {
+          parent[key] = oneOf;
+          // preserve nullable
+          parent[key].type = [parent[key].type, "null"]
+        }
+        
+      }
+      else if (nullWasRemoved) {
+        console.log(`Removed null from property as workaround (oneof null ablitity)`)
       }
     }
 
