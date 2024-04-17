@@ -115,30 +115,6 @@ export class SchemaSimplifier {
     }
   }
 
-  // private removeNullType(oneOf: Array<any>) {
-  //   let nullTypeCount = 0;
-  //   let nullTypeItemIndex = -1;
-  //   let index = 0;
-  //   oneOf.forEach((item) => {
-  //     const type = item.type;
-  //     if (type && type === 'null') {
-  //       nullTypeCount++;
-  //       nullTypeItemIndex = index;
-  //     }
-  //     index++;
-  //   });
-  //
-  //   if (nullTypeCount > 1) {
-  //     throw new Error(`Too much null types in schema (${nullTypeCount})`);
-  //   }
-  //
-  //   if (nullTypeItemIndex === -1) {
-  //     return;
-  //   }
-  //
-  //   oneOf.splice(nullTypeItemIndex, 1);
-  // }
-
   private resolveLocalReferences(schema: any) {
     // could have replaced a ref with something that contained a ref
     let iteration = 0;
