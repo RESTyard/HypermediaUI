@@ -5,9 +5,10 @@ export class SchemaSimplifier {
     // normalize schema so ui component can render propperly, if component improves this may be vanish:
     // oneOf: not handled-> will not show
 
+    this.fixNullablesInOneOf(response);
+
     // sub schemas, definitions + ref: not resolved
     this.resolveLocalReferences(response); // formly is capable of references so we could remove, but ther is an issue with arrays
-    this.fixNullablesInOneOf(response);
     this.flatenOneOf(response);
 
     // format: unknown "int32", "int64"
@@ -81,35 +82,44 @@ export class SchemaSimplifier {
   }
 
   private fixNullablesInOneOf(schema: any, parent: any = null) {
+    console.log('almost here', schema);
     if (typeof schema !== 'object' || schema === null) {
       return;
     }
-
+    console.log('here', schema);
     if (schema.hasOwnProperty('oneOf') && Array.isArray(schema.oneOf)) {
-      let originalLength = schema.oneOf.length
+      console.log('inside', schema);
+      let originalLength = schema.oneOf.length;
       schema.oneOf = schema.oneOf.filter((item: any) => item.type !== 'null');
-      let nullWasRemoved = schema.oneOf.length != originalLength
+      let nullWasRemoved = schema.oneOf.length != originalLength;
       if (schema.oneOf.length === 1) {
         let oneOf = schema.oneOf[0];
         delete schema.oneOf;
         let key = Object.keys(parent).find((key) => parent[key] === schema);
         if (!key) {
-          console.log(`Could not minify oneof`)
+          console.log(`Could not minify oneof`);
         } else {
           parent[key] = oneOf;
           // preserve nullable
-          parent[key].type = [parent[key].type, "null"]
+          parent[key].type = [parent[key].type, 'null'];
         }
-        
-      }
-      else if (nullWasRemoved) {
-        console.log(`Removed null from property as workaround (oneof null ablitity)`)
+      } else if (nullWasRemoved) {
+        console.log(
+          `Removed null from property as workaround (oneof null ablitity)`,
+        );
       }
     }
 
     // Recursion
     for (const key in schema) {
       if (Object.prototype.hasOwnProperty.call(schema, key)) {
+        console.log(
+          'Before going deeper',
+          key,
+          schema,
+          Object.keys(schema),
+          schema[key],
+        );
         this.fixNullablesInOneOf(schema[key], schema);
       }
     }
