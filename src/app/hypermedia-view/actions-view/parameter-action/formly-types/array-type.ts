@@ -33,7 +33,7 @@ import { FieldArrayType } from '@ngx-formly/core';
         </div>
 
         <div *ngIf="field.props['removable'] !== false">
-          <button mat-raised-button class="delete-button" (click)="remove(i)">
+          <button mat-icon-button class="delete-button" (click)="remove(i)">
             <mat-icon class="material-icons-outlined">delete</mat-icon>
           </button>
         </div>
