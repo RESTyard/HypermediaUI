@@ -82,13 +82,10 @@ export class SchemaSimplifier {
   }
 
   private fixNullablesInOneOf(schema: any, parent: any = null) {
-    console.log('almost here', schema);
     if (typeof schema !== 'object' || schema === null) {
       return;
     }
-    console.log('here', schema);
     if (schema.hasOwnProperty('oneOf') && Array.isArray(schema.oneOf)) {
-      console.log('inside', schema);
       let originalLength = schema.oneOf.length;
       schema.oneOf = schema.oneOf.filter((item: any) => item.type !== 'null');
       let nullWasRemoved = schema.oneOf.length != originalLength;
@@ -113,13 +110,6 @@ export class SchemaSimplifier {
     // Recursion
     for (const key in schema) {
       if (Object.prototype.hasOwnProperty.call(schema, key)) {
-        console.log(
-          'Before going deeper',
-          key,
-          schema,
-          Object.keys(schema),
-          schema[key],
-        );
         this.fixNullablesInOneOf(schema[key], schema);
       }
     }
