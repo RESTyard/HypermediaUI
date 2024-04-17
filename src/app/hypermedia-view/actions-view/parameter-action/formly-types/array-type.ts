@@ -11,7 +11,7 @@ import { FieldArrayType } from '@ngx-formly/core';
             {{ props.label }}
           </legend>
           <div style="margin-bottom: 3px; margin-left: 0px;">
-            <mat-icon id="addButton" (click)="add()">add</mat-icon>
+            <mat-icon class="add-button" (click)="add()">add</mat-icon>
           </div>
         </mat-card-header>
         <mat-card-title class="description" style="margin-left: 18px;">
@@ -31,12 +31,11 @@ import { FieldArrayType } from '@ngx-formly/core';
           <label class="label-container"> {{ getLabel(field) }} </label>
           <formly-field [field]="field"></formly-field>
         </div>
+
         <div *ngIf="field.props['removable'] !== false">
-          <div class="delete-button" id="deleteButton">
-            <mat-icon class="material-icons-outlined" (click)="remove(i)"
-              >delete
-            </mat-icon>
-          </div>
+          <button mat-icon-button class="delete-button" (click)="remove(i)">
+            <mat-icon class="material-icons-outlined">delete</mat-icon>
+          </button>
         </div>
       </mat-card-content>
     </mat-card>

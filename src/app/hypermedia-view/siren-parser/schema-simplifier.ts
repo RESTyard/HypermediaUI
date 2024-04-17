@@ -5,9 +5,10 @@ export class SchemaSimplifier {
     // normalize schema so ui component can render propperly, if component improves this may be vanish:
     // oneOf: not handled-> will not show
 
+    this.fixNullablesInOneOf(response);
+
     // sub schemas, definitions + ref: not resolved
     this.resolveLocalReferences(response); // formly is capable of references so we could remove, but ther is an issue with arrays
-    this.fixNullablesInOneOf(response);
     this.flatenOneOf(response);
 
     // format: unknown "int32", "int64"
@@ -80,51 +81,38 @@ export class SchemaSimplifier {
     }
   }
 
-  private fixNullablesInOneOf(schema: any) {
-    const properties = schema.properties;
-    if (!properties) {
+  private fixNullablesInOneOf(schema: any, parent: any = null) {
+    if (typeof schema !== 'object' || schema === null) {
       return;
     }
-
-    for (const propertyName in properties) {
-      if (!properties.hasOwnProperty(propertyName)) {
-        continue;
-      }
-
-      const oneOf = properties[propertyName].oneOf;
-      if (oneOf && Array.isArray(oneOf)) {
-        this.removeNullType(oneOf);
-
-        // recursion
-        oneOf.forEach((element) => {
-          this.fixNullablesInOneOf(element);
-        });
+    if (schema.hasOwnProperty('oneOf') && Array.isArray(schema.oneOf)) {
+      let originalLength = schema.oneOf.length;
+      schema.oneOf = schema.oneOf.filter((item: any) => item.type !== 'null');
+      let nullWasRemoved = schema.oneOf.length != originalLength;
+      if (schema.oneOf.length === 1) {
+        let oneOf = schema.oneOf[0];
+        delete schema.oneOf;
+        let key = Object.keys(parent).find((key) => parent[key] === schema);
+        if (!key) {
+          console.log(`Could not minify oneof`);
+        } else {
+          parent[key] = oneOf;
+          // preserve nullable
+          parent[key].type = [parent[key].type, 'null'];
+        }
+      } else if (nullWasRemoved) {
+        console.log(
+          `Removed null from property as workaround (oneof null ablitity)`,
+        );
       }
     }
-  }
 
-  private removeNullType(oneOf: Array<any>) {
-    let nullTypeCount = 0;
-    let nullTypeItemIndex = -1;
-    let index = 0;
-    oneOf.forEach((item) => {
-      const type = item.type;
-      if (type && type === 'null') {
-        nullTypeCount++;
-        nullTypeItemIndex = index;
+    // Recursion
+    for (const key in schema) {
+      if (Object.prototype.hasOwnProperty.call(schema, key)) {
+        this.fixNullablesInOneOf(schema[key], schema);
       }
-      index++;
-    });
-
-    if (nullTypeCount > 1) {
-      throw new Error(`Too much null types in schema (${nullTypeCount})`);
     }
-
-    if (nullTypeItemIndex === -1) {
-      return;
-    }
-
-    oneOf.splice(nullTypeItemIndex, 1);
   }
 
   private resolveLocalReferences(schema: any) {
