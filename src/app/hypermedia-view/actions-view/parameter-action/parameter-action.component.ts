@@ -49,16 +49,17 @@ export class ParameterActionComponent implements OnInit {
             ) {
               mappedField.defaultValue =
                 this.action.defaultValues[mappedField.key + ''];
-            }
-            let defaultValue = this.recursiveSearch(
-              this.action.defaultValues,
-              mappedField.key + '',
-            );
-            if (
-              mappedField.defaultValue === undefined &&
-              defaultValue !== undefined
-            ) {
-              mappedField.defaultValue = defaultValue;
+            } else {
+              let defaultValue = this.recursiveSearch(
+                this.action.defaultValues,
+                mappedField.key + '',
+              );
+              if (
+                mappedField.defaultValue === undefined &&
+                defaultValue !== undefined
+              ) {
+                mappedField.defaultValue = defaultValue;
+              }
             }
             return mappedField;
           },
