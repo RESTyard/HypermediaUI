@@ -39,12 +39,10 @@ export class ParameterActionComponent implements OnInit {
     this.action.waheActionParameterJsonSchema.subscribe((x) => {
       this.formlyFields = [
         this.formlyJsonschema.toFieldConfig(x, {
-          map: (mappedField) => {
+          map: (mappedField, mapSource) => {
             if (mappedField.key) {
               mappedField.props.label = mappedField.key + '';
             }
-
-            console.log('before mappedField', mappedField);
             if (
               this.action.defaultValues &&
               this.action.defaultValues.hasOwnProperty(mappedField.key + '')
@@ -52,17 +50,16 @@ export class ParameterActionComponent implements OnInit {
               mappedField.defaultValue =
                 this.action.defaultValues[mappedField.key + ''];
             }
+            let defaultValue = this.recursiveSearch(
+              this.action.defaultValues,
+              mappedField.key + '',
+            );
             if (
-              this.action.defaultValues &&
-              this.action.defaultValues.hasOwnProperty('Filter') &&
-              this.action.defaultValues['Filter'].hasOwnProperty(
-                mappedField.key + '',
-              )
+              mappedField.defaultValue === undefined &&
+              defaultValue !== undefined
             ) {
-              mappedField.defaultValue =
-                this.action.defaultValues['Filter'][mappedField.key + ''];
+              mappedField.defaultValue = defaultValue;
             }
-            console.log('after mappedField', mappedField);
             return mappedField;
           },
         }),
@@ -70,21 +67,27 @@ export class ParameterActionComponent implements OnInit {
     });
   }
 
-  findKey(obj, key) {
-    if (obj !== null && typeof obj === 'object') {
-      if (obj.hasOwnProperty(key)) {
-        return obj[key];
-      }
-      for (let k in obj) {
-        if (obj.hasOwnProperty(k)) {
-          let result = this.findKey(obj[k], key);
-          if (result !== undefined) {
-            return result;
+  recursiveSearch(obj, keyToFind) {
+    let result;
+
+    function search(obj, keyToFind) {
+      for (let key in obj) {
+        if (obj.hasOwnProperty(key)) {
+          if (key === keyToFind) {
+            result = obj[key];
+            return;
+          } else if (typeof obj[key] === 'object') {
+            search(obj[key], keyToFind);
+            if (result !== undefined) {
+              return;
+            }
           }
         }
       }
     }
-    return undefined;
+
+    search(obj, keyToFind);
+    return result;
   }
 
   public onActionSubmitted() {

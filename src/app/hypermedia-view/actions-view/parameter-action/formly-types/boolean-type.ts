@@ -19,7 +19,6 @@ export class BooleanTypeComponent extends FormlyFieldCheckbox {
   isNullable: boolean = false;
 
   ngOnInit() {
-    console.log(this.field);
     const schemaType = this.field.validators['type'].schemaType;
     this.isNullable =
       Array.isArray(schemaType) &&
@@ -27,11 +26,15 @@ export class BooleanTypeComponent extends FormlyFieldCheckbox {
     if (this.isNullable) {
       this.state = 0;
     }
-    if (this.field.defaultValue === true) {
-      this.state = 1;
-    }
-    if (this.field.defaultValue === false) {
-      this.state = -1;
+    switch (this.field.defaultValue) {
+      case true:
+        this.state = 1;
+        break;
+      case false:
+        this.state = -1;
+        break;
+      default:
+        break;
     }
   }
 
