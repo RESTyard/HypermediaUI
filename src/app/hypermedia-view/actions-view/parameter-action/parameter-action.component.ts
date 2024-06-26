@@ -43,6 +43,8 @@ export class ParameterActionComponent implements OnInit {
             if (mappedField.key) {
               mappedField.props.label = mappedField.key + '';
             }
+
+            console.log('before mappedField', mappedField);
             if (
               this.action.defaultValues &&
               this.action.defaultValues.hasOwnProperty(mappedField.key + '')
@@ -50,11 +52,39 @@ export class ParameterActionComponent implements OnInit {
               mappedField.defaultValue =
                 this.action.defaultValues[mappedField.key + ''];
             }
+            if (
+              this.action.defaultValues &&
+              this.action.defaultValues.hasOwnProperty('Filter') &&
+              this.action.defaultValues['Filter'].hasOwnProperty(
+                mappedField.key + '',
+              )
+            ) {
+              mappedField.defaultValue =
+                this.action.defaultValues['Filter'][mappedField.key + ''];
+            }
+            console.log('after mappedField', mappedField);
             return mappedField;
           },
         }),
       ];
     });
+  }
+
+  findKey(obj, key) {
+    if (obj !== null && typeof obj === 'object') {
+      if (obj.hasOwnProperty(key)) {
+        return obj[key];
+      }
+      for (let k in obj) {
+        if (obj.hasOwnProperty(k)) {
+          let result = this.findKey(obj[k], key);
+          if (result !== undefined) {
+            return result;
+          }
+        }
+      }
+    }
+    return undefined;
   }
 
   public onActionSubmitted() {
