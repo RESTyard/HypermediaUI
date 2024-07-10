@@ -18,6 +18,23 @@ export class BooleanTypeComponent extends FormlyFieldCheckbox {
   state: number = -1;
   isNullable: boolean = false;
 
+  override ngAfterViewInit() {
+    super.ngAfterViewInit();
+    switch (this.model[this.field.key + '']) {
+      case true:
+        this.state = 1;
+        this.formControl.setValue(true);
+        break;
+      case false:
+        this.state = -1;
+        this.formControl.setValue(false);
+        break;
+      default:
+        this.formControl.setValue(null);
+        break;
+    }
+  }
+
   ngOnInit() {
     const schemaType = this.field.validators['type'].schemaType;
     this.isNullable =
@@ -25,16 +42,6 @@ export class BooleanTypeComponent extends FormlyFieldCheckbox {
       (schemaType.includes(null) || schemaType.includes('null'));
     if (this.isNullable) {
       this.state = 0;
-    }
-    switch (this.field.defaultValue) {
-      case true:
-        this.state = 1;
-        break;
-      case false:
-        this.state = -1;
-        break;
-      default:
-        break;
     }
   }
 

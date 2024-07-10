@@ -36,59 +36,20 @@ export class ParameterActionComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.action.waheActionParameterJsonSchema.subscribe((x) => {
+    this.model = this.action.defaultValues;
+    this.action.waheActionParameterJsonSchema.subscribe((jsonSchema) => {
       this.formlyFields = [
-        this.formlyJsonschema.toFieldConfig(x, {
+        this.formlyJsonschema.toFieldConfig(jsonSchema, {
           map: (mappedField, mapSource) => {
             if (mappedField.key) {
               mappedField.props.label = mappedField.key + '';
-            }
-            if (
-              this.action.defaultValues &&
-              this.action.defaultValues.hasOwnProperty(mappedField.key + '')
-            ) {
-              mappedField.defaultValue =
-                this.action.defaultValues[mappedField.key + ''];
-            } else {
-              let defaultValue = this.recursiveSearch(
-                this.action.defaultValues,
-                mappedField.key + '',
-              );
-              if (
-                mappedField.defaultValue === undefined &&
-                defaultValue !== undefined
-              ) {
-                mappedField.defaultValue = defaultValue;
-              }
             }
             return mappedField;
           },
         }),
       ];
+      this.model = this.action.defaultValues;
     });
-  }
-
-  recursiveSearch(obj, keyToFind) {
-    let result;
-
-    function search(obj, keyToFind) {
-      for (let key in obj) {
-        if (obj.hasOwnProperty(key)) {
-          if (key === keyToFind) {
-            result = obj[key];
-            return;
-          } else if (typeof obj[key] === 'object') {
-            search(obj[key], keyToFind);
-            if (result !== undefined) {
-              return;
-            }
-          }
-        }
-      }
-    }
-
-    search(obj, keyToFind);
-    return result;
   }
 
   public onActionSubmitted() {
