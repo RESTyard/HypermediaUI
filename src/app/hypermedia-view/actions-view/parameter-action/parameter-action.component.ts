@@ -36,24 +36,18 @@ export class ParameterActionComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.action.waheActionParameterJsonSchema.subscribe((x) => {
+    this.action.waheActionParameterJsonSchema.subscribe((jsonSchema) => {
       this.formlyFields = [
-        this.formlyJsonschema.toFieldConfig(x, {
-          map: (mappedField) => {
+        this.formlyJsonschema.toFieldConfig(jsonSchema, {
+          map: (mappedField, mapSource) => {
             if (mappedField.key) {
               mappedField.props.label = mappedField.key + '';
-            }
-            if (
-              this.action.defaultValues &&
-              this.action.defaultValues.hasOwnProperty(mappedField.key + '')
-            ) {
-              mappedField.defaultValue =
-                this.action.defaultValues[mappedField.key + ''];
             }
             return mappedField;
           },
         }),
       ];
+      this.model = this.action.defaultValues;
     });
   }
 
