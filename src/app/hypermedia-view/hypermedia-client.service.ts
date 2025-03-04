@@ -1,37 +1,58 @@
-
 import { Injectable } from '@angular/core';
 import {
   HttpClient,
   HttpErrorResponse,
   HttpResponse,
   HttpHeaders,
+  HttpEventType,
 } from '@angular/common/http';
 import { Router } from '@angular/router';
 
-import { Observable, BehaviorSubject, map, catchError, Subject, tap, timeout } from 'rxjs';
+import {
+  Observable,
+  BehaviorSubject,
+  map,
+  catchError,
+  Subject,
+  tap,
+  timeout,
+} from 'rxjs';
 import { saveAs } from 'file-saver';
 
 import { SirenDeserializer } from './siren-parser/siren-deserializer';
 import { ObservableLruCache } from './api-access/observable-lru-cache';
 import { SirenClientObject } from './siren-parser/siren-client-object';
-import {HypermediaAction, HttpMethodTypes, ActionType} from './siren-parser/hypermedia-action';
+import {
+  HypermediaAction,
+  HttpMethodTypes,
+  ActionType,
+} from './siren-parser/hypermedia-action';
 import { ApiPath } from './api-path';
 
 import { SettingsService } from '../settings/services/settings.service';
 
 import { ProblemDetailsError } from '../error-dialog/problem-details-error';
-import {MediaTypes} from "./MediaTypes";
+import { MediaTypes } from './MediaTypes';
+import { throwError } from 'rxjs/internal/observable/throwError';
+import { filter } from 'rxjs/internal/operators/filter';
+import { switchMap } from 'rxjs/internal/operators/switchMap';
+import { of } from 'rxjs/internal/observable/of';
 
-const problemDetailsMimeType = "application/problem+json";
+const problemDetailsMimeType = 'application/problem+json';
 @Injectable()
 export class HypermediaClientService {
-  private currentClientObject$: BehaviorSubject<SirenClientObject> = new BehaviorSubject<SirenClientObject>(new SirenClientObject());
-  private currentClientObjectRaw$: BehaviorSubject<object> = new BehaviorSubject<object>({});
-  private currentNavPaths$: BehaviorSubject<Array<string>> = new BehaviorSubject<Array<string>>(new Array<string>());
+  private currentClientObject$: BehaviorSubject<SirenClientObject> =
+    new BehaviorSubject<SirenClientObject>(new SirenClientObject());
+  private currentClientObjectRaw$: BehaviorSubject<object> =
+    new BehaviorSubject<object>({});
+  private currentNavPaths$: BehaviorSubject<Array<string>> =
+    new BehaviorSubject<Array<string>>(new Array<string>());
   private apiPath: ApiPath = new ApiPath();
 
   // indicate that a http request is pending
-  public isBusy$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  public isBusy$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(
+    false,
+  );
   private busyRequestsCounter = 0;
 
   constructor(
@@ -39,8 +60,8 @@ export class HypermediaClientService {
     private schemaCache: ObservableLruCache<object>,
     private sirenDeserializer: SirenDeserializer,
     private router: Router,
-    private settingsService: SettingsService) {
-  }
+    private settingsService: SettingsService,
+  ) {}
 
   getHypermediaObjectStream(): BehaviorSubject<SirenClientObject> {
     return this.currentClientObject$;
@@ -91,15 +112,15 @@ export class HypermediaClientService {
       .pipe(
         tap({
           next: () => this.RemoveBusyRequest(),
-          error: () => this.RemoveBusyRequest()
-        }))
+          error: () => this.RemoveBusyRequest(),
+        }),
+      )
       .subscribe({
-        next: response =>
-        {
+        next: (response) => {
           this.router.navigate(['hui'], {
             queryParams: {
-              apiPath: this.apiPath.fullPath
-            }
+              apiPath: this.apiPath.fullPath,
+            },
           });
 
           const sirenClientObject = this.MapResponse(response.body);
@@ -108,7 +129,9 @@ export class HypermediaClientService {
           this.currentClientObjectRaw$.next(response.body);
           this.currentNavPaths$.next(this.apiPath.fullPath);
         },
-        error: (err: HttpErrorResponse) => { throw this.MapHttpErrorResponseToProblemDetails(err); }
+        error: (err: HttpErrorResponse) => {
+          throw this.MapHttpErrorResponseToProblemDetails(err);
+        },
       });
   }
 
@@ -118,20 +141,21 @@ export class HypermediaClientService {
     this.httpClient
       .get(downloadUrl, {
         observe: 'response',
-        responseType: 'blob'
+        responseType: 'blob',
       })
-      .subscribe(response => {
-        let fileName = response.headers.get('content-disposition')
+      .subscribe((response) => {
+        let fileName = response.headers
+          .get('content-disposition')
           ?.split(';')[1]
           .split('=')[1];
         if (!fileName) {
           console.log('Could not get file name form response. Use default.');
-          fileName = "download.dat"
+          fileName = 'download.dat';
         }
 
         let blob = response.body;
-        saveAs(blob, fileName)
-      })
+        saveAs(blob, fileName);
+      });
   }
 
   private AddBusyRequest() {
@@ -159,7 +183,16 @@ export class HypermediaClientService {
     return headers;
   }
 
-  private OnActionResponse(response: HttpResponse<any>, actionResult: (actionResults: ActionResults, resultLocation: string | null, content: any, problemDetailsError: ProblemDetailsError | null) => void) {
+  private OnActionResponse(
+    response: HttpResponse<any>,
+    actionResult: (
+      actionResults: ActionResults,
+      resultLocation: string | null,
+      content: any,
+      problemDetailsError: ProblemDetailsError | null,
+    ) => void,
+  ) {
+    console.log('Action response:', response);
     const location = response.headers.get('Location');
     if (!response.headers || location === null) {
       console.log('No location header was in response for action.');
@@ -169,23 +202,34 @@ export class HypermediaClientService {
     actionResult(ActionResults.ok, location, response.body, null);
   }
 
-  private ExecuteRequest(action: HypermediaAction, headers: any, body: any | null) {
-    this.AddBusyRequest()
-    return this.httpClient.request(
-      action.method,
-      action.href,
-      {
-        observe: "response",
+  private ExecuteRequest(
+    action: HypermediaAction,
+    headers: any,
+    body: any | null,
+  ) {
+    this.AddBusyRequest();
+    return this.httpClient
+      .request(action.method, action.href, {
+        observe: 'events',
         headers: headers,
-        body: body
+        body: body,
+        reportProgress: true, // Enable progress tracking
       })
       .pipe(
-        timeout(this.settingsService.CurrentSettings.GeneralSettings.actionExecutionTimeoutMs),
+        // Let upload progress events pass through
+        timeout({
+          each: this.settingsService.CurrentSettings.GeneralSettings
+            .actionExecutionTimeoutMs, // Reset timeout with each upload progress event received
+          with: () =>
+            throwError(() => new Error('Request timed out due to inactivity')),
+        }),
+        filter((event) => event.type === HttpEventType.Response), // Wait for the final response
+        map((event) => event as HttpResponse<any>),
         tap({
           next: () => this.RemoveBusyRequest(),
-          error: () => this.RemoveBusyRequest()
-        }
-        ));
+          error: () => this.RemoveBusyRequest(),
+        }),
+      );
   }
 
   createWaheStyleActionParameters(action: HypermediaAction): any {
@@ -201,20 +245,31 @@ export class HypermediaClientService {
     return parameters;
   }
 
-  executeAction(action: HypermediaAction, actionResult: (actionResults: ActionResults, resultLocation: string | null, content: any, problemDetailsError: ProblemDetailsError | null) => void): any {
+  executeAction(
+    action: HypermediaAction,
+    actionResult: (
+      actionResults: ActionResults,
+      resultLocation: string | null,
+      content: any,
+      problemDetailsError: ProblemDetailsError | null,
+    ) => void,
+  ): any {
     let requestBody = null;
 
-    switch (action.actionType){
+    switch (action.actionType) {
       case ActionType.NoParameters: {
         break;
       }
       case ActionType.FileUpload: {
-        requestBody = this.BuildBodyForFileUpload(action)
+        requestBody = this.BuildBodyForFileUpload(action);
 
         break;
       }
       case ActionType.JsonObjectParameters: {
-        if (this.settingsService.CurrentSettings.GeneralSettings.useEmbeddingPropertyForActionParameters) {
+        if (
+          this.settingsService.CurrentSettings.GeneralSettings
+            .useEmbeddingPropertyForActionParameters
+        ) {
           requestBody = this.createWaheStyleActionParameters(action);
         } else {
           requestBody = action.parameters;
@@ -223,45 +278,56 @@ export class HypermediaClientService {
       }
     }
 
-    const headers = this.createHeaders(action.type)
+    const headers = this.createHeaders(action.type);
 
     // todo if action responds with a action resource, process body
-    this.ExecuteRequest(action, headers, requestBody)
-      .subscribe({
-        next: (response: HttpResponse<any>) => this.OnActionResponse(response, actionResult),
-        error: (errorResponse: HttpErrorResponse) => this.HandleActionError(errorResponse, actionResult)
-      });
+    this.ExecuteRequest(action, headers, requestBody).subscribe({
+      next: (response: HttpResponse<any>) =>
+        this.OnActionResponse(response, actionResult),
+      error: (errorResponse: HttpErrorResponse) =>
+        this.HandleActionError(errorResponse, actionResult),
+    });
   }
 
   private BuildBodyForFileUpload(action: HypermediaAction): any {
     if (action.files.length < 1) {
-      throw new Error(`Can not execute file upload. No file specified`)
+      throw new Error(`Can not execute file upload. No file specified`);
     }
 
     switch (action.type) {
-
       case MediaTypes.FormData:
         let formData = new FormData();
-        action.files.forEach((file) => { formData.append('files', file); });
+        action.files.forEach((file) => {
+          formData.append('files', file);
+        });
         return formData;
       case MediaTypes.OctetStream:
         if (action.files.length > 1) {
-          throw new Error(`Can not execute file upload as ${MediaTypes.OctetStream} wit multiple files.`)
+          throw new Error(
+            `Can not execute file upload as ${MediaTypes.OctetStream} wit multiple files.`,
+          );
         }
         return action.files[0];
       default:
-        throw new Error(`Can not execute file upload for encoding type: ${action.type}`)
+        throw new Error(
+          `Can not execute file upload for encoding type: ${action.type}`,
+        );
     }
   }
 
-  private MapHttpErrorResponseToProblemDetails(errorResponse: HttpErrorResponse): ProblemDetailsError {
-    if (errorResponse.error && errorResponse.error.error instanceof SyntaxError) {
+  private MapHttpErrorResponseToProblemDetails(
+    errorResponse: HttpErrorResponse,
+  ): ProblemDetailsError {
+    if (
+      errorResponse.error &&
+      errorResponse.error.error instanceof SyntaxError
+    ) {
       // we did not receive a json
       console.error('Content error:', errorResponse.error.message);
       return new ProblemDetailsError({
-        type: "Client.ContentError",
-        title: "Content error",
-        detail: "Server did not respond with expected content (json)",
+        type: 'Client.ContentError',
+        title: 'Content error',
+        detail: 'Server did not respond with expected content (json)',
         status: 406,
       });
     }
@@ -270,9 +336,9 @@ export class HypermediaClientService {
       // A client-side or network error occurred. Handle it accordingly.
       console.error('Client-side error occurred:', errorResponse.error.message);
       return new ProblemDetailsError({
-        type: "Client.RequestError",
-        title: "Client error on request",
-        detail: "Could not execute request.",
+        type: 'Client.RequestError',
+        title: 'Client error on request',
+        detail: 'Could not execute request.',
         status: 0,
       });
     }
@@ -280,22 +346,34 @@ export class HypermediaClientService {
     // https://stackoverflow.com/questions/54922985/getting-status-code-0-angular-httpclient
     // status code 0 clientside or network error
     if (errorResponse.status === 0) {
-      let message = errorResponse.error.message ? ": " + errorResponse.error.message : "";
-      console.error(`Client-side error occurred ${message}`, errorResponse.error);
+      let message = errorResponse.error.message
+        ? ': ' + errorResponse.error.message
+        : '';
+      console.error(
+        `Client-side error occurred ${message}`,
+        errorResponse.error,
+      );
       return new ProblemDetailsError({
-        type: "Client.RequestError",
-        title: "Client error on request",
-        detail: 'Could not execute request. Check if the API is reachable and CORS settings.',
+        type: 'Client.RequestError',
+        title: 'Client error on request',
+        detail:
+          'Could not execute request. Check if the API is reachable and CORS settings.',
         status: 0,
       });
     }
 
     // try parse problem details
     if (errorResponse.headers) {
-      const contentType = errorResponse.headers.get('Content-Type')
+      console.log(errorResponse.headers);
+      const contentType = errorResponse.headers.get('Content-Type');
       if (contentType?.includes(problemDetailsMimeType)) {
-        console.error("API Error:" + JSON.stringify(errorResponse.error, null, 4));
-        return Object.assign(new ProblemDetailsError({ rawObject: errorResponse.error }), errorResponse.error);
+        console.error(
+          'API Error:' + JSON.stringify(errorResponse.error, null, 4),
+        );
+        return Object.assign(
+          new ProblemDetailsError({ rawObject: errorResponse.error }),
+          errorResponse.error,
+        );
       }
     }
 
@@ -304,22 +382,30 @@ export class HypermediaClientService {
     if (errorResponse.error) {
       rawBody = JSON.stringify(errorResponse.error, null, 4);
       console.error(`API Error ${errorResponse.status}: ${rawBody}`);
-    }
-    else {
+    } else {
       console.error(`API Error ${errorResponse.status}:`, errorResponse);
     }
 
     return new ProblemDetailsError({
-      type: "ApiError",
-      title: "API error",
-      detail: "API returned a generic error.",
+      type: 'ApiError',
+      title: 'API error',
+      detail: 'API returned a generic error.',
       status: errorResponse.status,
-      rawObject: rawBody
+      rawObject: rawBody,
     });
   }
 
-  private HandleActionError(errorResponse: HttpErrorResponse, actionResult: (actionResults: ActionResults, resultLocation: string | null, content: any, problemDetailsError: ProblemDetailsError) => void) {
-    let problemDetailsError: ProblemDetailsError = this.MapHttpErrorResponseToProblemDetails(errorResponse);
+  private HandleActionError(
+    errorResponse: HttpErrorResponse,
+    actionResult: (
+      actionResults: ActionResults,
+      resultLocation: string | null,
+      content: any,
+      problemDetailsError: ProblemDetailsError,
+    ) => void,
+  ) {
+    let problemDetailsError: ProblemDetailsError =
+      this.MapHttpErrorResponseToProblemDetails(errorResponse);
 
     actionResult(ActionResults.error, null, null, problemDetailsError);
   }
@@ -334,5 +420,5 @@ export enum ActionResults {
   undefined,
   pending,
   error,
-  ok
+  ok,
 }
