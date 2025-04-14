@@ -7,7 +7,7 @@ This Client is designed to work with the [RESTyard project]([https://github.com/
 Use the demoserver "CarShack" from this project to have a quick compliant backend.
 
 **NOTE**
-There are some minor deviations from the Siren hypermeida format.
+There are some minor deviations from the Siren hypermedia format.
 
 **NOTE**
 The code was originally developed [here](https://github.com/MathiasReichardt/HypermediaUi) but was now moved to the RESTyard organization.
