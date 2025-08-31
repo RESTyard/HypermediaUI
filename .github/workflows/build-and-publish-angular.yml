@@ -55,7 +55,7 @@ jobs:
       - name: Create release
         run: |
           zip -r release-v${{ steps.version_step.outputs.fullSemVer }}.zip ./dist/prod/
-          gh release create ${{ steps.version_step.outputs.fullSemVer }} -t 'HypermediaUI v${{ steps.version_step.outputs.fullSemVer }}' -d -p release-v${{ steps.version_step.outputs.fullSemVer }}
+          gh release create ${{ steps.version_step.outputs.fullSemVer }} -t 'HypermediaUI v${{ steps.version_step.outputs.fullSemVer }}' -d -p release-v${{ steps.version_step.outputs.fullSemVer }}.zip
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: bash
