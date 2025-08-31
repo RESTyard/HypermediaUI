@@ -28,10 +28,6 @@ jobs:
         id: version_step # step id used as a reference for output values
         uses: gittools/actions/gitversion/execute@v3.1.0
 
-      - run: |
-          echo "FullSemVer (steps.version_step.outputs.fullSemVer)            : ${{ steps.version_step.outputs.fullSemVer }}"
-        name: Display GitVersion outputs (step output without prefix)
-
       - name: Cache node modules
         uses: actions/cache@v4
         with:
@@ -55,7 +51,7 @@ jobs:
       - name: Create release
         run: |
           zip -r release-v${{ steps.version_step.outputs.fullSemVer }}.zip ./dist/prod/
-          gh release create ${{ steps.version_step.outputs.fullSemVer }} -t 'HypermediaUI v${{ steps.version_step.outputs.fullSemVer }}' -d -p release-v${{ steps.version_step.outputs.fullSemVer }}.zip
+          gh release create v${{ steps.version_step.outputs.fullSemVer }} -t 'HypermediaUI v${{ steps.version_step.outputs.fullSemVer }}' -d -p release-v${{ steps.version_step.outputs.fullSemVer }}.zip
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: bash
