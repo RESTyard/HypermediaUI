@@ -1,0 +1,57 @@
+name: build-and-publish-angular.yml
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '20'
+
+      - name: Install GitVersion
+        uses: gittools/actions/gitversion/setup@v3.1.0
+        with:
+          versionSpec: '5.x'
+
+      - name: Determine Version
+        id: version_step # step id used as a reference for output values
+        uses: gittools/actions/gitversion/execute@v3.1.0
+
+      - name: Cache node modules
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-npm-cache-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-npm-cache-
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build Angular app
+        run: npm run build --prod
+
+      - name: Publish production build as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: HypermediaUI
+          path: dist/prod
+
+      - name: Create release
+        run: |
+          zip -r release-v${{ steps.version_step.outputs.fullSemVer }}.zip ./dist/prod/
+          gh release create v${{ steps.version_step.outputs.fullSemVer }} -t 'HypermediaUI v${{ steps.version_step.outputs.fullSemVer }}' -d -p release-v${{ steps.version_step.outputs.fullSemVer }}.zip
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        if: github.event_name != 'pull_request'

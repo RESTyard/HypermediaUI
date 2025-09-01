@@ -1,0 +1,14 @@
+mode: Mainline
+branches:
+  release:
+    tag: 'rc'
+  feature:
+    regex: ^features?[/-]|^(pull|pull\-requests|pr)[/-]
+    tag: '{BranchName}'
+  develop:
+    tag: 'beta'
+  hotfix:
+    tag: 'post'
+ignore:
+  sha: []
+merge-message-formats: {}
