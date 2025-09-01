@@ -3,7 +3,6 @@ on:
   push:
     branches:
       - main
-      - feature/build-and-publish
 
 jobs:
   build-and-release:
@@ -55,3 +54,4 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: bash
+        if: github.event_name != 'pull_request'

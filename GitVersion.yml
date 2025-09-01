@@ -6,7 +6,7 @@ branches:
     regex: ^features?[/-]|^(pull|pull\-requests|pr)[/-]
     tag: '{BranchName}'
   develop:
-    tag: 'a'
+    tag: 'beta'
   hotfix:
     tag: 'post'
 ignore:
