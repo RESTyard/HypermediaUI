@@ -3,9 +3,10 @@ import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { HeaderSetting, SiteSetting } from '../services/AppSettings';
 
 @Component({
-  selector: 'app-site-settings',
-  templateUrl: './site-settings.component.html',
-  styleUrls: ['./site-settings.component.scss']
+    selector: 'app-site-settings',
+    templateUrl: './site-settings.component.html',
+    styleUrls: ['./site-settings.component.scss'],
+    standalone: false
 })
 
 

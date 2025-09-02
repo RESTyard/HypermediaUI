@@ -1,18 +1,19 @@
-@import '../../../styles/defaults.scss';
+@use '../../../styles/defaults';
+@use 'sass:map';
 .container {
-    padding: $defaultContainerSpacing;
+    padding: defaults.$defaultContainerSpacing;
 }
 
 .entityTitle {
     font-size: 20px;
     font-weight: bold;
-    margin-bottom: $defaultSpacing;
+    margin-bottom: defaults.$defaultSpacing;
 }
 
 @mixin entity-view-theme($theme) {
-    $background: map-get($theme, background);
+    $background: map.get($theme, background);
 
     .container {
-        background: map-get($background, app-bar);
+        background: map.get($background, app-bar);
     }
 }

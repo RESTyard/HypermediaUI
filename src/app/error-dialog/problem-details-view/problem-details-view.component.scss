@@ -1,12 +1,12 @@
-@import '../../../styles/defaults.scss';
+@use '../../../styles/defaults';
 
 .mat-card-header-text {
   margin: 0px;
 }
 
 mat-divider {
-  margin-top: $defaultSpacing;
-  margin-bottom: $defaultSpacing;
+  margin-top: defaults.$defaultSpacing;
+  margin-bottom: defaults.$defaultSpacing;
 }
 
 p {
@@ -15,7 +15,7 @@ p {
 }
 
 .problem-details-view {
-  padding: $defaultSpacing;
+  padding: defaults.$defaultSpacing;
   margin: 0;
   box-shadow: none;
 }

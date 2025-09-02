@@ -1,8 +1,9 @@
 import {Component} from '@angular/core';
 import {FieldType} from '@ngx-formly/core';
 
-@Component({selector: 'formly-object-type',
-  template: `
+@Component({
+    selector: 'formly-object-type',
+    template: `
     <div class="mb-3">
       <legend *ngIf="props.label">{{ props.label }}</legend>
       <p *ngIf="props.description">{{ props.description }}</p>
@@ -11,6 +12,7 @@ import {FieldType} from '@ngx-formly/core';
       </div>
       <formly-field *ngFor="let f of field.fieldGroup" [field]="f"></formly-field>
     </div> `,
+    standalone: false
 })
 export class ObjectTypeComponent extends FieldType {
 }

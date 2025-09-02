@@ -1,9 +1,9 @@
-@import '../../../../styles/defaults.scss';
+@use '../../../../styles/defaults';
 
 .action-container {
   display: flex;
   flex-direction: row;
-  height: $defaultRowHeigth;
+  height: defaults.$defaultRowHeigth;
   margin: 0;
   padding: 0;
 }
@@ -13,14 +13,14 @@
 }
 
 .containerElement {
-  margin-right: $defaultSpacing;
+  margin-right: defaults.$defaultSpacing;
 }
 
 .resultIconContainer {
   display: flex;
   align-items: center;
-  margin-right: $defaultSpacing+$defaultSpacing;
-  margin-left:  $defaultSpacing;
+  margin-right: defaults.$defaultSpacing+defaults.$defaultSpacing;
+  margin-left:  defaults.$defaultSpacing;
 }
 
 .resultLocationButton {

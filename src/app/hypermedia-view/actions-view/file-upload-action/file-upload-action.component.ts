@@ -6,9 +6,10 @@ import {ProblemDetailsError} from '../../../error-dialog/problem-details-error';
 import {MatSnackBar} from '@angular/material/snack-bar';
 
 @Component({
-  selector: 'app-file-upload-action',
-  templateUrl: './file-upload-action.component.html',
-  styleUrls: ['./file-upload-action.component.scss']
+    selector: 'app-file-upload-action',
+    templateUrl: './file-upload-action.component.html',
+    styleUrls: ['./file-upload-action.component.scss'],
+    standalone: false
 })
 export class FileUploadActionComponent implements OnInit {
 

@@ -1,12 +1,12 @@
-@import '../../../styles/defaults.scss';
+@use '../../../styles/defaults';
 
 .toolbar {
-  margin-top: $defaultSpacing*2;
+  margin-top: defaults.$defaultSpacing*2;
 }
 
 #addButton {
   margin-left: 16px;
-  margin-right: $defaultSpacing;
+  margin-right: defaults.$defaultSpacing;
 }
 
 .spacer{

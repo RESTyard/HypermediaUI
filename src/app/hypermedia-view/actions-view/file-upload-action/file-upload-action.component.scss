@@ -1,4 +1,4 @@
-@import '../../../../styles/defaults.scss';
+@use '../../../../styles/defaults';
 
 .error-snackbar {
   background-color: #f44336; /* set the background color to red */
@@ -22,7 +22,7 @@
 }
 
 .containerElement {
-  margin-right: $defaultSpacing;
+  margin-right: defaults.$defaultSpacing;
 }
 
 .resultContainer {
@@ -30,16 +30,17 @@
   flex-direction: row;
   align-items: center;
 
-  height: $defaultRowHeigth;
-  margin-right: $defaultSpacing+$defaultSpacing;
-  margin-left:  $defaultSpacing;
+  margin-bottom: defaults.$defaultSpacing;
+  height: defaults.$defaultRowHeigth;
+  margin-right: defaults.$defaultSpacing+defaults.$defaultSpacing;
+  margin-left:  defaults.$defaultSpacing;
 }
 
 .resultIconContainer {
   display: flex;
   flex-direction: row;
   align-items: center;
-  margin-right: $defaultSpacing;
+  margin-right: defaults.$defaultSpacing;
 }
 
 .mat-expansion-panel-header-title {
@@ -51,8 +52,8 @@
   flex-direction: row;
   align-items: center;
 
-  height: $defaultRowHeigth;
-  margin-top: $defaultSpacing;
+  height: defaults.$defaultRowHeigth;
+  margin-top: defaults.$defaultSpacing;
 }
 
 .fileIcon {

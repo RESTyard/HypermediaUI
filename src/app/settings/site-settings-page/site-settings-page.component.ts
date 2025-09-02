@@ -5,9 +5,10 @@ import {MatSnackBar} from '@angular/material/snack-bar';
 import { SiteSetting, SiteSettings } from '../services/AppSettings';
 
 @Component({
-  selector: 'app-site-settings-page',
-  templateUrl: './site-settings-page.component.html',
-  styleUrls: ['./site-settings-page.component.scss']
+    selector: 'app-site-settings-page',
+    templateUrl: './site-settings-page.component.html',
+    styleUrls: ['./site-settings-page.component.scss'],
+    standalone: false
 })
 export class SiteSettingsPageComponent implements OnInit {
 

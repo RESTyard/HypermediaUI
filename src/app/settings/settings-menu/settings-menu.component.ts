@@ -4,9 +4,10 @@ import { SettingsViewComponent } from '../settings-view/settings-view.component'
 import {SiteSettingsPageComponent} from '../site-settings-page/site-settings-page.component';
 
 @Component({
-  selector: 'app-settings-menu',
-  templateUrl: './settings-menu.component.html',
-  styleUrls: ['./settings-menu.component.scss']
+    selector: 'app-settings-menu',
+    templateUrl: './settings-menu.component.html',
+    styleUrls: ['./settings-menu.component.scss'],
+    standalone: false
 })
 export class SettingsMenuComponent implements OnInit {
 

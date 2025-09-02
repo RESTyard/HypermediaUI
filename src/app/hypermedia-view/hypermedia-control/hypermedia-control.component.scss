@@ -1,7 +1,7 @@
-@import '../../../styles/defaults.scss';
+@use '../../../styles/defaults';
 
 headerMenue{
-  padding: $defaultSpacing;
+  padding: defaults.$defaultSpacing;
 }
 
 .spacer {
@@ -27,7 +27,7 @@ rawContent{
 }
 
 .appIcon {
-  margin-right: $defaultSpacing;
+  margin-right: defaults.$defaultSpacing;
 }
 
 #CurrentEntryPoint {

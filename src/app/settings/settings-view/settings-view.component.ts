@@ -4,9 +4,10 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { SettingsService } from '../services/settings.service';
 
 @Component({
-  selector: 'app-settings-view',
-  templateUrl: './settings-view.component.html',
-  styleUrls: ['./settings-view.component.scss']
+    selector: 'app-settings-view',
+    templateUrl: './settings-view.component.html',
+    styleUrls: ['./settings-view.component.scss'],
+    standalone: false
 })
 export class SettingsViewComponent implements OnInit {
 

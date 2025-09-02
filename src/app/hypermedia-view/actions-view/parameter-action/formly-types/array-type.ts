@@ -2,8 +2,8 @@ import { Component, Input } from '@angular/core';
 import { FieldArrayType } from '@ngx-formly/core';
 
 @Component({
-  selector: 'formly-array-type',
-  template: ` <div>
+    selector: 'formly-array-type',
+    template: ` <div>
     <mat-card style="margin: 10px 0 0 0" appearance="raised">
       <div class="header-container">
         <mat-card-header class="header-content">
@@ -40,7 +40,8 @@ import { FieldArrayType } from '@ngx-formly/core';
       </mat-card-content>
     </mat-card>
   </div>`,
-  styleUrls: ['./array-type.scss'],
+    styleUrls: ['./array-type.scss'],
+    standalone: false
 })
 export class ArrayTypeComponent extends FieldArrayType {
   getLabel(field: any): string {
