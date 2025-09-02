@@ -4,7 +4,7 @@
     display: grid;
     grid-template-columns: 1fr;
     grid-template-rows: 2fr 1fr auto;
-    padding: defaults.$defaultSpacing;
+    padding: defaults.$spacing;
     height: 100%;
 }
 
@@ -27,11 +27,11 @@ mat-error {
 .navigateButton{
   grid-row: 3;
   justify-self: center;
-  margin-top: defaults.$defaultSpacing; 
+  margin-top: defaults.$spacing; 
  
 }
 
 .appIcon {
-  margin-right: defaults.$defaultSpacing;
+  margin-right: defaults.$spacing;
 }
 

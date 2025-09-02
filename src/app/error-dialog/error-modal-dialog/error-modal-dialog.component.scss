@@ -24,7 +24,7 @@
 }
 
 button {
-  margin-right: defaults.$defaultSpacing;
+  margin-right: defaults.$spacing;
 }
 
 app-problem-details-view{
@@ -32,6 +32,6 @@ app-problem-details-view{
 }
 
 #buttonRow {
-  margin-left: defaults.$defaultSpacing;
-  margin-bottom: defaults.$defaultSpacing;
+  margin-left: defaults.$spacing;
+  margin-bottom: defaults.$spacing;
 }

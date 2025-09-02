@@ -1,10 +1,10 @@
 @use '../../../styles/defaults';
 
 .container {
-  margin-top: defaults.$defaultContainerSpacing;
+  margin-top: defaults.$containerSpacing;
   padding: 0;
 }
 
 .actionContainer {
-  margin: defaults.$defaultSpacing 0;
+  margin: defaults.$spacing 0;
 }

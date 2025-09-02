@@ -5,16 +5,16 @@
 }
 
 #content{
-    margin-top: defaults.$defaultSpacing;
+    margin-top: defaults.$spacing;
     overflow: hidden; // hide scrollbar
 }
 
 mat-slide-toggle {
-    margin-top: defaults.$defaultSpacing*2;
-    margin-left: defaults.$defaultSpacing;
+    margin-top: defaults.$spacing*2;
+    margin-left: defaults.$spacing;
 }
 
 .textinput {
-    margin-top: defaults.$defaultSpacing*2;
-    margin-left: defaults.$defaultSpacing;
+    margin-top: defaults.$spacing*2;
+    margin-left: defaults.$spacing;
 }

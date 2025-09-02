@@ -5,8 +5,8 @@
 }
 
 mat-divider {
-  margin-top: defaults.$defaultSpacing;
-  margin-bottom: defaults.$defaultSpacing;
+  margin-top: defaults.$spacing;
+  margin-bottom: defaults.$spacing;
 }
 
 p {
@@ -15,7 +15,7 @@ p {
 }
 
 .problem-details-view {
-  padding: defaults.$defaultSpacing;
+  padding: defaults.$spacing;
   margin: 0;
   box-shadow: none;
 }

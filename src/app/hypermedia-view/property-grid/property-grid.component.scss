@@ -4,7 +4,7 @@
   display: grid;
   grid-template-columns: 1fr 4fr;
   grid-template-rows:auto;
-  padding: defaults.$defaultSpacing 0;
+  padding: defaults.$spacing 0;
 }
 
 .propertyLable .propertyValue {
@@ -14,7 +14,7 @@
 .nestedObject {
   // background: lightgray;
   border-left: 2px solid lightgray;
-  padding-left: defaults.$defaultSpacing
+  padding-left: defaults.$spacing
 }
 
 .warning {

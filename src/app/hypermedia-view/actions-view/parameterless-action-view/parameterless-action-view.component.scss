@@ -3,7 +3,7 @@
 .action-container {
   display: flex;
   flex-direction: row;
-  height: defaults.$defaultRowHeigth;
+  height: defaults.$rowHeigth;
   margin: 0;
   padding: 0;
 }
@@ -13,14 +13,14 @@
 }
 
 .containerElement {
-  margin-right: defaults.$defaultSpacing;
+  margin-right: defaults.$spacing;
 }
 
 .resultIconContainer {
   display: flex;
   align-items: center;
-  margin-right: defaults.$defaultSpacing+defaults.$defaultSpacing;
-  margin-left:  defaults.$defaultSpacing;
+  margin-right: defaults.$spacing+defaults.$spacing;
+  margin-left:  defaults.$spacing;
 }
 
 .resultLocationButton {

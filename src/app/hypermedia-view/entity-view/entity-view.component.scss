@@ -1,13 +1,13 @@
 @use '../../../styles/defaults';
 @use 'sass:map';
 .container {
-    padding: defaults.$defaultContainerSpacing;
+    padding: defaults.$containerSpacing;
 }
 
 .entityTitle {
     font-size: 20px;
     font-weight: bold;
-    margin-bottom: defaults.$defaultSpacing;
+    margin-bottom: defaults.$spacing;
 }
 
 @mixin entity-view-theme($theme) {

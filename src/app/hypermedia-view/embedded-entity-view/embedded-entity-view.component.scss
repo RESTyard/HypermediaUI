@@ -1,7 +1,7 @@
 @use '../../../styles/defaults';
 
 .container {
-  margin-top: defaults.$defaultContainerSpacing;
+  margin-top: defaults.$containerSpacing;
   padding: 0;
 }
 
@@ -20,12 +20,12 @@
 }
 
 .entityExpander {
-  margin: defaults.$defaultSpacing 0;
+  margin: defaults.$spacing 0;
 }
 
 .embeddedLinkEntityCard {
-  margin: defaults.$defaultSpacing 0;
-  padding: defaults.$defaultSpacing;
+  margin: defaults.$spacing 0;
+  padding: defaults.$spacing;
   display: grid;
   grid-template-columns: 1fr 1fr auto auto;
   align-items: center;
@@ -39,5 +39,5 @@
 }
 
 ::ng-deep div.mat-expansion-panel-body {
-  padding: defaults.$defaultSpacing;
+  padding: defaults.$spacing;
 }

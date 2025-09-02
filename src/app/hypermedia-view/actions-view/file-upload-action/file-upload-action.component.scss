@@ -22,7 +22,7 @@
 }
 
 .containerElement {
-  margin-right: defaults.$defaultSpacing;
+  margin-right: defaults.$spacing;
 }
 
 .resultContainer {
@@ -30,17 +30,17 @@
   flex-direction: row;
   align-items: center;
 
-  margin-bottom: defaults.$defaultSpacing;
-  height: defaults.$defaultRowHeigth;
-  margin-right: defaults.$defaultSpacing+defaults.$defaultSpacing;
-  margin-left:  defaults.$defaultSpacing;
+  margin-bottom: defaults.$spacing;
+  height: defaults.$rowHeigth;
+  margin-right: defaults.$spacing+defaults.$spacing;
+  margin-left:  defaults.$spacing;
 }
 
 .resultIconContainer {
   display: flex;
   flex-direction: row;
   align-items: center;
-  margin-right: defaults.$defaultSpacing;
+  margin-right: defaults.$spacing;
 }
 
 .mat-expansion-panel-header-title {
@@ -52,8 +52,8 @@
   flex-direction: row;
   align-items: center;
 
-  height: defaults.$defaultRowHeigth;
-  margin-top: defaults.$defaultSpacing;
+  height: defaults.$rowHeigth;
+  margin-top: defaults.$spacing;
 }
 
 .fileIcon {

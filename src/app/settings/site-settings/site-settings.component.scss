@@ -3,18 +3,18 @@
 #headerToolbar {
   display: flex;
   vertical-align: middle;
-  margin-bottom: defaults.$defaultSpacing;
+  margin-bottom: defaults.$spacing;
 }
 
 .hostTitle {
   font-size: 16px;
-  margin-left: defaults.$defaultSpacing;
+  margin-left: defaults.$spacing;
   margin-top: 4px;
 }
 
 #headersTitle {
   align-self: center;
-  margin-right: defaults.$defaultSpacing;
+  margin-right: defaults.$spacing;
 }
 
 .newHostInfo {
@@ -55,8 +55,8 @@
 }
 
 .deleteHeader {
-  margin-left: defaults.$defaultSpacing;
-  margin-bottom: defaults.$defaultSpacing*2;
+  margin-left: defaults.$spacing;
+  margin-bottom: defaults.$spacing*2;
 }
 
 .headerFormGroup {
