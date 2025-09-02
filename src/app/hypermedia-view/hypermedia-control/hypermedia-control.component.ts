@@ -89,7 +89,8 @@ export class HypermediaControlComponent implements OnInit {
       shortName = lastSegment;
     }
 
-    return shortName;
+    const decoded = decodeURIComponent(shortName);
+    return decoded;
   }
 
   public navigateLink(url: string) {
