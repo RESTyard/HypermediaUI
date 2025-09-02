@@ -16,7 +16,7 @@ mat-panel-title {
   flex-direction: row;
   align-items: center;
 
-  height: defaults.$rowHeigth;
+  height: defaults.$rowHeight;
   margin-top: defaults.$spacing;
 }
 
@@ -25,8 +25,8 @@ mat-panel-title {
   flex-direction: row;
   align-items: center;
 
-  height: defaults.$rowHeigth;
-  margin-right: defaults.$spacing+defaults.$spacing;
+  height: defaults.$rowHeight;
+  margin-right: 2*defaults.$spacing;
   margin-left:  defaults.$spacing;
 }
 

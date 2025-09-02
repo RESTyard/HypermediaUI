@@ -31,8 +31,8 @@
   align-items: center;
 
   margin-bottom: defaults.$spacing;
-  height: defaults.$rowHeigth;
-  margin-right: defaults.$spacing+defaults.$spacing;
+  height: defaults.$rowHeight;
+  margin-right: 2*defaults.$spacing;
   margin-left:  defaults.$spacing;
 }
 
@@ -52,7 +52,7 @@
   flex-direction: row;
   align-items: center;
 
-  height: defaults.$rowHeigth;
+  height: defaults.$rowHeight;
   margin-top: defaults.$spacing;
 }
 

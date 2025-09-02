@@ -1,7 +1,7 @@
 @use '../../../styles/defaults';
 
 .toolbar {
-  margin-top: defaults.$spacing*2;
+  margin-top: 2*defaults.$spacing;
 }
 
 #addButton {
