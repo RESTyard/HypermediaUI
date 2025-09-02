@@ -11,12 +11,15 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:browser",
+          "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist/hypermedia-ui2022",
+            "outputPath": {
+              "base": "dist/hypermedia-ui2022"
+            },
             "index": "src/index.html",
-            "main": "src/main.ts",
-            "polyfills": "src/polyfills.ts",
+            "polyfills": [
+              "src/polyfills.ts"
+            ],
             "tsConfig": "tsconfig.app.json",
             "assets": [
               "src/favicon.ico",
@@ -27,11 +30,14 @@
               "src/styles/styles.scss"
             ],
             "scripts": [],
-            "optimization": true
+            "optimization": true,
+            "browser": "src/main.ts"
           },
           "configurations": {
             "production": {
-              "outputPath": "dist/prod",
+              "outputPath": {
+                "base": "dist/prod"
+              },
               "budgets": [
                 {
                   "type": "initial",
@@ -53,8 +59,9 @@
               "outputHashing": "all"
             },
             "dev": {
-              "outputPath": "dist/dev",
-              "vendorChunk": true,
+              "outputPath": {
+                "base": "dist/dev"
+              },
               "budgets": [
                 {
                   "type": "initial",
@@ -76,8 +83,9 @@
               "outputHashing": "all"
             },
             "staging": {
-              "outputPath": "dist/staging",
-              "vendorChunk": true,
+              "outputPath": {
+                "base": "dist/staging"
+              },
               "budgets": [
                 {
                   "type": "initial",
@@ -99,9 +107,7 @@
               "outputHashing": "all"
             },
             "development": {
-              "buildOptimizer": false,
               "optimization": false,
-              "vendorChunk": true,
               "extractLicenses": false,
               "sourceMap": true,
               "namedChunks": true

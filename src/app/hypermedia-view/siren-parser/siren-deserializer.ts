@@ -1,4 +1,4 @@
-import {HttpClient} from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import {SirenClientObject} from './siren-client-object';
 import {HypermediaLink} from './hypermedia-link';
 import {PropertyInfo, PropertyTypes} from './property-info';
