@@ -17,12 +17,12 @@
 // Define the palettes for your theme using the Material Design palettes available in palette.scss
 // (imported above). For each palette, you can optionally specify a default, lighter, and darker
 // hue.
-$hui-app-primary: mat.define-palette(mat.$indigo-palette, 500);
-$hui-app-accent: mat.define-palette(mat.$amber-palette, A200, A100, A400);
-$hui-app-warn: mat.define-palette(mat.$red-palette);
+$hui-app-primary: mat.m2-define-palette(mat.$m2-indigo-palette, 500);
+$hui-app-accent: mat.m2-define-palette(mat.$m2-amber-palette, A200, A100, A400);
+$hui-app-warn: mat.m2-define-palette(mat.$m2-red-palette);
 
 // Create the theme object (a Sass map containing all of the palettes).
-$hui-app-theme: mat.define-light-theme((
+$hui-app-theme: mat.m2-define-light-theme((
   color: (
     primary: $hui-app-primary,
     accent: $hui-app-accent,
