@@ -1,22 +1,18 @@
 <div class="container">
   @for (action of actions; track action) {
-    @switch (action.actionType) {
-      @case (ActionType.NoParameters) {
-        <div class="actionContainer">
+    <div class="actionContainer">
+      @switch (action.actionType) {
+        @case (ActionType.NoParameters) {
           <app-parameterless-action-view [action]=action></app-parameterless-action-view>
-        </div>
-      }
-      @case ( ActionType.JsonObjectParameters) {
-        <div class="actionContainer">
+        }
+        @case ( ActionType.JsonObjectParameters) {
           <app-parameter-action [action]=action></app-parameter-action>
-        </div>
-      }
-      @case (ActionType.FileUpload) {
-        <div class="actionContainer">
+        }
+        @case (ActionType.FileUpload) {
           <app-file-upload-action [action]=action></app-file-upload-action>
-        </div>
+        }
       }
-    }
+    </div>
   }
 
 </div>
