@@ -1,30 +1,40 @@
 <mat-expansion-panel id="settingExpansionPanel">
-  <mat-expansion-panel-header *ngIf="!urlEditable">
-    <mat-panel-title>
-      <mat-icon fontSet="material-icons-outlined">language</mat-icon>
-      <span class="hostTitle">{{headline}}</span>
-    </mat-panel-title>
-    <mat-panel-description>
-      Applies to all http calls. Overrriden by site specific settings.
-    </mat-panel-description>
-  </mat-expansion-panel-header>
+  @if (!urlEditable) {
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        <mat-icon fontSet="material-icons-outlined">language</mat-icon>
+        <span class="hostTitle">{{headline}}</span>
+      </mat-panel-title>
+      <mat-panel-description>
+        Applies to all http calls. Overrriden by site specific settings.
+      </mat-panel-description>
+    </mat-expansion-panel-header>
+  }
 
-  <mat-expansion-panel-header *ngIf="urlEditable">
-    <mat-panel-title>
-      <span class="hostTitle newHostInfo" *ngIf="!this.urlFormControl.value">Host</span>
-      <span class="hostTitle">{{this.urlFormControl.value}}</span>
-      <span class="spacer"></span>
-      <mat-icon matTooltip="Delete site specific settings" fontSet="material-icons-outlined" id="deleteSiteButton" *ngIf="canBeDeleted" (click)="removeSite()">delete</mat-icon>
-    </mat-panel-title>
-  </mat-expansion-panel-header>
+  @if (urlEditable) {
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        @if (!this.urlFormControl.value) {
+          <span class="hostTitle newHostInfo">Host</span>
+        }
+        <span class="hostTitle">{{this.urlFormControl.value}}</span>
+        <span class="spacer"></span>
+        @if (canBeDeleted) {
+          <mat-icon matTooltip="Delete site specific settings" fontSet="material-icons-outlined" id="deleteSiteButton" (click)="removeSite()">delete</mat-icon>
+        }
+      </mat-panel-title>
+    </mat-expansion-panel-header>
+  }
 
   <div id="titleContainer">
-    <mat-form-field *ngIf="urlEditable" class="siteHostField">
-      <mat-label>
-        Host
-      </mat-label>
-      <input type="text" matInput [formControl]="this.urlFormControl">
-    </mat-form-field>
+    @if (urlEditable) {
+      <mat-form-field class="siteHostField">
+        <mat-label>
+          Host
+        </mat-label>
+        <input type="text" matInput [formControl]="this.urlFormControl">
+      </mat-form-field>
+    }
     <span class="flexSpacer"></span>
   </div>
 
@@ -34,24 +44,19 @@
     <mat-icon id="addHeaderButton" (click)="addHeader()">add</mat-icon>
   </div>
 
-  <ng-container *ngFor="let headerFormGroup of headerFormGroups; let i = index;">
+  @for (headerFormGroup of headerFormGroups; track headerFormGroup; let i = $index) {
     <div [formGroup]="headerFormGroup" id="headers">
-
       <mat-form-field class="headerKeyField">
         <mat-label>Key</mat-label>
         <input type="text" matInput formControlName="key">
       </mat-form-field>
-
       <span class="spacer"></span>
-
       <mat-form-field class="headerValueField">
         <mat-label>Value</mat-label>
         <input type="text" matInput formControlName="value">
       </mat-form-field>
-
       <mat-icon class="deleteHeader" fontSet="material-icons-outlined" (click)="removeHeader(i)">delete</mat-icon>
-
       <span class="flexSpacer"></span>
     </div>
-  </ng-container>
+  }
 </mat-expansion-panel>

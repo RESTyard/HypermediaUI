@@ -1,41 +1,53 @@
-<div *ngIf="generalSettings.showEmptyProperties || propertyContainer.length > 0">
-  <mat-list>
-    <ng-container *ngFor="let property of propertyContainer">
-      <div [ngSwitch]="property.type" class="propertyGrid">
-        <ng-container *ngSwitchCase="propertyTypes.number">
-          <div class="propertyLable">{{property.name}}:</div>
-          <div class="propertyValue">{{property.value}}</div>
-        </ng-container>
-
-        <ng-container class="propertyItem" *ngSwitchCase="propertyTypes.string">
-          <div class="propertyLable">{{property.name}}:</div>
-          <div class="propertyValue">{{property.value}}</div>
-        </ng-container>
-
-        <ng-container class="propertyItem" *ngSwitchCase="propertyTypes.boolean">
-          <div class="propertyLable">{{property.name}}:</div>
-          <mat-checkbox [checked]="property.value" [disabled]="true"></mat-checkbox>
-        </ng-container>
-
-        <ng-container class="propertyItem" *ngSwitchCase="propertyTypes.nullvalue">
-          <ng-container *ngIf="generalSettings.showNullProperties">
-            <div class="propertyLable">{{property.name}}:</div>
-            <div class="propertyValue">null</div>
-          </ng-container>
-        </ng-container>
-
-        <ng-container class="propertyItem" *ngSwitchCase="propertyTypes.array">
-          <div class="propertyLable">{{property.name}}:</div>
-
-          <app-property-grid *ngIf="!IsPrimitiveArray(property.value)" class="nestedObject" [propertyContainer]=GetObjectPropertyInfos(property.value) [generalSettings]="generalSettings"></app-property-grid>
-          <div *ngIf="IsPrimitiveArray(property.value)"  class="propertyValue">{{property.value}}</div>
-        </ng-container>
-
-        <ng-container class="propertyItem" *ngSwitchCase="propertyTypes.object">
-          <div class="propertyLable">{{property.name}}:</div>
-          <app-property-grid  class="nestedObject" [propertyContainer]=GetObjectPropertyInfos(property.value) [generalSettings]="generalSettings"></app-property-grid>
-        </ng-container>
-      </div>
-    </ng-container>
-  </mat-list>
-</div>
+@if (generalSettings.showEmptyProperties || propertyContainer.length > 0) {
+  <div>
+    <mat-list>
+      @for (property of propertyContainer; track property) {
+        <div class="propertyGrid">
+          @switch (property.type) {
+            @case (propertyTypes.number) {
+              <div class="propertyLable">{{property.name}}:</div>
+              <div class="propertyValue">{{property.value}}</div>
+            }
+            @case (propertyTypes.string) {
+              <ng-container class="propertyItem">
+                <div class="propertyLable">{{property.name}}:</div>
+                <div class="propertyValue">{{property.value}}</div>
+              </ng-container>
+            }
+            @case (propertyTypes.boolean) {
+              <ng-container class="propertyItem">
+                <div class="propertyLable">{{property.name}}:</div>
+                <mat-checkbox [checked]="property.value" [disabled]="true"></mat-checkbox>
+              </ng-container>
+            }
+            @case (propertyTypes.nullvalue) {
+              <ng-container class="propertyItem">
+                @if (generalSettings.showNullProperties) {
+                  <div class="propertyLable">{{property.name}}:</div>
+                  <div class="propertyValue">null</div>
+                }
+              </ng-container>
+            }
+            @case (propertyTypes.array) {
+              <ng-container class="propertyItem">
+                <div class="propertyLable">{{property.name}}:</div>
+                @if (!IsPrimitiveArray(property.value)) {
+                  <app-property-grid class="nestedObject" [propertyContainer]=GetObjectPropertyInfos(property.value) [generalSettings]="generalSettings"></app-property-grid>
+                }
+                @if (IsPrimitiveArray(property.value)) {
+                  <div  class="propertyValue">{{property.value}}</div>
+                }
+              </ng-container>
+            }
+            @case (propertyTypes.object) {
+              <ng-container class="propertyItem">
+                <div class="propertyLable">{{property.name}}:</div>
+                <app-property-grid  class="nestedObject" [propertyContainer]=GetObjectPropertyInfos(property.value) [generalSettings]="generalSettings"></app-property-grid>
+              </ng-container>
+            }
+          }
+        </div>
+      }
+    </mat-list>
+  </div>
+}

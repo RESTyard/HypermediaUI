@@ -4,7 +4,7 @@
     <span class="itemsLabel">{{embeddedEntities?.length + embeddedLinkEntities?.length}} items</span>
   </div>
 
-  <ng-container *ngFor="let embeddedEntity of embeddedEntities; let idx = index">
+  @for (embeddedEntity of embeddedEntities; track embeddedEntity; let idx = $index) {
     <mat-expansion-panel  class="entityExpander" >
       <mat-expansion-panel-header>
         <mat-panel-title>
@@ -14,32 +14,28 @@
           Classes: {{embeddedEntity.classes.join(",")}}
         </mat-panel-description>
       </mat-expansion-panel-header>
-
       <ng-template matExpansionPanelContent>
         <app-entity-view [entity]="embeddedEntity"></app-entity-view>
       </ng-template>
-
     </mat-expansion-panel>
-  </ng-container>
+  }
 
-  <ng-container *ngFor="let embeddedLinkEntity of embeddedLinkEntities; let idx = index">
-     <ng-template matExpansionPanelContent>
+  @for (embeddedLinkEntity of embeddedLinkEntities; track embeddedLinkEntity; let idx = $index) {
+    <ng-template matExpansionPanelContent>
       <mat-card  appearance="outlined"  class="embeddedLinkEntityCard" >
-          <span>
-            {{idx + 1 + embeddedEntities?.length}}: {{embeddedLinkEntity.relations.join(",")}}
-          </span>
-          <span>
-            Classes: {{embeddedLinkEntity.classes.join(",")}}
-          </span>
-
-          <button mat-icon-button class="CopyToClipboardButton" (click)="copyToClipBoard(embeddedLinkEntity.href)" matTooltip="Copy to clipboard" color="primary">
-              <mat-icon>assignment</mat-icon>
-          </button>
-
-          <button class="entityLinkButton" mat-raised-button (click)="navigateHref(embeddedLinkEntity.href)" matTooltip="{{embeddedLinkEntity.href}}" color="primary">
-              <mat-icon>play_arrow</mat-icon>
-          </button>
+        <span>
+          {{idx + 1 + embeddedEntities?.length}}: {{embeddedLinkEntity.relations.join(",")}}
+        </span>
+        <span>
+          Classes: {{embeddedLinkEntity.classes.join(",")}}
+        </span>
+        <button mat-icon-button class="CopyToClipboardButton" (click)="copyToClipBoard(embeddedLinkEntity.href)" matTooltip="Copy to clipboard" color="primary">
+          <mat-icon>assignment</mat-icon>
+        </button>
+        <button class="entityLinkButton" mat-raised-button (click)="navigateHref(embeddedLinkEntity.href)" matTooltip="{{embeddedLinkEntity.href}}" color="primary">
+          <mat-icon>play_arrow</mat-icon>
+        </button>
       </mat-card>
     </ng-template>
-  </ng-container>
+  }
 </div>
