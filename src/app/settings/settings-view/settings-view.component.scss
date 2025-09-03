@@ -1,4 +1,4 @@
-@import '../../../styles/defaults.scss';
+@use '../../../styles/defaults';
 
 .title {
   align-self: center;
@@ -13,7 +13,7 @@
 }
 
 #saveButton {
-  margin-right: $defaultSpacing;
+  margin-right: defaults.$spacing;
 }
 
 .spacer {
@@ -21,5 +21,5 @@
 }
 
 #container {
-  padding:$defaultSpacing;
+  padding: defaults.$spacing;
 }

@@ -4,13 +4,21 @@
     {{title}}
   </div>
 
-  <div *ngIf="GeneralSettings.showClasses">Classes: {{classes}}</div>
+  @if (GeneralSettings.showClasses) {
+    <div>Classes: {{classes}}</div>
+  }
 
   <app-property-grid [propertyContainer]="properties" [generalSettings]="GeneralSettings"></app-property-grid>
 
-  <app-link-view [links]="links" *ngIf="GeneralSettings.showEmptyLinks || links.length > 0"></app-link-view>
+  @if (GeneralSettings.showEmptyLinks || links.length > 0) {
+    <app-link-view [links]="links"></app-link-view>
+  }
 
-  <app-embedded-entity-view [embeddedEntities]="embeddedEntities" [embeddedLinkEntities]="embeddedLinkEntities" *ngIf="GeneralSettings.showEmptyEntities || embeddedEntities.length > 0 || embeddedLinkEntities.length > 0"></app-embedded-entity-view>
+  @if (GeneralSettings.showEmptyEntities || embeddedEntities.length > 0 || embeddedLinkEntities.length > 0) {
+    <app-embedded-entity-view [embeddedEntities]="embeddedEntities" [embeddedLinkEntities]="embeddedLinkEntities"></app-embedded-entity-view>
+  }
 
-  <app-actions-view [actions]="actions" *ngIf="GeneralSettings.showEmptyActions || actions.length > 0"></app-actions-view>
+  @if (GeneralSettings.showEmptyActions || actions.length > 0) {
+    <app-actions-view [actions]="actions"></app-actions-view>
+  }
 </div>

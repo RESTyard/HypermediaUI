@@ -5,9 +5,10 @@ import { ClipboardService } from 'ngx-clipboard';
 import {MediaTypes} from "../MediaTypes";
 
 @Component({
-  selector: 'app-link-view',
-  templateUrl: './link-view.component.html',
-  styleUrls: ['./link-view.component.scss']
+    selector: 'app-link-view',
+    templateUrl: './link-view.component.html',
+    styleUrls: ['./link-view.component.scss'],
+    standalone: false
 })
 export class LinkViewComponent implements OnInit {
 

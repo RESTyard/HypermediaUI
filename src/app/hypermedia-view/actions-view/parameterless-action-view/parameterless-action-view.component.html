@@ -3,37 +3,53 @@
   <!-- execute button -->
   <div class="contentRow">
     <button class="executeButton containerElement" mat-raised-button color="primary" (click)="executeAction()"
-            matTooltip="{{action.title}}">
+      matTooltip="{{action.title}}">
       <mat-icon class="icon" color="secondary">play_circle_outline</mat-icon>
       {{action.name}}
     </button>
   </div>
 
-  <div class="resultIconContainer" [ngSwitch]="actionResult" *ngIf="executed">
-      <mat-icon *ngSwitchCase="ActionResultsEnum.ok" color="primary"
-                matTooltip={{actionMessage}}>done</mat-icon>
-      <mat-icon *ngSwitchCase="ActionResultsEnum.error" color="warn" class="hoverButton" [matMenuTriggerFor]="errorPopup"
-                matTooltip={{actionMessage}}>error</mat-icon>
-      <mat-progress-spinner [diameter]="24" *ngSwitchCase="ActionResultsEnum.pending" mode="indeterminate" color="accent"></mat-progress-spinner>
-      <mat-icon *ngSwitchCase="ActionResultsEnum.undefined" color="primary"
-                matTooltip={{actionMessage}}>question_mark</mat-icon>
-  </div>
+  @if (executed) {
+    <div class="resultIconContainer">
+      @switch (actionResult) {
+        @case (ActionResultsEnum.ok) {
+          <mat-icon color="primary"
+          matTooltip={{actionMessage}}>done</mat-icon>
+        }
+        @case (ActionResultsEnum.error) {
+          <mat-icon color="warn" class="hoverButton" [matMenuTriggerFor]="errorPopup"
+          matTooltip={{actionMessage}}>error</mat-icon>
+        }
+        @case (ActionResultsEnum.pending) {
+          <mat-progress-spinner [diameter]="24" mode="indeterminate" color="accent"></mat-progress-spinner>
+        }
+        @case (ActionResultsEnum.undefined) {
+          <mat-icon color="primary"
+          matTooltip={{actionMessage}}>question_mark</mat-icon>
+        }
+      }
+    </div>
+  }
   <mat-menu #errorPopup="matMenu">
     <div (click)="$event.stopPropagation()">
-      <app-problem-details-view *ngIf="problemDetailsError" [problemDetailsError]="problemDetailsError"></app-problem-details-view>
+      @if (problemDetailsError) {
+        <app-problem-details-view [problemDetailsError]="problemDetailsError"></app-problem-details-view>
+      }
     </div>
   </mat-menu>
 
   <!-- result button -->
-  <button *ngIf="actionResultLocation !== null"
-          class="containerElement resultLocationButton"
-          mat-raised-button
-          (click)="navigateLocation(actionResultLocation)"
-          color="accent"
-          matTooltip="Go to result: {{actionResultLocation}}">
-    <mat-icon class="icon" color="primary">start</mat-icon>
-    Result
-  </button>
+  @if (actionResultLocation !== null) {
+    <button
+      class="containerElement resultLocationButton"
+      mat-raised-button
+      (click)="navigateLocation(actionResultLocation)"
+      color="accent"
+      matTooltip="Go to result: {{actionResultLocation}}">
+      <mat-icon class="icon" color="primary">start</mat-icon>
+      Result
+    </button>
+  }
 
   <!-- description -->
   <mat-panel-description>

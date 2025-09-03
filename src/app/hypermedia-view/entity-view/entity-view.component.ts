@@ -8,9 +8,10 @@ import { SettingsService } from 'src/app/settings/services/settings.service';
 import { GeneralSettings } from 'src/app/settings/services/AppSettings';
 
 @Component({
-  selector: 'app-entity-view',
-  templateUrl: './entity-view.component.html',
-  styleUrls: ['./entity-view.component.scss']
+    selector: 'app-entity-view',
+    templateUrl: './entity-view.component.html',
+    styleUrls: ['./entity-view.component.scss'],
+    standalone: false
 })
 export class EntityViewComponent implements OnInit, OnChanges {
 

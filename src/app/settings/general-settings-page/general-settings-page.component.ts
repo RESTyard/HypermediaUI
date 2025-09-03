@@ -5,9 +5,10 @@ import { GeneralSettings } from '../services/AppSettings';
 import { SettingsService } from '../services/settings.service';
 
 @Component({
-  selector: 'app-general-settings-page',
-  templateUrl: './general-settings-page.component.html',
-  styleUrls: ['./general-settings-page.component.scss']
+    selector: 'app-general-settings-page',
+    templateUrl: './general-settings-page.component.html',
+    styleUrls: ['./general-settings-page.component.scss'],
+    standalone: false
 })
 export class GeneralSettingsPageComponent implements OnInit {
 

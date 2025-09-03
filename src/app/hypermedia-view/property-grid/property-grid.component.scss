@@ -1,20 +1,20 @@
-@import '../../../styles/defaults.scss';
+@use '../../../styles/defaults';
 
 .propertyGrid {
   display: grid;
   grid-template-columns: 1fr 4fr;
   grid-template-rows:auto;
-  padding: $defaultSpacing 0;
+  padding: defaults.$spacing 0;
 }
 
-.propertyLable .propertyValue {
+.propertyLabel .propertyValue {
   justify-self: start;
 }
 
 .nestedObject {
   // background: lightgray;
   border-left: 2px solid lightgray;
-  padding-left: $defaultSpacing
+  padding-left: defaults.$spacing
 }
 
 .warning {

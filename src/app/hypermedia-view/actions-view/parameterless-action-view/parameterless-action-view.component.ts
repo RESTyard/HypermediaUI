@@ -4,9 +4,10 @@ import { HypermediaAction } from '../../siren-parser/hypermedia-action';
 import { ProblemDetailsError } from 'src/app/error-dialog/problem-details-error';
 
 @Component({
-  selector: 'app-parameterless-action-view',
-  templateUrl: './parameterless-action-view.component.html',
-  styleUrls: ['./parameterless-action-view.component.scss']
+    selector: 'app-parameterless-action-view',
+    templateUrl: './parameterless-action-view.component.html',
+    styleUrls: ['./parameterless-action-view.component.scss'],
+    standalone: false
 })
 export class ParameterlessActionViewComponent implements OnInit {
   @Input() action: HypermediaAction;

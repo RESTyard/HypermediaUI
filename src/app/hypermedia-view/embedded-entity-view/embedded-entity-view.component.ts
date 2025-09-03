@@ -5,9 +5,10 @@ import { HypermediaClientService } from '../hypermedia-client.service';
 import { ClipboardService } from 'ngx-clipboard';
 
 @Component({
-  selector: 'app-embedded-entity-view',
-  templateUrl: './embedded-entity-view.component.html',
-  styleUrls: ['./embedded-entity-view.component.scss']
+    selector: 'app-embedded-entity-view',
+    templateUrl: './embedded-entity-view.component.html',
+    styleUrls: ['./embedded-entity-view.component.scss'],
+    standalone: false
 })
 export class EmbeddedEntityViewComponent implements OnInit {
   @Input() embeddedLinkEntities: EmbeddedLinkEntity[];

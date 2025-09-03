@@ -8,9 +8,10 @@ import { SettingsService } from 'src/app/settings/services/settings.service';
 import { GeneralSettings } from 'src/app/settings/services/AppSettings';
 
 @Component({
-  selector: 'app-hypermedia-control',
-  templateUrl: './hypermedia-control.component.html',
-  styleUrls: ['./hypermedia-control.component.scss']
+    selector: 'app-hypermedia-control',
+    templateUrl: './hypermedia-control.component.html',
+    styleUrls: ['./hypermedia-control.component.scss'],
+    standalone: false
 })
 export class HypermediaControlComponent implements OnInit {
   public rawResponse: object | null = null;

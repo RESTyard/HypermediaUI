@@ -10,9 +10,10 @@ import { FormGroup } from '@angular/forms';
 import { FormlyJsonschema } from '@ngx-formly/core/json-schema';
 
 @Component({
-  selector: 'app-parameter-action',
-  templateUrl: './parameter-action.component.html',
-  styleUrls: ['./parameter-action.component.scss'],
+    selector: 'app-parameter-action',
+    templateUrl: './parameter-action.component.html',
+    styleUrls: ['./parameter-action.component.scss'],
+    standalone: false
 })
 export class ParameterActionComponent implements OnInit {
   @Input()

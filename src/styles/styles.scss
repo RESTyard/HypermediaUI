@@ -1,6 +1,6 @@
 /* You can add global styles to this file, and also import other style files */
-@import 'hypermedia-ui-theme.scss';
-@import 'material-icons.scss';
+@use 'hypermedia-ui-theme';
+@use 'material-icons';
 
 mat-card {
   margin: 1rem;

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 
@@ -53,76 +53,6 @@ import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { BooleanTypeComponent } from './actions-view/parameter-action/formly-types/boolean-type';
 
 @NgModule({
-  imports: [
-    CommonModule,
-    HttpClientModule,
-    MatCardModule,
-    MatButtonModule,
-    MatGridListModule,
-    MatCheckboxModule,
-    MatExpansionModule,
-    MatTabsModule,
-    MatTooltipModule,
-    MatIconModule,
-    MatToolbarModule,
-    MatListModule,
-    MatInputModule,
-    MatSelectModule,
-    MatMenuModule,
-    ErrorDialogModule,
-    MatProgressSpinnerModule,
-    MatProgressBarModule,
-
-    NgxJsonViewerModule,
-
-    ReactiveFormsModule,
-    FormlyModule.forRoot({
-      validationMessages: [
-        { name: 'required', message: 'This field is required' },
-        { name: 'type', message: typeValidationMessage },
-        { name: 'minLength', message: minLengthValidationMessage },
-        { name: 'maxLength', message: maxLengthValidationMessage },
-        { name: 'min', message: minValidationMessage },
-        { name: 'max', message: maxValidationMessage },
-        { name: 'multipleOf', message: multipleOfValidationMessage },
-        {
-          name: 'exclusiveMinimum',
-          message: exclusiveMinimumValidationMessage,
-        },
-        {
-          name: 'exclusiveMaximum',
-          message: exclusiveMaximumValidationMessage,
-        },
-        { name: 'minItems', message: minItemsValidationMessage },
-        { name: 'maxItems', message: maxItemsValidationMessage },
-        { name: 'uniqueItems', message: 'should NOT have duplicate items' },
-        { name: 'const', message: constValidationMessage },
-      ],
-      types: [
-        {
-          name: 'null',
-          component: NullTypeComponent,
-          wrappers: ['form-field'],
-        },
-        { name: 'array', component: ArrayTypeComponent },
-        { name: 'object', component: ObjectTypeComponent },
-        { name: 'multischema', component: MultiSchemaTypeComponent },
-        {
-          name: 'boolean',
-          component: BooleanTypeComponent,
-          wrappers: ['form-field'],
-        },
-      ],
-    }),
-    FormlyMaterialModule,
-
-    ClipboardModule,
-    FormsModule,
-    SettingsModule,
-    NgxDropzoneModule,
-    MatStepperModule,
-    MatButtonToggleModule,
-  ],
   exports: [HypermediaControlComponent],
   declarations: [
     HypermediaControlComponent,
@@ -141,14 +71,79 @@ import { BooleanTypeComponent } from './actions-view/parameter-action/formly-typ
     NullTypeComponent,
     BooleanTypeComponent,
   ],
+  imports: [
+    CommonModule,
+    MatCardModule,
+    MatButtonModule,
+    MatGridListModule,
+    MatCheckboxModule,
+    MatExpansionModule,
+    MatTabsModule,
+    MatTooltipModule,
+    MatIconModule,
+    MatToolbarModule,
+    MatListModule,
+    MatInputModule,
+    MatSelectModule,
+    MatMenuModule,
+    ErrorDialogModule,
+    MatProgressSpinnerModule,
+    MatProgressBarModule,
+    NgxJsonViewerModule,
+    ReactiveFormsModule,
+    FormlyModule.forRoot({
+        validationMessages: [
+            { name: 'required', message: 'This field is required' },
+            { name: 'type', message: typeValidationMessage },
+            { name: 'minLength', message: minLengthValidationMessage },
+            { name: 'maxLength', message: maxLengthValidationMessage },
+            { name: 'min', message: minValidationMessage },
+            { name: 'max', message: maxValidationMessage },
+            { name: 'multipleOf', message: multipleOfValidationMessage },
+            {
+                name: 'exclusiveMinimum',
+                message: exclusiveMinimumValidationMessage,
+            },
+            {
+                name: 'exclusiveMaximum',
+                message: exclusiveMaximumValidationMessage,
+            },
+            { name: 'minItems', message: minItemsValidationMessage },
+            { name: 'maxItems', message: maxItemsValidationMessage },
+            { name: 'uniqueItems', message: 'should NOT have duplicate items' },
+            { name: 'const', message: constValidationMessage },
+        ],
+        types: [
+            {
+                name: 'null',
+                component: NullTypeComponent,
+                wrappers: ['form-field'],
+            },
+            { name: 'array', component: ArrayTypeComponent },
+            { name: 'object', component: ObjectTypeComponent },
+            { name: 'multischema', component: MultiSchemaTypeComponent },
+            {
+                name: 'boolean',
+                component: BooleanTypeComponent,
+                wrappers: ['form-field'],
+            },
+        ],
+    }),
+    FormlyMaterialModule,
+    ClipboardModule,
+    FormsModule,
+    SettingsModule,
+    NgxDropzoneModule,
+    MatStepperModule,
+    MatButtonToggleModule],
   providers: [
     HypermediaClientService,
     ObservableLruCache,
     SirenDeserializer,
     SchemaSimplifier,
     HttpClient,
-  ],
-})
+    provideHttpClient(withInterceptorsFromDi()),
+  ]})
 export class HypermediaViewModule {}
 
 export function minItemsValidationMessage(

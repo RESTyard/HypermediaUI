@@ -3,9 +3,10 @@ import { Component, OnInit, Input } from '@angular/core';
 import {FormControl, Validators} from '@angular/forms';
 
 @Component({
-  selector: 'app-main-page',
-  templateUrl: './main-page.component.html',
-  styleUrls: ['./main-page.component.scss']
+    selector: 'app-main-page',
+    templateUrl: './main-page.component.html',
+    styleUrls: ['./main-page.component.scss'],
+    standalone: false
 })
 export class MainPageComponent implements OnInit {
 

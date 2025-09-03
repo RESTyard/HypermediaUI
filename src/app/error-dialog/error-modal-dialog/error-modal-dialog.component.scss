@@ -1,4 +1,4 @@
-@import '../../../styles/defaults.scss';
+@use '../../../styles/defaults';
 
 .backdrop {
   position: absolute;
@@ -24,7 +24,7 @@
 }
 
 button {
-  margin-right: $defaultSpacing;
+  margin-right: defaults.$spacing;
 }
 
 app-problem-details-view{
@@ -32,6 +32,6 @@ app-problem-details-view{
 }
 
 #buttonRow {
-  margin-left: $defaultSpacing;
-  margin-bottom: $defaultSpacing;
+  margin-left: defaults.$spacing;
+  margin-bottom: defaults.$spacing;
 }
