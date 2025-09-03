@@ -51,6 +51,7 @@ import { MultiSchemaTypeComponent } from './actions-view/parameter-action/formly
 import { NullTypeComponent } from './actions-view/parameter-action/formly-types/null-type';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { BooleanTypeComponent } from './actions-view/parameter-action/formly-types/boolean-type';
+import { AuthService } from './auth.service';
 
 @NgModule({
   imports: [
@@ -143,6 +144,7 @@ import { BooleanTypeComponent } from './actions-view/parameter-action/formly-typ
   ],
   providers: [
     HypermediaClientService,
+    AuthService,
     ObservableLruCache,
     SirenDeserializer,
     SchemaSimplifier,

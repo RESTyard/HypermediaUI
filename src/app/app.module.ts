@@ -28,11 +28,16 @@ import { MatListModule } from '@angular/material/list';
 import { MatTableModule } from '@angular/material/table';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { CustomHeadersInterceptor } from './settings/custom-headers.interceptor';
+import { AuthRedirectComponent } from './auth-redirect/auth-redirect.component';
 
 const appRoutes: Routes = [
   {
     path: 'hui',
     component: HypermediaControlComponent
+  },  
+  {
+    path: 'auth-redirect',
+    component: AuthRedirectComponent
   },
   {
     path: '',
@@ -51,7 +56,8 @@ export const myCustomTooltipDefaults: MatTooltipDefaultOptions = {
 @NgModule({
   declarations: [
     AppComponent,
-    MainPageComponent
+    MainPageComponent,
+    AuthRedirectComponent
   ],
   imports: [
     RouterModule.forRoot(

@@ -42,7 +42,7 @@ export class SiteSettings {
 }
 
 export class SiteSetting {
-   constructor(public SiteUrl:string = "", public Headers: HeaderSetting[] = []){
+   constructor(public SiteUrl:string = "", public Headers: HeaderSetting[] = [], public AuthConfig : AuthenticationConfiguration | null = null){
    }
 }
 
@@ -51,3 +51,7 @@ export class HeaderSetting {
     }
 }
 
+export class AuthenticationConfiguration {
+    constructor(public authority: string, public client_id: string, public redirect_uri: string, public scope: string) {
+    }
+}

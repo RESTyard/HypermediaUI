@@ -8,7 +8,7 @@ import {
 } from '@angular/common/http';
 import { Router } from '@angular/router';
 
-import { Observable, BehaviorSubject, map, catchError, Subject, tap, timeout } from 'rxjs';
+import { Observable, BehaviorSubject, map, catchError, Subject, tap, timeout, retry } from 'rxjs';
 import { saveAs } from 'file-saver';
 
 import { SirenDeserializer } from './siren-parser/siren-deserializer';
@@ -21,6 +21,7 @@ import { SettingsService } from '../settings/services/settings.service';
 
 import { ProblemDetailsError } from '../error-dialog/problem-details-error';
 import {MediaTypes} from "./MediaTypes";
+import { AuthService } from './auth.service';
 
 const problemDetailsMimeType = "application/problem+json";
 @Injectable()
@@ -39,7 +40,8 @@ export class HypermediaClientService {
     private schemaCache: ObservableLruCache<object>,
     private sirenDeserializer: SirenDeserializer,
     private router: Router,
-    private settingsService: SettingsService) {
+    private settingsService: SettingsService,
+    private authService: AuthService) {
   }
 
   getHypermediaObjectStream(): BehaviorSubject<SirenClientObject> {
@@ -75,13 +77,14 @@ export class HypermediaClientService {
     return this.apiPath;
   }
 
-  Navigate(url: string) {
+  async Navigate(url: string) {
     this.apiPath.addStep(url);
 
     // todo use media type of link if exists in siren, maybe check for supported types?
     const headers = new HttpHeaders().set('Accept', MediaTypes.Siren);
 
     this.AddBusyRequest();
+
     this.httpClient
       .get(url, {
         headers: headers,
@@ -108,7 +111,31 @@ export class HypermediaClientService {
           this.currentClientObjectRaw$.next(response.body);
           this.currentNavPaths$.next(this.apiPath.fullPath);
         },
-        error: (err: HttpErrorResponse) => { throw this.MapHttpErrorResponseToProblemDetails(err); }
+        error: (err: HttpErrorResponse) => { 
+          if(err.status === 401) {
+            
+            // IF authheader exists => show error to user
+
+            let wwwAuthHeader = err.headers.get('www-authenticate');
+            let kvpAsString = wwwAuthHeader?.replace("Bearer", "").split(',',) ?? []
+            let valueMap = new Map(kvpAsString.map(v => {
+              let keyAndValue = v.split('=');
+              return [keyAndValue[0].trim(), keyAndValue[1].substring(1, keyAndValue[1].length - 1).trim()];
+            }));
+
+            let authUri = valueMap.get('authorization_uri')
+
+            // TODO param object
+            this.authService.login(
+              url,
+              authUri!,
+              'hui',
+              window.location.origin + "/auth-redirect?api_path=" + encodeURIComponent(url),
+              'openid profile email offline_access'
+            )
+          }
+          
+          throw this.MapHttpErrorResponseToProblemDetails(err); }
       });
   }
 

@@ -6,7 +6,7 @@
     "configurations": [
         {
             "name": "Launch app debug",
-            "type": "firefox",
+            "type": "chrome",
             "request": "launch",
             "reAttach": true,
             // "preLaunchTask": "npm: start", // debugging not working
