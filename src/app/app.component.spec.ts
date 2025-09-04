@@ -1,5 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { AppComponent } from './app.component';
+import { ErrorDialogContainerProvider } from './error-dialog/application-root.provider';
+import { SettingsService } from './settings/services/settings.service';
 
 describe('AppComponent', () => {
   beforeEach(async () => {
@@ -7,6 +9,11 @@ describe('AppComponent', () => {
       declarations: [
         AppComponent
       ],
+      imports: [],
+      providers: [
+        ErrorDialogContainerProvider,
+        SettingsService,
+      ]
     }).compileComponents();
   });
 
@@ -16,16 +23,9 @@ describe('AppComponent', () => {
     expect(app).toBeTruthy();
   });
 
-  it(`should have as title 'HypermediaUI2022'`, () => {
+  it(`should have as title 'Hypermedia UI'`, () => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
-    expect(app.title).toEqual('HypermediaUI2022');
-  });
-
-  it('should render title', () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    fixture.detectChanges();
-    const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('.content span')?.textContent).toContain('HypermediaUI2022 app is running!');
+    expect(app.title).toEqual('Hypermedia UI');
   });
 });

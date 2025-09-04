@@ -8,13 +8,13 @@ export class ObservableLruCache<T> {
   private cacheItems: Map<string, CacheItem<T>> = new Map<string, CacheItem<T>>();
   private maxEntries = 30;
 
-  public getItem(key: string): Observable<T> {
+  public getItem(key: string): Observable<T> | null {
 
     const hasKey = this.cacheItems.has(key);
-    let item: CacheItem<T>;
+    let item: CacheItem<T> | undefined = undefined;
     if (hasKey) {
       // peek the entry, re-insert for LRU strategy
-      item = this.cacheItems.get(key);
+      item = this.cacheItems.get(key)!;
       this.cacheItems.delete(key);
       this.cacheItems.set(key, item);
     }
@@ -31,7 +31,9 @@ export class ObservableLruCache<T> {
     if (this.cacheItems.size >= this.maxEntries) {
       const keyToDelete = this.cacheItems.keys().next().value;
 
-      this.cacheItems.delete(keyToDelete);
+      if (keyToDelete) {
+        this.cacheItems.delete(keyToDelete);
+      }
     }
 
     const newItem = new CacheItem<T>();
@@ -43,8 +45,8 @@ export class ObservableLruCache<T> {
 }
 
 class CacheItem<T> {
-  value: T = null;
-  valueSource: Observable<T>;
+  value: T | null = null;
+  valueSource: Observable<T> | null = null;
 
   setValue(valueSource: Observable<T>): Observable<T> {
     this.valueSource = valueSource
@@ -63,8 +65,10 @@ class CacheItem<T> {
   getValue(): Observable<T> {
     if (this.value) {
       return of(this.value);
+    } else if (this.valueSource) {
+      return this.valueSource;
+    } else {
+      return of();
     }
-
-    return this.valueSource;
   }
 }

@@ -11,8 +11,8 @@ import { ClipboardService } from 'ngx-clipboard';
     standalone: false
 })
 export class EmbeddedEntityViewComponent implements OnInit {
-  @Input() embeddedLinkEntities: EmbeddedLinkEntity[];
-  @Input() embeddedEntities: EmbeddedEntity[];
+  @Input() embeddedLinkEntities: EmbeddedLinkEntity[] = [];
+  @Input() embeddedEntities: EmbeddedEntity[] = [];
 
   constructor(private hypermediaClient: HypermediaClientService, private clipboardService: ClipboardService) { }
 

@@ -1,6 +1,7 @@
 import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { MainPageComponent } from './main-page.component';
+import { provideHypermediaClientServiceMock } from '../test/HypermediaClientServiceMock';
 
 describe('MainPageComponent', () => {
   let component: MainPageComponent;
@@ -8,7 +9,13 @@ describe('MainPageComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ MainPageComponent ]
+      declarations: [
+        MainPageComponent
+      ],
+      imports: [],
+      providers: [
+        provideHypermediaClientServiceMock(),
+      ],
     })
     .compileComponents();
   }));

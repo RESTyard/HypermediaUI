@@ -23,9 +23,9 @@
     "@angular/platform-browser": "^20.2.3",
     "@angular/platform-browser-dynamic": "^20.2.3",
     "@angular/router": "^20.2.3",
-    "@ngx-formly/core": "^6.1.8",
-    "@ngx-formly/material": "^6.2.0",
-    "@types/file-saver": "^2.0.5",
+    "@ngx-formly/core": "^7.0.0",
+    "@ngx-formly/material": "^7.0.0",
+    "@types/file-saver": "^2.0.7",
     "file-saver": "^2.0.5",
     "json-schema": "^0.4.0",
     "ngx-clipboard": "^16.0.0",
@@ -41,8 +41,9 @@
     "@angular/cli": "^20.2.1",
     "@angular/compiler-cli": "^20.2.3",
     "@angular/localize": "^20.2.3",
-    "@types/jasmine": "~4.3.6",
-    "jasmine-core": "~5.1.1",
+    "@types/jasmine": "~5.1.9",
+    "@types/json-schema": "^7.0.15",
+    "jasmine-core": "~5.10.0",
     "karma": "~6.4.2",
     "karma-chrome-launcher": "~3.2.0",
     "karma-coverage": "~2.2.1",
@@ -50,6 +51,6 @@
     "karma-jasmine-html-reporter": "~2.1.0",
     "node-sass": "^9.0.0",
     "rxjs-tslint": "^0.1.8",
-    "typescript": "~5.8.3"
+    "typescript": "~5.9.2"
   }
 }
