@@ -17,9 +17,25 @@ import { SettingsService } from '../settings/services/settings.service';
 import { ProblemDetailsError } from '../error-dialog/problem-details-error';
 import {MediaTypes} from "./MediaTypes";
 
+export interface IHypermediaClientService {
+  isBusy$ : BehaviorSubject<boolean>;
+  getHypermediaObjectStream(): BehaviorSubject<SirenClientObject>;
+  getHypermediaObjectRawStream(): BehaviorSubject<object>;
+  getNavPathsStream(): BehaviorSubject<Array<string>>;
+  navigateToEntryPoint() : void;
+  NavigateToApiPath(apiPath: ApiPath): void;
+  get currentApiPath(): ApiPath;
+  Navigate(url: string) : void;
+  DownloadAsFile(downloadUrl: string) : void;
+  navigateToMainPage() : void;
+  createHeaders(withContentType: string | null): HttpHeaders;
+  createWaheStyleActionParameters(action: HypermediaAction): any;
+  executeAction(action: HypermediaAction, actionResult: (actionResults: ActionResults, resultLocation: string | null, content: any, problemDetailsError: ProblemDetailsError | null) => void): any;
+}
+
 const problemDetailsMimeType = "application/problem+json";
 @Injectable()
-export class HypermediaClientService {
+export class HypermediaClientService implements IHypermediaClientService {
   private currentClientObject$: BehaviorSubject<SirenClientObject> = new BehaviorSubject<SirenClientObject>(new SirenClientObject());
   private currentClientObjectRaw$: BehaviorSubject<object> = new BehaviorSubject<object>({});
   private currentNavPaths$: BehaviorSubject<Array<string>> = new BehaviorSubject<Array<string>>(new Array<string>());
