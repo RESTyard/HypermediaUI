@@ -5,6 +5,7 @@ import { provideHypermediaClientServiceMock } from 'src/app/test/HypermediaClien
 import { ActivatedRoute } from '@angular/router';
 import { ValueProvider } from '@angular/core';
 import { SettingsService } from 'src/app/settings/services/settings.service';
+import { of } from 'rxjs';
 
 describe('HypermediaControlComponent', () => {
   let component: HypermediaControlComponent;
