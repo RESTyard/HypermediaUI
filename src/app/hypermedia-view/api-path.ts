@@ -31,7 +31,7 @@ export class ApiPath {
       }
 
       for (let i = 0; i < this.apiPath.length; i++) {
-        if (this[i] !== other[i]) {
+        if (this.apiPath[i] !== other.apiPath[i]) {
           return false;
         }
       }

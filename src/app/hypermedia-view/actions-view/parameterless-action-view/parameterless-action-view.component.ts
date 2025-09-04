@@ -10,7 +10,7 @@ import { ProblemDetailsError } from 'src/app/error-dialog/problem-details-error'
     standalone: false
 })
 export class ParameterlessActionViewComponent implements OnInit {
-  @Input() action: HypermediaAction;
+  @Input() action!: HypermediaAction;
 
   ActionResultsEnum = ActionResults;
 
@@ -28,7 +28,8 @@ export class ParameterlessActionViewComponent implements OnInit {
   public executeAction() {
     this.actionResult= ActionResults.pending;
     this.executed = true;
-    this.hypermediaClientService.executeAction(this.action,
+    this.hypermediaClientService.executeAction(
+      this.action,
       (actionResults: ActionResults,
         resultLocation: string | null,
         content: any,

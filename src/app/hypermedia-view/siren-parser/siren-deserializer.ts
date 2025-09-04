@@ -261,7 +261,7 @@ export class SirenDeserializer {
 
   }
 
-  private FillFileUploadInformation(hypermediaAction: HypermediaAction, action: any, actionField) {
+  private FillFileUploadInformation(hypermediaAction: HypermediaAction, action: any, actionField: any) {
     hypermediaAction.actionType = ActionType.FileUpload;
 
     if (actionField.maxFileSizeBytes) {
@@ -280,7 +280,7 @@ export class SirenDeserializer {
   private FillJsonParameterInformation(hypermediaAction: HypermediaAction, action: any, actionField: any) {
     hypermediaAction.actionType = ActionType.JsonObjectParameters;
 
-    if (hypermediaAction.waheActionParameterClasses.length !== 1) {
+    if (hypermediaAction.waheActionParameterClasses?.length !== 1) {
       throw new Error(`Action field must contain one class. [action ${action.name}]`);
     }
 

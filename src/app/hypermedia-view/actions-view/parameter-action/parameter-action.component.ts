@@ -27,7 +27,7 @@ export class ParameterActionComponent implements OnInit {
   executed: boolean = false; // TODO show multiple executions as list
   problemDetailsError: ProblemDetailsError | null = null;
 
-  formlyFields: FormlyFieldConfig[] = null;
+  formlyFields: FormlyFieldConfig[] = [];
   form: FormGroup = new FormGroup({});
   model: any;
 
@@ -37,11 +37,11 @@ export class ParameterActionComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.action.waheActionParameterJsonSchema.subscribe((jsonSchema) => {
+    this.action.waheActionParameterJsonSchema?.subscribe((jsonSchema) => {
       this.formlyFields = [
         this.formlyJsonschema.toFieldConfig(jsonSchema, {
           map: (mappedField, mapSource) => {
-            if (mappedField.key) {
+            if (mappedField.key && mappedField.props) {
               mappedField.props.label = mappedField.key + '';
             }
             return mappedField;

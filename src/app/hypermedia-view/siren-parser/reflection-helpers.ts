@@ -1,13 +1,10 @@
 export class ReflectionHelpers {
 
   static hasProperty(obj: object, propertyName: string): boolean {
-    if (obj.hasOwnProperty(propertyName)) {
-      return true;
-    }
-    return false;
+    return obj.hasOwnProperty(propertyName);
   }
 
-  static hasFilledProperty(obj: object, propertyName: string): boolean {
+  static hasFilledProperty(obj: any, propertyName: string): boolean {
     if (this.hasProperty(obj, propertyName) && obj[propertyName]) {
       return true;
     }
@@ -15,7 +12,7 @@ export class ReflectionHelpers {
     return false;
   }
 
-  static hasFilledArrayProperty(obj: object, propertyName: string): boolean {
+  static hasFilledArrayProperty(obj: any, propertyName: string): boolean {
     if (this.hasFilledProperty(obj, propertyName) && Array.isArray(obj[propertyName])) {
       return true;
     }

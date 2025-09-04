@@ -97,11 +97,13 @@ export class HypermediaClientService {
             }
           });
 
-          const sirenClientObject = this.MapResponse(response.body);
+          if (response.body) {
+            const sirenClientObject = this.MapResponse(response.body);
 
-          this.currentClientObject$.next(sirenClientObject);
-          this.currentClientObjectRaw$.next(response.body);
-          this.currentNavPaths$.next(this.apiPath.fullPath);
+            this.currentClientObject$.next(sirenClientObject);
+            this.currentClientObjectRaw$.next(response.body);
+            this.currentNavPaths$.next(this.apiPath.fullPath);
+          }
         },
         error: (err: HttpErrorResponse) => { throw this.MapHttpErrorResponseToProblemDetails(err); }
       });
@@ -124,8 +126,10 @@ export class HypermediaClientService {
           fileName = "download.dat"
         }
 
-        let blob = response.body;
-        saveAs(blob, fileName)
+        const blob = response.body;
+        if (blob) {
+          saveAs(blob, fileName)
+        }
       })
   }
 

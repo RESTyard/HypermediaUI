@@ -12,7 +12,7 @@ import {MediaTypes} from "../MediaTypes";
 })
 export class LinkViewComponent implements OnInit {
 
-  @Input() links: HypermediaLink[];
+  @Input() links: HypermediaLink[] = [];
 
   protected readonly MediaTypes = MediaTypes;
 
