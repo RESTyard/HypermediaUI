@@ -16,6 +16,8 @@ import { SettingsService } from '../settings/services/settings.service';
 
 import { ProblemDetailsError } from '../error-dialog/problem-details-error';
 import {MediaTypes} from "./MediaTypes";
+import { AppSettings, GeneralSettings } from '../settings/app-settings';
+import { Store } from '@ngrx/store';
 
 export interface IHypermediaClientService {
   isBusy$ : BehaviorSubject<boolean>;
@@ -44,13 +46,21 @@ export class HypermediaClientService implements IHypermediaClientService {
   // indicate that a http request is pending
   public isBusy$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   private busyRequestsCounter = 0;
+  private generalSettings: GeneralSettings = new GeneralSettings();
 
   constructor(
     private httpClient: HttpClient,
     private schemaCache: ObservableLruCache<object>,
     private sirenDeserializer: SirenDeserializer,
     private router: Router,
-    private settingsService: SettingsService) {
+    private store: Store<{ appSettings: AppSettings }>) {
+      store
+        .select(state => state.appSettings.generalSettings)
+        .subscribe({
+          next: generalSettings => {
+            this.generalSettings = generalSettings;
+          }
+        })
   }
 
   getHypermediaObjectStream(): BehaviorSubject<SirenClientObject> {
@@ -195,7 +205,7 @@ export class HypermediaClientService implements IHypermediaClientService {
         body: body
       })
       .pipe(
-        timeout(this.settingsService.CurrentSettings.GeneralSettings.actionExecutionTimeoutMs),
+        timeout(this.generalSettings.actionExecutionTimeoutMs),
         tap({
           next: () => this.RemoveBusyRequest(),
           error: () => this.RemoveBusyRequest()
@@ -229,7 +239,7 @@ export class HypermediaClientService implements IHypermediaClientService {
         break;
       }
       case ActionType.JsonObjectParameters: {
-        if (this.settingsService.CurrentSettings.GeneralSettings.useEmbeddingPropertyForActionParameters) {
+        if (this.generalSettings.useEmbeddingPropertyForActionParameters) {
           requestBody = this.createWaheStyleActionParameters(action);
         } else {
           requestBody = action.parameters;

@@ -1,7 +1,9 @@
 <div id="content">
     <span class="SubTitle">Rendering options</span><br>
 
-    <mat-slide-toggle [formControl]="showRawTab" [checked]="" color="primary">Show raw view</mat-slide-toggle><br>
+    @if(!rawTabDisabled) {
+        <mat-slide-toggle [formControl]="showRawTab" [checked]="" color="primary">Show raw view</mat-slide-toggle><br>
+    }
     <mat-slide-toggle [formControl]="showClasses" [checked]="" color="primary">Show classes</mat-slide-toggle><br>
     <mat-slide-toggle [formControl]="showEmptyEntities" [checked]="" color="primary">Show empty entities</mat-slide-toggle><br>
     <mat-slide-toggle [formControl]="showEmptyProperties" [checked]="" color="primary">Show empty properties</mat-slide-toggle><br>

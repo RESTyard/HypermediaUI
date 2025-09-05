@@ -2,7 +2,7 @@ import { HypermediaViewModule } from './hypermedia-view/hypermedia-view.module';
 import { HypermediaControlComponent } from './hypermedia-view/hypermedia-control/hypermedia-control.component';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { NgModule } from '@angular/core';
+import { inject, NgModule, provideAppInitializer } from '@angular/core';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { RouterModule, Routes } from '@angular/router';
 
@@ -28,6 +28,11 @@ import { MatListModule } from '@angular/material/list';
 import { MatTableModule } from '@angular/material/table';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { CustomHeadersInterceptor } from './settings/custom-headers.interceptor';
+import { AppConfigService } from 'src/app.config.service';
+import { Observable } from 'rxjs';
+import { StoreModule } from '@ngrx/store';
+import { appSettingsReducer } from './store/appsettings.reducer';
+import { appConfigReducer } from './store/appconfig.reducer';
 
 const appRoutes: Routes = [
   {
@@ -41,6 +46,10 @@ const appRoutes: Routes = [
   },
   // { path: '**', component: MainPageComponent } // wildcard -> 404
 ];
+
+export function appConfigInit(appConfigService: AppConfigService): Observable<any> {
+  return appConfigService.load();
+}
 
 export const myCustomTooltipDefaults: MatTooltipDefaultOptions = {
   showDelay: 600,
@@ -76,16 +85,22 @@ export const myCustomTooltipDefaults: MatTooltipDefaultOptions = {
     MatListModule,
     MatTableModule,
     MatAutocompleteModule,
+    StoreModule.forRoot({
+      appSettings: appSettingsReducer,
+      appConfig: appConfigReducer,
+    })
   ],
-  providers: [{
-    provide: HTTP_INTERCEPTORS,
-    useClass: CustomHeadersInterceptor,
-    multi: true
-  },
-  {
-    provide: MAT_TOOLTIP_DEFAULT_OPTIONS,
-    useValue: myCustomTooltipDefaults
-  }
+  providers: [
+    provideAppInitializer(() => appConfigInit(inject(AppConfigService))),
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: CustomHeadersInterceptor,
+      multi: true
+    },
+    {
+      provide: MAT_TOOLTIP_DEFAULT_OPTIONS,
+      useValue: myCustomTooltipDefaults
+    },
   ],
   bootstrap: [AppComponent]
 })

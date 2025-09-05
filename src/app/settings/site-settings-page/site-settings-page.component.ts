@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import {FormControl} from '@angular/forms';
-import {SettingsService} from '../services/settings.service';
-import {MatSnackBar} from '@angular/material/snack-bar';
-import { SiteSetting, SiteSettings } from '../services/AppSettings';
+import { AppSettings, SiteSettings } from '../app-settings';
+import { Store } from '@ngrx/store';
+import { addSite, removeSite } from 'src/app/store/appsettings.actions';
 
 @Component({
     selector: 'app-site-settings-page',
@@ -13,19 +13,26 @@ import { SiteSetting, SiteSettings } from '../services/AppSettings';
 export class SiteSettingsPageComponent implements OnInit {
 
   siteFormControls: FormControl[] = [];
-  siteSettings: SiteSettings;
-  constructor(private settingsService: SettingsService) {
-    this.siteSettings = settingsService.CurrentSettings.SiteSettings;
+  siteSettings: SiteSettings = new SiteSettings();
+  constructor(private store: Store<{ appSettings: AppSettings }>) {
+    store
+      .select(state => state.appSettings.siteSettings)
+      .subscribe({
+        next: siteSettings => {
+          this.siteSettings = siteSettings;
+        }
+      })
    }
 
   ngOnInit(): void {
   }
 
   addSite(): void {
-    this.siteSettings.SiteSpecificSettings.push(new SiteSetting());
+    this.store.dispatch(addSite({ siteUrl: "" }));
   }
 
   removeSite(index: number): void {
-    this.siteSettings.SiteSpecificSettings.splice(index, 1);
+    var site = Array.from(this.siteSettings.siteSpecificSettings.entries())[index];
+    this.store.dispatch(removeSite({ siteUrl: site[0] }));
   }
 }

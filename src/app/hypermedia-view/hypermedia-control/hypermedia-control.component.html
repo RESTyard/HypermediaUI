@@ -37,7 +37,7 @@
   }
 </mat-toolbar>
 
-@if (GeneralSettings.showRawTab) {
+@if (GeneralSettings.showRawTab && !rawViewDisabled) {
   <mat-tab-group>
     <mat-tab label="UI">
       <app-entity-view [entity]="hto"></app-entity-view>
@@ -48,6 +48,6 @@
   </mat-tab-group>
 }
 
-@if (!GeneralSettings.showRawTab) {
+@if (!GeneralSettings.showRawTab || rawViewDisabled) {
   <app-entity-view [entity]="hto"></app-entity-view>
 }

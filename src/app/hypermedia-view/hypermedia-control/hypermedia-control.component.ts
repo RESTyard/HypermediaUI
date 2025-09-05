@@ -4,8 +4,9 @@ import { SirenClientObject } from '../siren-parser/siren-client-object';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PlatformLocation } from '@angular/common';
 import { ApiPath } from '../api-path';
-import { SettingsService } from 'src/app/settings/services/settings.service';
-import { GeneralSettings } from 'src/app/settings/services/AppSettings';
+import { AppSettings, GeneralSettings } from 'src/app/settings/app-settings';
+import { Store } from '@ngrx/store';
+import { AppConfig } from 'src/app.config.service';
 
 @Component({
     selector: 'app-hypermedia-control',
@@ -20,11 +21,26 @@ export class HypermediaControlComponent implements OnInit {
   public isBusy: boolean = false;
   public CurrentHost: string = "";
   public CurrentEntryPoint: string = "";
-  GeneralSettings: GeneralSettings;
+  GeneralSettings: GeneralSettings = new GeneralSettings();
+  rawViewDisabled: boolean = false;
   IsInsecureConnection: boolean = false;
 
-  constructor(private hypermediaClient: HypermediaClientService, private route: ActivatedRoute, private router: Router, location: PlatformLocation, public settingsService: SettingsService) {
-    this.GeneralSettings = settingsService.CurrentSettings.GeneralSettings
+  constructor(
+    private hypermediaClient: HypermediaClientService,
+    private route: ActivatedRoute,
+    private router: Router,
+    location: PlatformLocation,
+    private store: Store<{ appSettings: AppSettings, appConfig: AppConfig }>) {
+      store
+        .select(state => state.appSettings.generalSettings)
+        .subscribe({
+          next: generalSettings => this.GeneralSettings = generalSettings,
+        });
+      store
+        .select(state => state.appConfig.disableRawView)
+        .subscribe({
+          next: disableRawView => this.rawViewDisabled = disableRawView,
+        });
   }
 
   ngOnInit() {
