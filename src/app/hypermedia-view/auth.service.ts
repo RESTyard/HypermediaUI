@@ -6,9 +6,11 @@ import { AuthenticationConfiguration, HeaderSetting } from '../settings/services
 @Injectable()
 export class AuthService {
     private userManagers: Map<string, UserManager>;
+    private tokenRecentlyAquired: Map<string, boolean>;
 
     constructor(private settingsService: SettingsService) {
         this.userManagers = new Map();
+        this.tokenRecentlyAquired = new Map();
     }
 
     async login(entryPoint: string, authority: string, client_id: string, redirect_uri: string, scope: string): Promise<void> {
@@ -52,6 +54,14 @@ export class AuthService {
         return access_token;
     }
 
+    isTokenRecentlyAquired(entryPoint: string) : boolean {
+        return this.tokenRecentlyAquired.has(entryPoint);
+    }
+
+    authSuccessfulWithTokenFor(entryPoint: string) {
+        this.tokenRecentlyAquired.delete(entryPoint);
+    }
+
     async handleCallback(entryPoint: string): Promise<boolean> {
         
         let siteSettings = this.settingsService.getSettingsForSite(new URL(entryPoint).host);
@@ -86,8 +96,9 @@ export class AuthService {
         if(!headers) {
            siteSettings.Headers.push(new HeaderSetting("Authorization", "Bearer " + token))
         } else {
-            headers.Value = token;
+            headers.Value = "Bearer " + token;
         }
+        this.tokenRecentlyAquired.set(entryPoint, true);
         siteSettings.AuthConfig = null;
         
         this.settingsService.SaveCurrentSettings();

@@ -99,6 +99,8 @@ export class HypermediaClientService {
       .subscribe({
         next: response =>
         {
+          this.authService.authSuccessfulWithTokenFor(url);
+
           this.router.navigate(['hui'], {
             queryParams: {
               apiPath: this.apiPath.fullPath
@@ -112,10 +114,9 @@ export class HypermediaClientService {
           this.currentNavPaths$.next(this.apiPath.fullPath);
         },
         error: (err: HttpErrorResponse) => { 
-          if(err.status === 401) {
+          if(err.status === 401 && !this.authService.isTokenRecentlyAquired(url)) {
             
-            // IF authheader exists => show error to user
-
+            // https://learn.microsoft.com/en-us/entra/msal/dotnet/advancewd/extract-authentication-parameters
             let wwwAuthHeader = err.headers.get('www-authenticate');
             let kvpAsString = wwwAuthHeader?.replace("Bearer", "").split(',',) ?? []
             let valueMap = new Map(kvpAsString.map(v => {
@@ -133,9 +134,10 @@ export class HypermediaClientService {
               window.location.origin + "/auth-redirect?api_path=" + encodeURIComponent(url),
               'openid profile email offline_access'
             )
+          } else {
+            throw this.MapHttpErrorResponseToProblemDetails(err); }
           }
-          
-          throw this.MapHttpErrorResponseToProblemDetails(err); }
+
       });
   }
 
