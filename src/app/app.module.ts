@@ -30,9 +30,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { CustomHeadersInterceptor } from './settings/custom-headers.interceptor';
 import { AppConfigService } from 'src/app.config.service';
 import { Observable } from 'rxjs';
-import { StoreModule } from '@ngrx/store';
-import { appSettingsReducer } from './store/appsettings.reducer';
-import { appConfigReducer } from './store/appconfig.reducer';
+import { importStore } from './store/store-module';
 
 const appRoutes: Routes = [
   {
@@ -85,10 +83,7 @@ export const myCustomTooltipDefaults: MatTooltipDefaultOptions = {
     MatListModule,
     MatTableModule,
     MatAutocompleteModule,
-    StoreModule.forRoot({
-      appSettings: appSettingsReducer,
-      appConfig: appConfigReducer,
-    })
+    importStore(),
   ],
   providers: [
     provideAppInitializer(() => appConfigInit(inject(AppConfigService))),

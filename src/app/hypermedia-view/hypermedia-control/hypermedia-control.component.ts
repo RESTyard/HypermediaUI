@@ -17,7 +17,7 @@ import { selectEffectiveGeneralSettings } from 'src/app/store/selectors';
 })
 export class HypermediaControlComponent implements OnInit {
   public rawResponse: object | null = null;
-  public hto: SirenClientObject| null = null;
+  public hto: SirenClientObject = new SirenClientObject();
   public navPaths: string[] = [];
   public isBusy: boolean = false;
   public CurrentHost: string = "";

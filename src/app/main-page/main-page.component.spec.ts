@@ -2,6 +2,7 @@ import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { MainPageComponent } from './main-page.component';
 import { provideHypermediaClientServiceMock } from '../test/HypermediaClientServiceMock';
+import { importStore } from '../store/store-module';
 
 describe('MainPageComponent', () => {
   let component: MainPageComponent;
@@ -12,7 +13,9 @@ describe('MainPageComponent', () => {
       declarations: [
         MainPageComponent
       ],
-      imports: [],
+      imports: [
+        importStore(),
+      ],
       providers: [
         provideHypermediaClientServiceMock(),
       ],

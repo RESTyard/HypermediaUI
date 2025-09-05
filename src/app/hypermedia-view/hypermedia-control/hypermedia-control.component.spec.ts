@@ -6,6 +6,7 @@ import { ActivatedRoute } from '@angular/router';
 import { ValueProvider } from '@angular/core';
 import { SettingsService } from 'src/app/settings/services/settings.service';
 import { of } from 'rxjs';
+import { importStore } from 'src/app/store/store-module';
 
 describe('HypermediaControlComponent', () => {
   let component: HypermediaControlComponent;
@@ -17,6 +18,7 @@ describe('HypermediaControlComponent', () => {
         HypermediaControlComponent
       ],
       imports: [
+        importStore(),
       ],
       providers: [
         provideHypermediaClientServiceMock(),
