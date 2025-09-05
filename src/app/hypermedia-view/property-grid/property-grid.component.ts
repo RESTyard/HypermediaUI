@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { GeneralSettings } from 'src/app/settings/services/AppSettings';
+import { GeneralSettings } from 'src/app/settings/app-settings';
 import { PropertyInfo, PropertyTypes } from '../siren-parser/property-info';
 
 @Component({

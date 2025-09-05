@@ -2,7 +2,9 @@
   <mat-icon class="appIcon">signpost</mat-icon>
   <span>Hypermedia UI</span>
   <span style="flex: 1 1 auto"></span>
-  <app-settings-menu></app-settings-menu>
+  @if(showSettingsIcon) {
+    <app-settings-menu></app-settings-menu>
+  }
 </mat-toolbar>
 
 <div class="mainGrid">

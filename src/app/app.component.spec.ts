@@ -2,6 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { AppComponent } from './app.component';
 import { ErrorDialogContainerProvider } from './error-dialog/application-root.provider';
 import { SettingsService } from './settings/services/settings.service';
+import { importStore } from './store/store-module';
 
 describe('AppComponent', () => {
   beforeEach(async () => {
@@ -9,7 +10,9 @@ describe('AppComponent', () => {
       declarations: [
         AppComponent
       ],
-      imports: [],
+      imports: [
+        importStore(),
+      ],
       providers: [
         ErrorDialogContainerProvider,
         SettingsService,

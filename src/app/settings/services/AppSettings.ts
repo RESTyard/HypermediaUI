@@ -1,8 +1,8 @@
-export class AppSettings {
-    GeneralSettings: GeneralSettings = new GeneralSettings();
-    SiteSettings: SiteSettings = new SiteSettings();
+export class AppSettingsStorageModel {
+    GeneralSettings: GeneralSettingsStorageModel = new GeneralSettingsStorageModel();
+    SiteSettings: SiteSettingsStorageModel = new SiteSettingsStorageModel();
 
-    public constructor(init?: Partial<AppSettings>) {
+    public constructor(init?: Partial<AppSettingsStorageModel>) {
         Object.assign(this, init);
         this.EnsureDefaults();
     }
@@ -14,40 +14,40 @@ export class AppSettings {
     }
 }
 
-export class GeneralSettings {
-    showRawTab:boolean = true;
+export class GeneralSettingsStorageModel {
+    showRawTab: boolean = true;
 
-    showClasses:boolean = false;
+    showClasses: boolean = false;
   
-    showEmptyEntities:boolean = false;
+    showEmptyEntities: boolean = false;
   
-    showEmptyProperties:boolean = false;
+    showEmptyProperties: boolean = false;
   
-    showNullProperties:boolean = true;
+    showNullProperties: boolean = true;
   
-    showEmptyLinks:boolean = false;
+    showEmptyLinks: boolean = false;
   
-    showEmptyActions:boolean = false;
+    showEmptyActions: boolean = false;
   
-    useEmbeddingPropertyForActionParameters:boolean = true;
+    useEmbeddingPropertyForActionParameters: boolean = true;
 
-    showHostInformation:boolean = true;
+    showHostInformation: boolean = true;
 
-    actionExecutionTimeoutMs:number = 60000;
+    actionExecutionTimeoutMs: number = 60000;
 }
 
-export class SiteSettings {
-    GlobalSiteSettings: SiteSetting = new SiteSetting("Global");
-    SiteSpecificSettings: SiteSetting[] = [];
+export class SiteSettingsStorageModel {
+    GlobalSiteSettings: SiteSettingStorageModel = new SiteSettingStorageModel("Global");
+    SiteSpecificSettings: SiteSettingStorageModel[] = [];
 }
 
-export class SiteSetting {
-   constructor(public SiteUrl:string = "", public Headers: HeaderSetting[] = []){
+export class SiteSettingStorageModel {
+   constructor(public SiteUrl: string = "", public Headers: HeaderSettingStorageModel[] = []){
    }
 }
 
-export class HeaderSetting {
-    constructor(public Key:string = "", public Value:string ="") {
+export class HeaderSettingStorageModel {
+    constructor(public Key: string = "", public Value:string ="") {
     }
 }
 

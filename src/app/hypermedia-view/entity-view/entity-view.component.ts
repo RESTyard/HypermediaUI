@@ -4,8 +4,10 @@ import { HypermediaLink } from '../siren-parser/hypermedia-link';
 import { HypermediaAction } from '../siren-parser/hypermedia-action';
 import { PropertyInfo } from '../siren-parser/property-info';
 import { IEmbeddedEntity, IEmbeddedLinkEntity } from '../siren-parser/entity-interfaces';
-import { SettingsService } from 'src/app/settings/services/settings.service';
-import { GeneralSettings } from 'src/app/settings/services/AppSettings';
+import { AppSettings, GeneralSettings } from 'src/app/settings/app-settings';
+import { Store } from '@ngrx/store';
+import { selectEffectiveGeneralSettings } from 'src/app/store/selectors';
+import { AppConfig } from 'src/app.config.service';
 
 @Component({
     selector: 'app-entity-view',
@@ -26,8 +28,14 @@ export class EntityViewComponent implements OnInit, OnChanges {
   public actions: HypermediaAction[] = new Array<HypermediaAction>();
   GeneralSettings: GeneralSettings = new GeneralSettings();
 
-  constructor(public settingsService: SettingsService) {
-    this.GeneralSettings = settingsService.CurrentSettings.GeneralSettings;
+  constructor(private store: Store<{ appSettings: AppSettings, appConfig: AppConfig }>) {
+    store
+      .select(selectEffectiveGeneralSettings)
+      .subscribe({
+        next: appSettings => {
+          this.GeneralSettings = appSettings;
+        }
+      });
   }
 
   ngOnInit() {

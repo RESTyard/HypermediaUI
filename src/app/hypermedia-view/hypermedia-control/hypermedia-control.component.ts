@@ -4,8 +4,12 @@ import { SirenClientObject } from '../siren-parser/siren-client-object';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PlatformLocation } from '@angular/common';
 import { ApiPath } from '../api-path';
-import { SettingsService } from 'src/app/settings/services/settings.service';
-import { GeneralSettings } from 'src/app/settings/services/AppSettings';
+import { AppSettings, GeneralSettings } from 'src/app/settings/app-settings';
+import { Store } from '@ngrx/store';
+import { AppConfig } from 'src/app.config.service';
+import { selectEffectiveGeneralSettings } from 'src/app/store/selectors';
+import { combineLatest, merge } from 'rxjs';
+import { CurrentEntryPoint } from 'src/app/store/entrypoint.reducer';
 
 @Component({
     selector: 'app-hypermedia-control',
@@ -15,16 +19,56 @@ import { GeneralSettings } from 'src/app/settings/services/AppSettings';
 })
 export class HypermediaControlComponent implements OnInit {
   public rawResponse: object | null = null;
-  public hto: SirenClientObject| null = null;
+  public hto: SirenClientObject = new SirenClientObject();
   public navPaths: string[] = [];
   public isBusy: boolean = false;
   public CurrentHost: string = "";
   public CurrentEntryPoint: string = "";
-  GeneralSettings: GeneralSettings;
+  GeneralSettings: GeneralSettings = new GeneralSettings();
+  showSettingsIcon: boolean = true;
+  showExitIcon: boolean = true;
   IsInsecureConnection: boolean = false;
+  title: string = "";
 
-  constructor(private hypermediaClient: HypermediaClientService, private route: ActivatedRoute, private router: Router, location: PlatformLocation, public settingsService: SettingsService) {
-    this.GeneralSettings = settingsService.CurrentSettings.GeneralSettings
+  constructor(
+    private hypermediaClient: HypermediaClientService,
+    private route: ActivatedRoute,
+    private router: Router,
+    location: PlatformLocation,
+    private store: Store<{ appSettings: AppSettings, appConfig: AppConfig, currentEntryPoint: CurrentEntryPoint }>) {
+      store
+        .select(selectEffectiveGeneralSettings)
+        .subscribe({
+          next: generalSettings => this.GeneralSettings = generalSettings,
+        });
+      store
+        .select(state => state.appConfig)
+        .subscribe({
+          next: appConfig => {
+            this.showSettingsIcon = !appConfig.disableDeveloperControls;
+            this.showExitIcon = !appConfig.onlyAllowConfiguredEntryPoints;
+          }
+        });
+      store
+        .select(state => state.currentEntryPoint)
+        .subscribe({
+          next: entryPoint => {
+            this.title = entryPoint.title ?? "Hypermedia UI";
+          }
+        });
+      combineLatest(
+        [
+          store.select(state => state.appConfig),
+          store.select(state => state.currentEntryPoint),
+        ])
+        .subscribe({
+          next: tuple => {
+            const [appConfig, currentEntryPoint] = tuple;
+            if (appConfig.onlyAllowConfiguredEntryPoints && (currentEntryPoint.path === undefined || currentEntryPoint.path === 'hui')) {
+              router.navigate(['']);
+            }
+          }
+        })
   }
 
   ngOnInit() {
@@ -52,7 +96,6 @@ export class HypermediaControlComponent implements OnInit {
         this.hypermediaClient.NavigateToApiPath(apiPath);
       }
     });
-
   }
 
   private SetHostInfo(navPaths: string[]) {
