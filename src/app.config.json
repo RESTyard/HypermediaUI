@@ -1,3 +1,5 @@
 {
-    "disableDeveloperControls": false
+    "disableDeveloperControls": false,
+    "configuredEntryPoints": [],
+    "onlyAllowConfiguredEntryPoints": false
 }

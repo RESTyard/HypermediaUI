@@ -3,6 +3,9 @@ import { Component, OnInit, Input } from '@angular/core';
 import {FormControl, Validators} from '@angular/forms';
 import { AppConfig } from 'src/app.config.service';
 import { Store } from '@ngrx/store';
+import { CurrentEntryPoint } from '../store/entrypoint.reducer';
+import { updateEntryPoint } from '../store/entrypoint.actions';
+import { Router } from '@angular/router';
 
 @Component({
     selector: 'app-main-page',
@@ -22,11 +25,19 @@ export class MainPageComponent implements OnInit {
 
   constructor(
     private hypermediaClientService: HypermediaClientService,
-    store: Store<{ appConfig: AppConfig }>) {
+    private store: Store<{ appConfig: AppConfig, currentEntryPoint: CurrentEntryPoint }>,
+    router: Router) {
     store
-      .select(state => state.appConfig.disableDeveloperControls)
+      .select(state => state.appConfig)
       .subscribe({
-        next: disableDeveloperControls => this.showSettingsIcon = !disableDeveloperControls,
+        next: appConfig => {
+          this.showSettingsIcon = !appConfig.disableDeveloperControls;
+          if (appConfig.onlyAllowConfiguredEntryPoints && appConfig.configuredEntryPoints !== undefined) {
+            if (appConfig.configuredEntryPoints.length > 0) {
+              router.navigate([appConfig.configuredEntryPoints[0].alias]);
+            }
+          }
+        }
       });
     this.urlFormControl = new FormControl("", [
         Validators.required,
@@ -37,6 +48,7 @@ export class MainPageComponent implements OnInit {
   ngOnInit() {}
 
   navigate() {
+    this.store.dispatch(updateEntryPoint({ newEntryPoint: { title: "Hypermedia UI", path: "hui", entryPoint: this.urlFormControl.value }}));
     this.hypermediaClientService.Navigate(this.urlFormControl.value);
   }
 

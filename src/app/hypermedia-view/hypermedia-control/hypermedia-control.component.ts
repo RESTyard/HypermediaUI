@@ -8,6 +8,8 @@ import { AppSettings, GeneralSettings } from 'src/app/settings/app-settings';
 import { Store } from '@ngrx/store';
 import { AppConfig } from 'src/app.config.service';
 import { selectEffectiveGeneralSettings } from 'src/app/store/selectors';
+import { combineLatest, merge } from 'rxjs';
+import { CurrentEntryPoint } from 'src/app/store/entrypoint.reducer';
 
 @Component({
     selector: 'app-hypermedia-control',
@@ -24,23 +26,48 @@ export class HypermediaControlComponent implements OnInit {
   public CurrentEntryPoint: string = "";
   GeneralSettings: GeneralSettings = new GeneralSettings();
   showSettingsIcon: boolean = true;
+  showExitIcon: boolean = true;
   IsInsecureConnection: boolean = false;
+  title: string = "";
 
   constructor(
     private hypermediaClient: HypermediaClientService,
     private route: ActivatedRoute,
     private router: Router,
     location: PlatformLocation,
-    private store: Store<{ appSettings: AppSettings, appConfig: AppConfig }>) {
+    private store: Store<{ appSettings: AppSettings, appConfig: AppConfig, currentEntryPoint: CurrentEntryPoint }>) {
       store
         .select(selectEffectiveGeneralSettings)
         .subscribe({
           next: generalSettings => this.GeneralSettings = generalSettings,
         });
       store
-        .select(state => state.appConfig.disableDeveloperControls)
+        .select(state => state.appConfig)
         .subscribe({
-          next: disableDeveloperControls => this.showSettingsIcon = !disableDeveloperControls,
+          next: appConfig => {
+            this.showSettingsIcon = !appConfig.disableDeveloperControls;
+            this.showExitIcon = !appConfig.onlyAllowConfiguredEntryPoints;
+          }
+        });
+      store
+        .select(state => state.currentEntryPoint)
+        .subscribe({
+          next: entryPoint => {
+            this.title = entryPoint.title ?? "Hypermedia UI";
+          }
+        });
+      combineLatest(
+        [
+          store.select(state => state.appConfig),
+          store.select(state => state.currentEntryPoint),
+        ])
+        .subscribe({
+          next: tuple => {
+            const [appConfig, currentEntryPoint] = tuple;
+            if (appConfig.onlyAllowConfiguredEntryPoints && (currentEntryPoint.path === undefined || currentEntryPoint.path === 'hui')) {
+              router.navigate(['']);
+            }
+          }
         })
   }
 
@@ -69,7 +96,6 @@ export class HypermediaControlComponent implements OnInit {
         this.hypermediaClient.NavigateToApiPath(apiPath);
       }
     });
-
   }
 
   private SetHostInfo(navPaths: string[]) {

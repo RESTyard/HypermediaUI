@@ -31,6 +31,7 @@ import { CustomHeadersInterceptor } from './settings/custom-headers.interceptor'
 import { AppConfigService } from 'src/app.config.service';
 import { Observable } from 'rxjs';
 import { importStore } from './store/store-module';
+import { AliasPageComponent } from './alias-page/alias-page.component';
 
 const appRoutes: Routes = [
   {
@@ -42,7 +43,10 @@ const appRoutes: Routes = [
     pathMatch: 'full',
     component: MainPageComponent
   },
-  // { path: '**', component: MainPageComponent } // wildcard -> 404
+  {
+    path: '**',
+    component: AliasPageComponent
+  },
 ];
 
 export function appConfigInit(appConfigService: AppConfigService): Observable<any> {

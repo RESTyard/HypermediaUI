@@ -20,6 +20,7 @@ import { AppSettings, GeneralSettings } from '../settings/app-settings';
 import { Store } from '@ngrx/store';
 import { AppConfig } from 'src/app.config.service';
 import { selectEffectiveGeneralSettings } from '../store/selectors';
+import { CurrentEntryPoint } from '../store/entrypoint.reducer';
 
 export interface IHypermediaClientService {
   isBusy$ : BehaviorSubject<boolean>;
@@ -44,6 +45,7 @@ export class HypermediaClientService implements IHypermediaClientService {
   private currentClientObjectRaw$: BehaviorSubject<object> = new BehaviorSubject<object>({});
   private currentNavPaths$: BehaviorSubject<Array<string>> = new BehaviorSubject<Array<string>>(new Array<string>());
   private apiPath: ApiPath = new ApiPath();
+  private path: string | undefined;
 
   // indicate that a http request is pending
   public isBusy$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
@@ -55,14 +57,19 @@ export class HypermediaClientService implements IHypermediaClientService {
     private schemaCache: ObservableLruCache<object>,
     private sirenDeserializer: SirenDeserializer,
     private router: Router,
-    private store: Store<{ appSettings: AppSettings, appConfig: AppConfig }>) {
+    private store: Store<{ appSettings: AppSettings, appConfig: AppConfig, currentEntryPoint: CurrentEntryPoint }>) {
       store
         .select(selectEffectiveGeneralSettings)
         .subscribe({
           next: generalSettings => {
             this.generalSettings = generalSettings;
           }
-        })
+        });
+      store
+        .select(state => state.currentEntryPoint)
+        .subscribe({
+          next: entryPoint => this.path = entryPoint.path,
+        });
   }
 
   getHypermediaObjectStream(): BehaviorSubject<SirenClientObject> {
@@ -119,10 +126,13 @@ export class HypermediaClientService implements IHypermediaClientService {
       .subscribe({
         next: response =>
         {
-          this.router.navigate(['hui'], {
-            queryParams: {
-              apiPath: this.apiPath.fullPath
-            }
+          this.router.navigate(
+            ['hui'],
+            {
+              queryParams: {
+                apiPath: this.apiPath.fullPath
+              },
+              browserUrl: this.buildBrowserUrl(this.path, this.apiPath)
           });
 
           if (response.body) {
@@ -135,6 +145,18 @@ export class HypermediaClientService implements IHypermediaClientService {
         },
         error: (err: HttpErrorResponse) => { throw this.MapHttpErrorResponseToProblemDetails(err); }
       });
+  }
+
+  buildBrowserUrl(path: string | undefined, apiPath: ApiPath) {
+    if (path === undefined) {
+      path = 'hui';
+    }
+    const useApiPath = path === 'hui' ? apiPath.fullPath : apiPath.fullPath.slice(1);
+    if (useApiPath.length === 0) {
+      return path;
+    }
+    const q = new URLSearchParams(useApiPath.map(pathSegment => ['apiPath', pathSegment]));
+    return path + '?' + q.toString();
   }
 
   DownloadAsFile(downloadUrl: string) {
