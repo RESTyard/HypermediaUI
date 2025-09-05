@@ -6,6 +6,8 @@ import { PropertyInfo } from '../siren-parser/property-info';
 import { IEmbeddedEntity, IEmbeddedLinkEntity } from '../siren-parser/entity-interfaces';
 import { AppSettings, GeneralSettings } from 'src/app/settings/app-settings';
 import { Store } from '@ngrx/store';
+import { selectEffectiveGeneralSettings } from 'src/app/store/selectors';
+import { AppConfig } from 'src/app.config.service';
 
 @Component({
     selector: 'app-entity-view',
@@ -26,14 +28,14 @@ export class EntityViewComponent implements OnInit, OnChanges {
   public actions: HypermediaAction[] = new Array<HypermediaAction>();
   GeneralSettings: GeneralSettings = new GeneralSettings();
 
-  constructor(private store: Store<{ appSettings: AppSettings }>) {
+  constructor(private store: Store<{ appSettings: AppSettings, appConfig: AppConfig }>) {
     store
-      .select(state => state.appSettings.generalSettings)
+      .select(selectEffectiveGeneralSettings)
       .subscribe({
         next: appSettings => {
           this.GeneralSettings = appSettings;
         }
-      })
+      });
   }
 
   ngOnInit() {

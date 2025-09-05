@@ -7,6 +7,7 @@ import { ApiPath } from '../api-path';
 import { AppSettings, GeneralSettings } from 'src/app/settings/app-settings';
 import { Store } from '@ngrx/store';
 import { AppConfig } from 'src/app.config.service';
+import { selectEffectiveGeneralSettings } from 'src/app/store/selectors';
 
 @Component({
     selector: 'app-hypermedia-control',
@@ -22,7 +23,7 @@ export class HypermediaControlComponent implements OnInit {
   public CurrentHost: string = "";
   public CurrentEntryPoint: string = "";
   GeneralSettings: GeneralSettings = new GeneralSettings();
-  rawViewDisabled: boolean = false;
+  showSettingsIcon: boolean = true;
   IsInsecureConnection: boolean = false;
 
   constructor(
@@ -32,15 +33,15 @@ export class HypermediaControlComponent implements OnInit {
     location: PlatformLocation,
     private store: Store<{ appSettings: AppSettings, appConfig: AppConfig }>) {
       store
-        .select(state => state.appSettings.generalSettings)
+        .select(selectEffectiveGeneralSettings)
         .subscribe({
           next: generalSettings => this.GeneralSettings = generalSettings,
         });
       store
-        .select(state => state.appConfig.disableRawView)
+        .select(state => state.appConfig.disableDeveloperControls)
         .subscribe({
-          next: disableRawView => this.rawViewDisabled = disableRawView,
-        });
+          next: disableDeveloperControls => this.showSettingsIcon = !disableDeveloperControls,
+        })
   }
 
   ngOnInit() {

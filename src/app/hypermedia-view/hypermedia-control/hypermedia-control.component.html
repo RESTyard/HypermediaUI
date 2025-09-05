@@ -11,7 +11,9 @@
   @if (GeneralSettings.showHostInformation) {
     <span class="spacer"></span>
   }
-  <app-settings-menu></app-settings-menu>
+  @if (showSettingsIcon) {
+    <app-settings-menu></app-settings-menu>
+  }
   <button mat-icon-button matTooltip="Exit API" (click)="navigateMainPage()">
     <mat-icon class="icon">exit_to_app</mat-icon>
   </button>
@@ -37,7 +39,7 @@
   }
 </mat-toolbar>
 
-@if (GeneralSettings.showRawTab && !rawViewDisabled) {
+@if (GeneralSettings.showRawTab) {
   <mat-tab-group>
     <mat-tab label="UI">
       <app-entity-view [entity]="hto"></app-entity-view>
@@ -48,6 +50,6 @@
   </mat-tab-group>
 }
 
-@if (!GeneralSettings.showRawTab || rawViewDisabled) {
+@if (!GeneralSettings.showRawTab) {
   <app-entity-view [entity]="hto"></app-entity-view>
 }

@@ -18,7 +18,7 @@ export class GeneralSettingsPageComponent implements OnInit {
   generalSettings: GeneralSettings = new GeneralSettings();
   checked = false;
   showRawTab: FormControl<boolean>= new FormControl();
-  rawTabDisabled: boolean = false;
+  disableDeveloperControls: boolean = false;
   showClasses: FormControl<boolean>= new FormControl();
   showEmptyEntities: FormControl<boolean>= new FormControl();
   showEmptyProperties: FormControl<boolean>= new FormControl();
@@ -40,9 +40,9 @@ export class GeneralSettingsPageComponent implements OnInit {
           next: generalSettings => this.generalSettings = generalSettings,
         });
       store
-        .select(state => state.appConfig.disableRawView)
+        .select(state => state.appConfig.disableDeveloperControls)
         .subscribe({
-          next: d => this.rawTabDisabled = d,
+          next: d => this.disableDeveloperControls = d,
         });
    }
 

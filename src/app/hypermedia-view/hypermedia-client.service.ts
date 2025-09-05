@@ -18,6 +18,8 @@ import { ProblemDetailsError } from '../error-dialog/problem-details-error';
 import {MediaTypes} from "./MediaTypes";
 import { AppSettings, GeneralSettings } from '../settings/app-settings';
 import { Store } from '@ngrx/store';
+import { AppConfig } from 'src/app.config.service';
+import { selectEffectiveGeneralSettings } from '../store/selectors';
 
 export interface IHypermediaClientService {
   isBusy$ : BehaviorSubject<boolean>;
@@ -53,9 +55,9 @@ export class HypermediaClientService implements IHypermediaClientService {
     private schemaCache: ObservableLruCache<object>,
     private sirenDeserializer: SirenDeserializer,
     private router: Router,
-    private store: Store<{ appSettings: AppSettings }>) {
+    private store: Store<{ appSettings: AppSettings, appConfig: AppConfig }>) {
       store
-        .select(state => state.appSettings.generalSettings)
+        .select(selectEffectiveGeneralSettings)
         .subscribe({
           next: generalSettings => {
             this.generalSettings = generalSettings;

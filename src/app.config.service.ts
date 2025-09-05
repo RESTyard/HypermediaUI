@@ -9,7 +9,7 @@ import { Record } from "immutable";
     providedIn: 'root'
 })
 export class AppConfigService {
-    private disableRawView: boolean = false;
+    private disableDeveloperControls: boolean = false;
 
     constructor(
         private http: HttpClient,
@@ -23,7 +23,7 @@ export class AppConfigService {
                 tap(value => {
                     Object.assign(this, value);
                     const newConfig = new AppConfig({
-                        disableRawView: this.disableRawView,
+                        disableDeveloperControls: this.disableDeveloperControls,
                     });
                     this.store.dispatch(updateAppConfig({ newConfig: newConfig}))
             }));
@@ -31,5 +31,5 @@ export class AppConfigService {
 }
 
 export class AppConfig extends Record({
-    disableRawView: true,
+    disableDeveloperControls: true,
 }) {}
