@@ -1,27 +1,22 @@
+import {Injectable} from '@angular/core';
+import {HttpClient, HttpErrorResponse, HttpHeaders, HttpResponse,} from '@angular/common/http';
+import {Router} from '@angular/router';
 
-import { Injectable } from '@angular/core';
-import {
-  HttpClient,
-  HttpErrorResponse,
-  HttpResponse,
-  HttpHeaders,
-} from '@angular/common/http';
-import { Router } from '@angular/router';
+import {BehaviorSubject, tap, timeout} from 'rxjs';
+import {saveAs} from 'file-saver';
 
-import { Observable, BehaviorSubject, map, catchError, Subject, tap, timeout, retry } from 'rxjs';
-import { saveAs } from 'file-saver';
+import {SirenDeserializer} from './siren-parser/siren-deserializer';
+import {ObservableLruCache} from './api-access/observable-lru-cache';
+import {SirenClientObject} from './siren-parser/siren-client-object';
+import {ActionType, HypermediaAction} from './siren-parser/hypermedia-action';
+import {ApiPath} from './api-path';
 
-import { SirenDeserializer } from './siren-parser/siren-deserializer';
-import { ObservableLruCache } from './api-access/observable-lru-cache';
-import { SirenClientObject } from './siren-parser/siren-client-object';
-import {HypermediaAction, HttpMethodTypes, ActionType} from './siren-parser/hypermedia-action';
-import { ApiPath } from './api-path';
+import {SettingsService} from '../settings/services/settings.service';
 
-import { SettingsService } from '../settings/services/settings.service';
-
-import { ProblemDetailsError } from '../error-dialog/problem-details-error';
+import {ProblemDetailsError} from '../error-dialog/problem-details-error';
 import {MediaTypes} from "./MediaTypes";
-import { AuthService } from './auth.service';
+import {AuthService} from './auth.service';
+import {Result} from "../utils/result";
 
 const problemDetailsMimeType = "application/problem+json";
 @Injectable()
@@ -113,32 +108,50 @@ export class HypermediaClientService {
           this.currentClientObjectRaw$.next(response.body);
           this.currentNavPaths$.next(this.apiPath.fullPath);
         },
-        error: (err: HttpErrorResponse) => { 
-          if(err.status === 401 && !this.authService.isTokenRecentlyAquired(url)) {
-            
+        error: async (err: HttpErrorResponse) => {
+          if (err.status === 401 && !this.authService.isTokenRecentlyAquired(url)) {
+
             // https://learn.microsoft.com/en-us/entra/msal/dotnet/advancewd/extract-authentication-parameters
-            let wwwAuthHeader = err.headers.get('www-authenticate');
-            let kvpAsString = wwwAuthHeader?.replace("Bearer", "").split(',',) ?? []
-            let valueMap = new Map(kvpAsString.map(v => {
-              let keyAndValue = v.split('=');
-              return [keyAndValue[0].trim(), keyAndValue[1].substring(1, keyAndValue[1].length - 1).trim()];
-            }));
-
-            let authUri = valueMap.get('authorization_uri')
-
-            // TODO param object
-            this.authService.login(
-              url,
-              authUri!,
-              'hui',
-              window.location.origin + "/auth-redirect?api_path=" + encodeURIComponent(url),
-              'openid profile email offline_access'
+            const header = err.headers.get('www-authenticate');
+            let result = await (
+              this.parseWWWAuthenticateHeaderSchemeParams(header, "Bearer")
+              .bind(value => {
+                let authUri = value.get('authorization_uri')
+                return authUri ? Result.ok(authUri!) : Result.error<string>("No authorization uri defined");
+              })
+              .bindAsync(async authUri  =>
+                await this.authService.login(
+                  url,
+                  authUri!,
+                  'hui',
+                  window.location.origin + "/auth-redirect?api_path=" + encodeURIComponent(url),
+                  'openid profile email offline_access'
+                )
+              ));
+            result.match(
+              _ => { return; },
+              error => {
+                console.error(error);
+                throw this.MapHttpErrorResponseToProblemDetails(err) }
             )
-          } else {
-            throw this.MapHttpErrorResponseToProblemDetails(err); }
           }
 
+          throw this.MapHttpErrorResponseToProblemDetails(err);
+        }
+
       });
+  }
+
+  private parseWWWAuthenticateHeaderSchemeParams(header: string | null, authScheme: string) : Result<Map<string, string>> {
+    if(!header?.startsWith('Bearer')) {
+      return Result.error("");
+    }
+
+    let kvpAsString = header?.replace(authScheme, "").split(',',) ?? []
+    return Result.ok(new Map(kvpAsString.map(v => {
+      let keyAndValue = v.split('=');
+      return [keyAndValue[0].trim(), keyAndValue[1].substring(1, keyAndValue[1].length - 1).trim()];
+    })));
   }
 
   DownloadAsFile(downloadUrl: string) {

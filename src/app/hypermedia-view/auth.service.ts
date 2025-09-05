@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { User, UserManager } from 'oidc-client-ts';
 import { SettingsService } from '../settings/services/settings.service';
 import { AuthenticationConfiguration, HeaderSetting } from '../settings/services/AppSettings';
+import {Result, Unit} from "../utils/result";
 
 @Injectable()
 export class AuthService {
@@ -13,27 +14,31 @@ export class AuthService {
         this.tokenRecentlyAquired = new Map();
     }
 
-    async login(entryPoint: string, authority: string, client_id: string, redirect_uri: string, scope: string): Promise<void> {
+    async login(entryPoint: string, authority: string, client_id: string, redirect_uri: string, scope: string): Promise<Result<Unit>> {
         let userManager = new UserManager({
             authority: authority,
             client_id: client_id,
             redirect_uri: redirect_uri,
             response_type: 'code',
             scope: scope})
-        
+
         this.userManagers.set(entryPoint, userManager)
 
         let siteSettings = this.settingsService.getSettingsForSite(new URL(entryPoint).host);
         if(siteSettings.AuthConfig !== null) {
-            return;
+            return Result.error("Different login is already in progress");
         }
-        
+
         siteSettings.AuthConfig = new AuthenticationConfiguration(authority, client_id, redirect_uri, scope);
 
-        
-        this.settingsService.saveSettingsForSite(siteSettings);
 
+        this.settingsService.saveSettingsForSite(siteSettings);
+        try {
         await userManager.signinRedirect();
+        return Result.ok(Unit.NoThing);
+        } catch {
+          return Result.error("Error during authentication");
+        }
     }
 
     async tryGetToken(entryPoint: string): Promise<string | null> {
@@ -63,7 +68,7 @@ export class AuthService {
     }
 
     async handleCallback(entryPoint: string): Promise<boolean> {
-        
+
         let siteSettings = this.settingsService.getSettingsForSite(new URL(entryPoint).host);
 
         if(!siteSettings.AuthConfig) {
@@ -92,7 +97,7 @@ export class AuthService {
 
         const token = user.access_token;
 
-        let headers = siteSettings.Headers.find(h => h.Key === "Authorization");    
+        let headers = siteSettings.Headers.find(h => h.Key === "Authorization");
         if(!headers) {
            siteSettings.Headers.push(new HeaderSetting("Authorization", "Bearer " + token))
         } else {
@@ -100,7 +105,7 @@ export class AuthService {
         }
         this.tokenRecentlyAquired.set(entryPoint, true);
         siteSettings.AuthConfig = null;
-        
+
         this.settingsService.SaveCurrentSettings();
         return true;
     }
