@@ -1,7 +1,7 @@
-import { Component } from '@angular/core';
-import { AuthService } from '../hypermedia-view/auth.service';
-import { Router } from '@angular/router';
-import { ProblemDetailsError } from '../error-dialog/problem-details-error';
+import {Component} from '@angular/core';
+import {AuthService} from '../hypermedia-view/auth.service';
+import {Router} from '@angular/router';
+import {ProblemDetailsError} from '../error-dialog/problem-details-error';
 
 @Component({
   selector: 'app-auth-redirect',
@@ -9,31 +9,37 @@ import { ProblemDetailsError } from '../error-dialog/problem-details-error';
   styleUrls: ['./auth-redirect.component.css']
 })
 export class AuthRedirectComponent {
- constructor(
-  private authService: AuthService,
-  private router: Router) {
+  constructor(
+    private authService: AuthService,
+    private router: Router) {
 
- }
+  }
 
   ngOnInit() {
-    
+
     let targetEntryPoint = new URL(window.location.href).searchParams.get("api_path");
 
-    if(!targetEntryPoint) {
+    if (!targetEntryPoint) {
       throw new ProblemDetailsError();
     }
 
     this.authService.handleCallback(targetEntryPoint)
-    .then(success => {
-      if(!success) {
-        return;
-      }
-      this.router.navigate(['hui'], {
-            queryParams: {
-              apiPath: targetEntryPoint
+      .then(success =>
+        success.match(
+          _ => this.router.navigate(['hui'], {
+              queryParams: {
+                apiPath: targetEntryPoint
+              }
             }
+          ),
+          error => {
+            throw new ProblemDetailsError({
+              type: "ApiError",
+              title: "API error",
+              detail: error,
+              status: 401,
+            })
           }
-      );
-    });
+        ));
   }
 }

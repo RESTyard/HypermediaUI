@@ -26,7 +26,7 @@ export class MainPageComponent implements OnInit {
   ngOnInit() {}
 
   navigate() {
-    this.hypermediaClientService.Navigate(this.urlFormControl.value);
+    this.hypermediaClientService.Navigate(this.urlFormControl.value).catch(err => { throw err; });
   }
 
 }
