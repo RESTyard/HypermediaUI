@@ -1,16 +1,18 @@
 <div class="container">
-  <ng-container *ngFor="let action of actions" [ngSwitch]="action.actionType">
-    <div class="actionContainer" *ngSwitchCase="ActionType.NoParameters">
-      <app-parameterless-action-view [action]=action></app-parameterless-action-view>
+  @for (action of actions; track action) {
+    <div class="actionContainer">
+      @switch (action.actionType) {
+        @case (ActionType.NoParameters) {
+          <app-parameterless-action-view [action]=action></app-parameterless-action-view>
+        }
+        @case ( ActionType.JsonObjectParameters) {
+          <app-parameter-action [action]=action></app-parameter-action>
+        }
+        @case (ActionType.FileUpload) {
+          <app-file-upload-action [action]=action></app-file-upload-action>
+        }
+      }
     </div>
-
-    <div class="actionContainer" *ngSwitchCase=" ActionType.JsonObjectParameters">
-      <app-parameter-action [action]=action></app-parameter-action>
-    </div>
-
-    <div class="actionContainer" *ngSwitchCase="ActionType.FileUpload">
-      <app-file-upload-action [action]=action></app-file-upload-action>
-    </div>
-  </ng-container>
+  }
 
 </div>

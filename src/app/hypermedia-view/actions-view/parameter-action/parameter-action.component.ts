@@ -10,9 +10,10 @@ import { FormGroup } from '@angular/forms';
 import { FormlyJsonschema } from '@ngx-formly/core/json-schema';
 
 @Component({
-  selector: 'app-parameter-action',
-  templateUrl: './parameter-action.component.html',
-  styleUrls: ['./parameter-action.component.scss'],
+    selector: 'app-parameter-action',
+    templateUrl: './parameter-action.component.html',
+    styleUrls: ['./parameter-action.component.scss'],
+    standalone: false
 })
 export class ParameterActionComponent implements OnInit {
   @Input()
@@ -26,7 +27,7 @@ export class ParameterActionComponent implements OnInit {
   executed: boolean = false; // TODO show multiple executions as list
   problemDetailsError: ProblemDetailsError | null = null;
 
-  formlyFields: FormlyFieldConfig[] = null;
+  formlyFields: FormlyFieldConfig[] = [];
   form: FormGroup = new FormGroup({});
   model: any;
 
@@ -36,11 +37,11 @@ export class ParameterActionComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.action.waheActionParameterJsonSchema.subscribe((jsonSchema) => {
+    this.action.waheActionParameterJsonSchema?.subscribe((jsonSchema) => {
       this.formlyFields = [
         this.formlyJsonschema.toFieldConfig(jsonSchema, {
           map: (mappedField, mapSource) => {
-            if (mappedField.key) {
+            if (mappedField.key && mappedField.props) {
               mappedField.props.label = mappedField.key + '';
             }
             return mappedField;

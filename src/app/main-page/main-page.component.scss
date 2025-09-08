@@ -1,10 +1,10 @@
-@import '../../styles/defaults.scss';
+@use '../../styles/defaults';
 
 .mainGrid {
     display: grid;
     grid-template-columns: 1fr;
     grid-template-rows: 2fr 1fr auto;
-    padding: $defaultSpacing;
+    padding: defaults.$spacing;
     height: 100%;
 }
 
@@ -27,11 +27,11 @@ mat-error {
 .navigateButton{
   grid-row: 3;
   justify-self: center;
-  margin-top: $defaultSpacing; 
+  margin-top: defaults.$spacing; 
  
 }
 
 .appIcon {
-  margin-right: $defaultSpacing;
+  margin-right: defaults.$spacing;
 }
 

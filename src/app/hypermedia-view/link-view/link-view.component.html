@@ -1,29 +1,31 @@
 <div class="container">
-  <span *ngFor="let link of links">
-    <mat-button-toggle-group class="buttonContainer">
-      <mat-button-toggle (click)="navigateLink(link)" matTooltip="{{link.url}}">
-        <mat-icon >play_arrow</mat-icon>
-        <span>
-          {{link.relations.join(',')}}
-        </span>
-      </mat-button-toggle>
-      <mat-button-toggle [matMenuTriggerFor]="dropdownMenuOne">
-        <mat-icon>arrow_drop_down</mat-icon>
-      </mat-button-toggle>
-    </mat-button-toggle-group>
-
-    <mat-menu #dropdownMenuOne="matMenu">
-            <button  mat-menu-item
-                    (click)="copyToClipBoard(link)">
-              <mat-icon color="primary">assignment</mat-icon>
-              Copy URL to clipboard
-            </button>
-            <button  mat-menu-item
-               *ngIf="link.type !== MediaTypes.Siren && link.type != undefined"
-               (click)="download(link)">
-              <mat-icon color="primary">download</mat-icon>
-              Download
-            </button>
-    </mat-menu>
-  </span>
+  @for (link of links; track link) {
+    <span>
+      <mat-button-toggle-group class="buttonContainer">
+        <mat-button-toggle (click)="navigateLink(link)" matTooltip="{{link.url}}">
+          <mat-icon >play_arrow</mat-icon>
+          <span>
+            {{link.relations.join(',')}}
+          </span>
+        </mat-button-toggle>
+        <mat-button-toggle [matMenuTriggerFor]="dropdownMenuOne">
+          <mat-icon>arrow_drop_down</mat-icon>
+        </mat-button-toggle>
+      </mat-button-toggle-group>
+      <mat-menu #dropdownMenuOne="matMenu">
+        <button  mat-menu-item
+          (click)="copyToClipBoard(link)">
+          <mat-icon color="primary">assignment</mat-icon>
+          Copy URL to clipboard
+        </button>
+        @if (link.type !== MediaTypes.Siren && link.type != undefined) {
+          <button  mat-menu-item
+            (click)="download(link)">
+            <mat-icon color="primary">download</mat-icon>
+            Download
+          </button>
+        }
+      </mat-menu>
+    </span>
+  }
 </div>

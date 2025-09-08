@@ -2,7 +2,9 @@
   <mat-icon class="appIcon">signpost</mat-icon>
   <span>Hypermedia UI</span>
   <span style="flex: 1 1 auto"></span>
-  <app-settings-menu></app-settings-menu>
+  @if(showSettingsIcon) {
+    <app-settings-menu></app-settings-menu>
+  }
 </mat-toolbar>
 
 <div class="mainGrid">
@@ -11,26 +13,28 @@
 
     <mat-form-field class="apiEntryFormField">
       <input matInput type="url"
-             placeholder="Enter API entrypoint URL"
-             name="apiEntryPointInput"
-             [formControl]="urlFormControl" />
+        placeholder="Enter API entrypoint URL"
+        name="apiEntryPointInput"
+        [formControl]="urlFormControl" />
 
-      <mat-hint>Example: http://localhost/api/EntryPoint</mat-hint>
+        <mat-hint>Example: http://localhost/api/EntryPoint</mat-hint>
 
-      <mat-error *ngIf="urlFormControl.hasError('pattern')">Check your URL</mat-error>
+        @if (urlFormControl.hasError('pattern')) {
+          <mat-error>Check your URL</mat-error>
+        }
 
-      <button type="reset" [disabled]="!urlFormControl.value" matSuffix mat-icon-button
-              aria-label="Clear"
-              (click)="urlFormControl.reset()">
-        <mat-icon class="icon">close</mat-icon>
+        <button type="reset" [disabled]="!urlFormControl.value" matSuffix mat-icon-button
+          aria-label="Clear"
+          (click)="urlFormControl.reset()">
+          <mat-icon class="icon">close</mat-icon>
+        </button>
+      </mat-form-field>
+
+      <button class="navigateButton" [disabled]="!urlFormControl.value" mat-button matSuffix mat-raised-button
+        (click)="navigate()" color="primary">
+
+        <mat-icon>explore</mat-icon>
+        <span>Enter API</span>
       </button>
-    </mat-form-field>
-
-    <button class="navigateButton" [disabled]="!urlFormControl.value" mat-button matSuffix mat-raised-button
-            (click)="navigate()" color="primary">
-
-      <mat-icon>explore</mat-icon>
-      <span>Enter API</span>
-    </button>
-  </form>
-</div>
+    </form>
+  </div>

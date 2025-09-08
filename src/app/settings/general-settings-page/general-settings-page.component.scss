@@ -1,20 +1,20 @@
-@import '../../../styles/defaults.scss';
+@use '../../../styles/defaults';
 
 .SubTitle {
     font-size: large;
 }
 
 #content{
-    margin-top: $defaultSpacing;
+    margin-top: defaults.$spacing;
     overflow: hidden; // hide scrollbar
 }
 
 mat-slide-toggle {
-    margin-top: $defaultSpacing*2;
-    margin-left: $defaultSpacing;
+    margin-top: 2*defaults.$spacing;
+    margin-left: defaults.$spacing;
 }
 
 .textinput {
-    margin-top: $defaultSpacing*2;
-    margin-left: $defaultSpacing;
+    margin-top: 2*defaults.$spacing;
+    margin-left: defaults.$spacing;
 }

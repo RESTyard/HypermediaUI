@@ -179,8 +179,8 @@ export class SchemaSimplifier {
 
     if (schema.hasOwnProperty('anyOf')) {
       // if anyOf contains both number and integer, simplify to just number
-      let anyOfNumber = schema.anyOf.filter((s) => s.type === 'number');
-      let anyOfInteger = schema.anyOf.filter((s) => s.type === 'integer');
+      let anyOfNumber = schema.anyOf.filter((s: any) => s.type === 'number');
+      let anyOfInteger = schema.anyOf.filter((s: any) => s.type === 'integer');
       if (anyOfNumber.length > 0 && anyOfInteger.length > 0) {
         schema['type'] = 'number';
         delete schema.anyOf;

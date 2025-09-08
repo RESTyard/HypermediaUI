@@ -1,39 +1,57 @@
 <mat-toolbar class="headerMenue" color="primary">
   <mat-icon class="appIcon">signpost</mat-icon>
-  <span>Hypermedia UI</span>
+  <span [innerText]="title"></span>
   <span class="spacer"></span>
-    <mat-icon *ngIf="GeneralSettings.showHostInformation && IsInsecureConnection" id="IsInsecureConnectionIcon" matTooltip="The connection is unencrypted (http)">lock_open</mat-icon>
-    <span *ngIf="GeneralSettings.showHostInformation" id="CurrentEntryPoint" matTooltip="{{CurrentEntryPoint}}" [ngClass]="{'isInsecure': IsInsecureConnection}">{{CurrentHost}}</span>
-    <span *ngIf="GeneralSettings.showHostInformation" class="spacer"></span>
-  <app-settings-menu></app-settings-menu>
-  <button mat-icon-button matTooltip="Exit API" (click)="navigateMainPage()">
-    <mat-icon class="icon">exit_to_app</mat-icon>
-  </button>
+  @if (GeneralSettings.showHostInformation && IsInsecureConnection) {
+    <mat-icon id="IsInsecureConnectionIcon" matTooltip="The connection is unencrypted (http)">lock_open</mat-icon>
+  }
+  @if (GeneralSettings.showHostInformation) {
+    <span id="CurrentEntryPoint" matTooltip="{{CurrentEntryPoint}}" [ngClass]="{'isInsecure': IsInsecureConnection}">{{CurrentHost}}</span>
+  }
+  @if (GeneralSettings.showHostInformation) {
+    <span class="spacer"></span>
+  }
+  @if (showSettingsIcon) {
+    <app-settings-menu></app-settings-menu>
+  }
+  @if (showExitIcon) {
+    <button mat-icon-button matTooltip="Exit API" (click)="navigateMainPage()">
+      <mat-icon class="icon">exit_to_app</mat-icon>
+    </button>
+  }
 </mat-toolbar>
 
-<mat-progress-bar class="progressSpacer" *ngIf="isBusy" mode="indeterminate" color="accent"></mat-progress-bar>
-<div *ngIf="!isBusy" class="progressSpacer">&nbsp;</div>
+@if (isBusy) {
+  <mat-progress-bar class="progressSpacer" mode="indeterminate" color="accent"></mat-progress-bar>
+}
+@if (!isBusy) {
+  <div class="progressSpacer">&nbsp;</div>
+}
 
 
 <mat-toolbar class="apiToolbar">
 
-  <ng-container *ngFor="let link of navPaths; let i = index">
+  @for (link of navPaths; track link; let i = $index) {
     <button mat-raised-button matTooltip="{{link}}" (click)="navigateLink(link)" color="primary">
       {{getUrlShortName(link)}}
     </button>
-
-    <mat-icon *ngIf="i < navPaths.length-1">play_arrow</mat-icon>
-
-  </ng-container>
+    @if (i < navPaths.length-1) {
+      <mat-icon>play_arrow</mat-icon>
+    }
+  }
 </mat-toolbar>
 
-<mat-tab-group *ngIf="GeneralSettings.showRawTab">
-  <mat-tab label="UI">
-    <app-entity-view [entity]="hto"></app-entity-view>
-  </mat-tab>
-  <mat-tab label="Raw">
-    <app-raw-view class="rawContent" [rawObject]="rawResponse"></app-raw-view>
-  </mat-tab>
-</mat-tab-group>
+@if (GeneralSettings.showRawTab) {
+  <mat-tab-group>
+    <mat-tab label="UI">
+      <app-entity-view [entity]="hto"></app-entity-view>
+    </mat-tab>
+    <mat-tab label="Raw">
+      <app-raw-view class="rawContent" [rawObject]="rawResponse"></app-raw-view>
+    </mat-tab>
+  </mat-tab-group>
+}
 
-<app-entity-view [entity]="hto" *ngIf="!GeneralSettings.showRawTab"></app-entity-view>
+@if (!GeneralSettings.showRawTab) {
+  <app-entity-view [entity]="hto"></app-entity-view>
+}

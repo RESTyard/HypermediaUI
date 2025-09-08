@@ -1,12 +1,12 @@
 <mat-expansion-panel>
   <mat-expansion-panel-header>
     <mat-panel-title>
-      <button class="executeButton containerElement" mat-raised-button color="primary" 
-            matTooltip="{{action.title}}">
-      <mat-icon class="icon" color="secondary">play_circle_outline</mat-icon>
-      {{action.name}}
-    </button>
-    <mat-icon class="icon" color="primary" style="margin-left: 4px;">expand_more</mat-icon>
+      <button class="executeButton containerElement" mat-raised-button color="primary"
+        matTooltip="{{action.title}}">
+        <mat-icon class="icon" color="secondary">play_circle_outline</mat-icon>
+        {{action.name}}
+      </button>
+      <mat-icon class="icon" color="primary" style="margin-left: 4px;">expand_more</mat-icon>
     </mat-panel-title>
     <mat-panel-description>
       {{action.title}}
@@ -25,43 +25,59 @@
 
         <div class="resultContainer">
           <!-- result icon -->
-          <div class="resultIconContainer" [ngSwitch]="actionResult" *ngIf="executed">
-            <mat-icon *ngSwitchCase="ActionResultsEnum.ok" class="containerElement" color="primary"
-                      matTooltip={{actionMessage}}>done</mat-icon>
-            <mat-icon *ngSwitchCase="ActionResultsEnum.error" class="containerElement hoverButton" color="warn" [matMenuTriggerFor]="errorPopup"
-                      matTooltip={{actionMessage}}>error</mat-icon>
-            <mat-progress-spinner [diameter]="26" *ngSwitchCase="ActionResultsEnum.pending" mode="indeterminate" color="accent"></mat-progress-spinner>
-            <mat-icon *ngSwitchCase="ActionResultsEnum.undefined" class="containerElement" color="primary"
-                      matTooltip={{actionMessage}}>question_mark</mat-icon>
-          </div>
+          @if (executed) {
+            <div class="resultIconContainer">
+              @switch (actionResult) {
+                @case (ActionResultsEnum.ok) {
+                  <mat-icon class="containerElement" color="primary"
+                  matTooltip={{actionMessage}}>done</mat-icon>
+                }
+                @case (ActionResultsEnum.error) {
+                  <mat-icon class="containerElement hoverButton" color="warn" [matMenuTriggerFor]="errorPopup"
+                  matTooltip={{actionMessage}}>error</mat-icon>
+                }
+                @case (ActionResultsEnum.pending) {
+                  <mat-progress-spinner [diameter]="26" mode="indeterminate" color="accent"></mat-progress-spinner>
+                }
+                @case (ActionResultsEnum.undefined) {
+                  <mat-icon class="containerElement" color="primary"
+                  matTooltip={{actionMessage}}>question_mark</mat-icon>
+                }
+              }
+            </div>
+          }
           <!-- result button -->
-          <button type="button" *ngIf="actionResultLocation !== null"
-                  class="containerElement"
-                  mat-raised-button
-                  (click)="navigateLocation(actionResultLocation)"
-                  color="accent"
-                  matTooltip="Go to result: {{actionResultLocation}}">
-            <mat-icon class="icon" color="primary">start</mat-icon>
-            Result
-          </button>
+          @if (actionResultLocation !== null) {
+            <button type="button"
+              class="containerElement"
+              mat-raised-button
+              (click)="navigateLocation(actionResultLocation)"
+              color="accent"
+              matTooltip="Go to result: {{actionResultLocation}}">
+              <mat-icon class="icon" color="primary">start</mat-icon>
+              Result
+            </button>
+          }
         </div>
       </div>
     </form>
   </ng-template>
 
   <!-- <button *ngIf="actionResultLocation !== null" mat-raised-button (click)="navigateLocation(actionResultLocation)" matTooltip="{{actionResultLocation}}">
-    Action result
-  </button>
-  <span>{{actionMessage}}</span> -->
+  Action result
+</button>
+<span>{{actionMessage}}</span> -->
 
-  <!-- <app-raw-view [rawObject]="action.waheActionParameterJsonSchema | async"></app-raw-view> -->
+<!-- <app-raw-view [rawObject]="action.waheActionParameterJsonSchema | async"></app-raw-view> -->
 
 
 
-  <mat-menu #errorPopup="matMenu">
-    <div (click)="$event.stopPropagation()">
-      <app-problem-details-view *ngIf="problemDetailsError" [problemDetailsError]="problemDetailsError"></app-problem-details-view>
-    </div>
-  </mat-menu>
+<mat-menu #errorPopup="matMenu">
+  <div (click)="$event.stopPropagation()">
+    @if (problemDetailsError) {
+      <app-problem-details-view [problemDetailsError]="problemDetailsError"></app-problem-details-view>
+    }
+  </div>
+</mat-menu>
 
 </mat-expansion-panel>

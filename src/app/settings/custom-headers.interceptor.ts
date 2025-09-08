@@ -1,10 +1,5 @@
 import { Injectable } from '@angular/core';
-import {
-  HttpRequest,
-  HttpHandler,
-  HttpEvent,
-  HttpInterceptor, HttpHeaders
-} from '@angular/common/http';
+import { HttpRequest, HttpHandler, HttpEvent, HttpInterceptor, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import {SettingsService} from './services/settings.service';
 
@@ -22,11 +17,13 @@ export class CustomHeadersInterceptor implements HttpInterceptor {
       
     });
 
-    this.settingsService.getHeadersForSite(new URL(request.url).host).forEach(h => {
-      if (h.Key!== "") {
-        headers = headers.set(h.Key, h.Value);
-      }
-    });
+    if (URL.canParse(request.url)) {
+      this.settingsService.getHeadersForSite(new URL(request.url).host).forEach(h => {
+        if (h.Key!== "") {
+          headers = headers.set(h.Key, h.Value);
+        }
+      });
+    }
 
     return next.handle(request.clone({
       headers: headers

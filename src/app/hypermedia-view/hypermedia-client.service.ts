@@ -1,6 +1,6 @@
-import {Injectable} from '@angular/core';
-import {HttpClient, HttpErrorResponse, HttpHeaders, HttpResponse,} from '@angular/common/http';
-import {Router} from '@angular/router';
+import { Injectable } from '@angular/core';
+import { HttpClient, HttpErrorResponse, HttpResponse, HttpHeaders } from '@angular/common/http';
+import { Router } from '@angular/router';
 
 import {BehaviorSubject, lastValueFrom, tap, timeout} from 'rxjs';
 import {saveAs} from 'file-saver';
@@ -19,20 +19,42 @@ import {AuthService} from './auth.service';
 import {Result} from "../utils/result";
 import {ProblemDetailsErrorService} from "../error-dialog/problem-details-error.service";
 import {GlobalNavigationEvents} from '../global-navigation.events';
-import {C} from "@angular/cdk/keycodes";
+import { AppSettings, GeneralSettings } from '../settings/app-settings';
+import { Store } from '@ngrx/store';
+import { AppConfig } from 'src/app.config.service';
+import { selectEffectiveGeneralSettings } from '../store/selectors';
+import { CurrentEntryPoint } from '../store/entrypoint.reducer';
+
+export interface IHypermediaClientService {
+  isBusy$ : BehaviorSubject<boolean>;
+  getHypermediaObjectStream(): BehaviorSubject<SirenClientObject>;
+  getHypermediaObjectRawStream(): BehaviorSubject<object>;
+  getNavPathsStream(): BehaviorSubject<Array<string>>;
+  navigateToEntryPoint() : void;
+  NavigateToApiPath(apiPath: ApiPath): void;
+  get currentApiPath(): ApiPath;
+  Navigate(url: string) : void;
+  DownloadAsFile(downloadUrl: string) : void;
+  navigateToMainPage() : void;
+  createHeaders(withContentType: string | null): HttpHeaders;
+  createWaheStyleActionParameters(action: HypermediaAction): any;
+  executeAction(action: HypermediaAction, actionResult: (actionResults: ActionResults, resultLocation: string | null, content: any, problemDetailsError: ProblemDetailsError | null) => void): any;
+}
 
 const problemDetailsMimeType = "application/problem+json";
 
 @Injectable()
-export class HypermediaClientService {
+export class HypermediaClientService implements IHypermediaClientService {
   private currentClientObject$: BehaviorSubject<SirenClientObject> = new BehaviorSubject<SirenClientObject>(new SirenClientObject());
   private currentClientObjectRaw$: BehaviorSubject<object> = new BehaviorSubject<object>({});
   private currentNavPaths$: BehaviorSubject<Array<string>> = new BehaviorSubject<Array<string>>(new Array<string>());
   private apiPath: ApiPath = new ApiPath();
+  private path: string | undefined;
 
   // indicate that a http request is pending
   public isBusy$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   private busyRequestsCounter = 0;
+  private generalSettings: GeneralSettings = new GeneralSettings();
 
   constructor(
     globalNavigationEvents: GlobalNavigationEvents,
@@ -42,7 +64,21 @@ export class HypermediaClientService {
     private router: Router,
     private settingsService: SettingsService,
     private authService: AuthService,
-    private problemDetailsErrorService: ProblemDetailsErrorService) {
+    private problemDetailsErrorService: ProblemDetailsErrorService,
+    private store: Store<{ appSettings: AppSettings, appConfig: AppConfig, currentEntryPoint: CurrentEntryPoint }>) {
+
+    store
+      .select(selectEffectiveGeneralSettings)
+      .subscribe({
+        next: generalSettings => {
+          this.generalSettings = generalSettings;
+        }
+      });
+    store
+      .select(state => state.currentEntryPoint)
+      .subscribe({
+        next: entryPoint => this.path = entryPoint.path,
+      });
 
     globalNavigationEvents.onGotoEntryPoint.subscribe({
       next: _ => {
@@ -114,14 +150,16 @@ export class HypermediaClientService {
       this.router.navigate(['hui'], {
         queryParams: {
           apiPath: this.apiPath.fullPath
-        }
-      });
+        },
+      browserUrl: this.buildBrowserUrl(this.path, this.apiPath)
+          });
 
-      const sirenClientObject = this.MapResponse(response.body);
-
-      this.currentClientObject$.next(sirenClientObject);
-      this.currentClientObjectRaw$.next(response.body!);
-      this.currentNavPaths$.next(this.apiPath.fullPath);
+      if (response.body) {
+        const sirenClientObject = this.MapResponse(response.body);
+        this.currentClientObject$.next(sirenClientObject);
+        this.currentClientObjectRaw$.next(response.body!);
+        this.currentNavPaths$.next(this.apiPath.fullPath);
+      }
     } catch (err: any) {
       if (!(err instanceof HttpErrorResponse)) {
         throw err;
@@ -180,6 +218,18 @@ export class HypermediaClientService {
     })));
   }
 
+  buildBrowserUrl(path: string | undefined, apiPath: ApiPath) {
+    if (path === undefined) {
+      path = 'hui';
+    }
+    const useApiPath = path === 'hui' ? apiPath.fullPath : apiPath.fullPath.slice(1);
+    if (useApiPath.length === 0) {
+      return path;
+    }
+    const q = new URLSearchParams(useApiPath.map(pathSegment => ['apiPath', pathSegment]));
+    return path + '?' + q.toString();
+  }
+
   DownloadAsFile(downloadUrl: string) {
     // this will break for large files
     // consider https://github.com/jimmywarting/StreamSaver.js
@@ -197,8 +247,10 @@ export class HypermediaClientService {
           fileName = "download.dat"
         }
 
-        let blob = response.body!;
-        saveAs(blob, fileName)
+        const blob = response.body!;
+        if (blob) {
+          saveAs(blob, fileName)
+        }
       })
   }
 
@@ -249,7 +301,7 @@ export class HypermediaClientService {
         body: body
       })
       .pipe(
-        timeout(this.settingsService.CurrentSettings.GeneralSettings.actionExecutionTimeoutMs),
+        timeout(this.generalSettings.actionExecutionTimeoutMs),
         tap({
             next: () => this.RemoveBusyRequest(),
             error: () => this.RemoveBusyRequest()
@@ -283,7 +335,7 @@ export class HypermediaClientService {
         break;
       }
       case ActionType.JsonObjectParameters: {
-        if (this.settingsService.CurrentSettings.GeneralSettings.useEmbeddingPropertyForActionParameters) {
+        if (this.generalSettings.useEmbeddingPropertyForActionParameters) {
           requestBody = this.createWaheStyleActionParameters(action);
         } else {
           requestBody = action.parameters;

@@ -2,8 +2,8 @@ import { Component } from '@angular/core';
 import { FormlyFieldCheckbox } from '@ngx-formly/material/checkbox';
 
 @Component({
-  selector: 'boolean-type',
-  template: `
+    selector: 'boolean-type',
+    template: `
     <mat-checkbox
       [indeterminate]="state === 0"
       [formControl]="formControl"
@@ -13,6 +13,7 @@ import { FormlyFieldCheckbox } from '@ngx-formly/material/checkbox';
       {{ props.label }}
     </mat-checkbox>
   `,
+    standalone: false
 })
 export class BooleanTypeComponent extends FormlyFieldCheckbox {
   state: number = -1;
@@ -36,7 +37,7 @@ export class BooleanTypeComponent extends FormlyFieldCheckbox {
   }
 
   ngOnInit() {
-    const schemaType = this.field.validators['type'].schemaType;
+    const schemaType = (this.field.validators ?? {})['type']?.schemaType;
     this.isNullable =
       Array.isArray(schemaType) &&
       (schemaType.includes(null) || schemaType.includes('null'));

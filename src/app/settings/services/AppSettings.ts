@@ -1,12 +1,12 @@
-export class AppSettings {
-    GeneralSettings: GeneralSettings = new GeneralSettings();
-    SiteSettings: SiteSettings = new SiteSettings();
+export class AppSettingsStorageModel {
+    GeneralSettings: GeneralSettingsStorageModel = new GeneralSettingsStorageModel();
+    SiteSettings: SiteSettingsStorageModel = new SiteSettingsStorageModel();
 
-    public constructor(init?: Partial<AppSettings>) {
+    public constructor(init?: Partial<AppSettingsStorageModel>) {
         Object.assign(this, init);
         this.EnsureDefaults();
     }
-    
+
     public EnsureDefaults() {
         if (!this.GeneralSettings.actionExecutionTimeoutMs) {
             this.GeneralSettings.actionExecutionTimeoutMs = 60000;
@@ -14,40 +14,40 @@ export class AppSettings {
     }
 }
 
-export class GeneralSettings {
-    showRawTab:boolean = true;
+export class GeneralSettingsStorageModel {
+    showRawTab: boolean = true;
 
-    showClasses:boolean = false;
-  
-    showEmptyEntities:boolean = false;
-  
-    showEmptyProperties:boolean = false;
-  
-    showNullProperties:boolean = true;
-  
-    showEmptyLinks:boolean = false;
-  
-    showEmptyActions:boolean = false;
-  
-    useEmbeddingPropertyForActionParameters:boolean = true;
+    showClasses: boolean = false;
 
-    showHostInformation:boolean = true;
+    showEmptyEntities: boolean = false;
 
-    actionExecutionTimeoutMs:number = 60000;
+    showEmptyProperties: boolean = false;
+
+    showNullProperties: boolean = true;
+
+    showEmptyLinks: boolean = false;
+
+    showEmptyActions: boolean = false;
+
+    useEmbeddingPropertyForActionParameters: boolean = true;
+
+    showHostInformation: boolean = true;
+
+    actionExecutionTimeoutMs: number = 60000;
 }
 
-export class SiteSettings {
-    GlobalSiteSettings: SiteSetting = new SiteSetting("Global");
-    SiteSpecificSettings: SiteSetting[] = [];
+export class SiteSettingsStorageModel {
+    GlobalSiteSettings: SiteSettingStorageModel = new SiteSettingStorageModel("Global");
+    SiteSpecificSettings: SiteSettingStorageModel[] = [];
 }
 
-export class SiteSetting {
-   constructor(public SiteUrl:string = "", public Headers: HeaderSetting[] = [], public AuthConfig : AuthenticationConfiguration | null = null){
+export class SiteSettingStorageModel {
+   constructor(public SiteUrl: string = "", public Headers: HeaderSettingStorageModel[] = [], public AuthConfig : AuthenticationConfiguration | null = null){
    }
 }
 
-export class HeaderSetting {
-    constructor(public Key:string = "", public Value:string ="") {
+export class HeaderSettingStorageModel {
+    constructor(public Key: string = "", public Value:string ="") {
     }
 }
 

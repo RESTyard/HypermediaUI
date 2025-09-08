@@ -3,11 +3,11 @@
     <mat-panel-title>
       <!-- <mat-icon class="icon" color="primary">cloud_upload</mat-icon>&nbsp;
       <div>{{action.name}}</div> -->
-      <button class="executeButton" 
-              mat-raised-button color="primary" 
-              matTooltip="{{action.title}}">
-      <mat-icon class="icon" >cloud_upload</mat-icon>
-      {{action.name}}
+      <button class="executeButton"
+        mat-raised-button color="primary"
+        matTooltip="{{action.title}}">
+        <mat-icon class="icon" >cloud_upload</mat-icon>
+        {{action.name}}
       </button>
       <mat-icon class="icon" color="primary" style="margin-left: 4px;">expand_more</mat-icon>
     </mat-panel-title>
@@ -18,66 +18,88 @@
 
   <ng-template matExpansionPanelContent>
     <ngx-dropzone class="dropzone-container"
-                  [multiple]="action.FileUploadConfiguration.AllowMultiple"
-                  [maxFileSize]="action.FileUploadConfiguration.MaxFileSizeBytes > -1 ? action.FileUploadConfiguration.MaxFileSizeBytes : 0"
-                  [accept]="action.FileUploadConfiguration.Accept.length > 0 ? action.FileUploadConfiguration.Accept.join(',') : '*'"
-                  [processDirectoryDrop]="action.FileUploadConfiguration.AllowMultiple"
-                  [expandable]=true
-                  (change)="onSelect($event)">
-      <ngx-dropzone-label *ngIf="action.FileUploadConfiguration.AllowMultiple === false">Drop a file here or click to
-        select
-      </ngx-dropzone-label>
-      <ngx-dropzone-label *ngIf="action.FileUploadConfiguration.AllowMultiple === true">Drop a files or folder here or
-        click to select
-      </ngx-dropzone-label>
-      <ngx-dropzone-preview *ngFor="let file of files" [removable]="true" (removed)="onRemove(file)">
-        <ngx-dropzone-label>
-          <mat-icon class="fileIcon">description</mat-icon>
-          <mat-vertical-stepper></mat-vertical-stepper>
-          <span class="file-name" [matTooltip]="file.name">{{ file.name }}</span>
-          <mat-vertical-stepper></mat-vertical-stepper>
-          <span class="size">{{convertBytesToMBReadable(file.size)}}</span>
+      [multiple]="action.FileUploadConfiguration.AllowMultiple"
+      [maxFileSize]="action.FileUploadConfiguration.MaxFileSizeBytes > -1 ? action.FileUploadConfiguration.MaxFileSizeBytes : 0"
+      [accept]="action.FileUploadConfiguration.Accept.length > 0 ? action.FileUploadConfiguration.Accept.join(',') : '*'"
+      [processDirectoryDrop]="action.FileUploadConfiguration.AllowMultiple"
+      [expandable]=true
+      (change)="onSelect($event)">
+      @if (action.FileUploadConfiguration.AllowMultiple === false) {
+        <ngx-dropzone-label>Drop a file here or click to
+          select
         </ngx-dropzone-label>
-      </ngx-dropzone-preview>
+      }
+      @if (action.FileUploadConfiguration.AllowMultiple === true) {
+        <ngx-dropzone-label>Drop a files or folder here or
+          click to select
+        </ngx-dropzone-label>
+      }
+      @for (file of files; track file) {
+        <ngx-dropzone-preview [removable]="true" (removed)="onRemove(file)">
+          <ngx-dropzone-label>
+            <mat-icon class="fileIcon">description</mat-icon>
+            <mat-vertical-stepper></mat-vertical-stepper>
+            <span class="file-name" [matTooltip]="file.name">{{ file.name }}</span>
+            <mat-vertical-stepper></mat-vertical-stepper>
+            <span class="size">{{convertBytesToMBReadable(file.size)}}</span>
+          </ngx-dropzone-label>
+        </ngx-dropzone-preview>
+      }
     </ngx-dropzone>
 
     <div class="buttonRow">
       <!--place tooltip in parent because it does not work when button is disabled-->
       <span matTooltip="Please select a file." [matTooltipDisabled]="this.hasFiles()">
         <button (click)="onSubmit()"
-                [disabled]="!this.hasFiles()"
-                mat-raised-button>Upload</button>
+          [disabled]="!this.hasFiles()"
+        mat-raised-button>Upload</button>
       </span>
 
       <div class="resultContainer">
         <!-- result icon -->
-        <div class="resultIconContainer" [ngSwitch]="actionResult" *ngIf="executed">
-          <mat-icon *ngSwitchCase="ActionResultsEnum.ok" class="containerElement" color="primary"
-                    matTooltip={{actionMessage}}>done</mat-icon>
-          <mat-icon *ngSwitchCase="ActionResultsEnum.error" class="containerElement hoverButton" color="warn" [matMenuTriggerFor]="errorPopup"
-                    matTooltip={{actionMessage}}>error</mat-icon>
-          <mat-progress-spinner [diameter]="26" *ngSwitchCase="ActionResultsEnum.pending" mode="indeterminate" color="accent"></mat-progress-spinner>
-          <mat-icon *ngSwitchCase="ActionResultsEnum.undefined" class="containerElement" color="primary"
-                    matTooltip={{actionMessage}}>question_mark</mat-icon>
-        </div>
+        @if (executed) {
+          <div class="resultIconContainer">
+            @switch (actionResult) {
+              @case (ActionResultsEnum.ok) {
+                <mat-icon class="containerElement" color="primary"
+                matTooltip={{actionMessage}}>done</mat-icon>
+              }
+              @case (ActionResultsEnum.error) {
+                <mat-icon class="containerElement hoverButton" color="warn" [matMenuTriggerFor]="errorPopup"
+                matTooltip={{actionMessage}}>error</mat-icon>
+              }
+              @case (ActionResultsEnum.pending) {
+                <mat-progress-spinner [diameter]="26" mode="indeterminate" color="accent"></mat-progress-spinner>
+              }
+              @case (ActionResultsEnum.undefined) {
+                <mat-icon class="containerElement" color="primary"
+                matTooltip={{actionMessage}}>question_mark</mat-icon>
+              }
+            }
+          </div>
+        }
         <!-- result button -->
-        <button *ngIf="actionResultLocation !== null"
-                class="containerElement"
-                mat-raised-button
-                (click)="navigateLocation(actionResultLocation)"
-                color="accent"
-                matTooltip="Go to result: {{actionResultLocation}}">
-          <mat-icon class="icon" color="primary">start</mat-icon>
-          Result
-        </button>
+        @if (actionResultLocation !== null) {
+          <button
+            class="containerElement"
+            mat-raised-button
+            (click)="navigateLocation(actionResultLocation)"
+            color="accent"
+            matTooltip="Go to result: {{actionResultLocation}}">
+            <mat-icon class="icon" color="primary">start</mat-icon>
+            Result
+          </button>
+        }
       </div>
     </div>
 
     <mat-menu #errorPopup="matMenu">
       <div (click)="$event.stopPropagation()">
-        <app-problem-details-view *ngIf="problemDetailsError"
-                                  [problemDetailsError]="problemDetailsError">
-        </app-problem-details-view>
+        @if (problemDetailsError) {
+          <app-problem-details-view
+            [problemDetailsError]="problemDetailsError">
+          </app-problem-details-view>
+        }
       </div>
     </mat-menu>
   </ng-template>

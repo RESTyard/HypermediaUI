@@ -3,9 +3,10 @@ import { ClipboardService } from 'ngx-clipboard';
 import { ProblemDetailsError } from '../problem-details-error';
 
 @Component({
-  selector: 'app-problem-details-view',
-  templateUrl: './problem-details-view.component.html',
-  styleUrls: ['./problem-details-view.component.scss']
+    selector: 'app-problem-details-view',
+    templateUrl: './problem-details-view.component.html',
+    styleUrls: ['./problem-details-view.component.scss'],
+    standalone: false
 })
 export class ProblemDetailsViewComponent implements OnInit {
 

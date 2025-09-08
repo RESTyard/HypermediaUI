@@ -31,7 +31,7 @@ export class ApiPath {
       }
 
       for (let i = 0; i < this.apiPath.length; i++) {
-        if (this[i] !== other[i]) {
+        if (this.apiPath[i] !== other.apiPath[i]) {
           return false;
         }
       }
@@ -71,6 +71,10 @@ export class ApiPath {
       }
 
       this.apiPath = this.apiPath.slice(0, stepIndex + 1);
+    }
+
+    insert(stepUrl: string, index: number) {
+      this.apiPath.splice(index, 0, stepUrl);
     }
 
     private getStepIndex(stepUrl: string): number {
