@@ -197,7 +197,7 @@ export class HypermediaClientService {
           fileName = "download.dat"
         }
 
-        let blob = response.body;
+        let blob = response.body!;
         saveAs(blob, fileName)
       })
   }

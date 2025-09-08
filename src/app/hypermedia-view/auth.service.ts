@@ -7,11 +7,11 @@ import {Result, Unit} from "../utils/result";
 @Injectable()
 export class AuthService {
   private userManagers: Map<string, UserManager>;
-  private tokenRecentlyAquired: Map<string, boolean>;
+  private tokenRecentlyAquired: Set<string>;
 
   constructor(private settingsService: SettingsService) {
     this.userManagers = new Map();
-    this.tokenRecentlyAquired = new Map();
+    this.tokenRecentlyAquired = new Set();
   }
 
   async login({entryPoint, authority, client_id, redirect_uri, scope}: {
@@ -98,7 +98,7 @@ export class AuthService {
     } else {
       headers.Value = "Bearer " + token;
     }
-    this.tokenRecentlyAquired.set(entryPoint, true);
+    this.tokenRecentlyAquired.add(entryPoint);
     siteSettings.AuthConfig = null;
 
     this.settingsService.SaveCurrentSettings();
