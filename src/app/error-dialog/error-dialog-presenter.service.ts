@@ -14,9 +14,9 @@ import { HypermediaClientService } from '../hypermedia-view/hypermedia-client.se
 
 @Injectable()
 export class ErrorDialogPresenter {
-  _viewContainer: ViewContainerRef;
+  _viewContainer: ViewContainerRef = undefined!;
 
-  modal: ComponentRef<ErrorModalDialogComponent>;
+  modal: ComponentRef<ErrorModalDialogComponent> = undefined!;
 
   set viewContainer(viewContainer: ViewContainerRef) {
     if (!viewContainer) {

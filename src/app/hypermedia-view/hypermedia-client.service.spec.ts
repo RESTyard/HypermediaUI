@@ -8,11 +8,14 @@ import { SirenDeserializer } from './siren-parser/siren-deserializer';
 import { Router } from '@angular/router';
 import { SettingsService } from '../settings/services/settings.service';
 import { SchemaSimplifier } from './siren-parser/schema-simplifier';
+import { importStore } from '../store/store-module';
 
 describe('HypermediaClientService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [],
+      imports: [
+        importStore(),
+      ],
       providers: [
         HypermediaClientService,
         provideHttpClient(),

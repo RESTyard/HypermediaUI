@@ -10,9 +10,11 @@
         <mat-panel-title>
           {{idx + 1}}: {{embeddedEntity.relations.join(",")}}
         </mat-panel-title>
-        <mat-panel-description>
-          Classes: {{embeddedEntity.classes.join(",")}}
-        </mat-panel-description>
+        @if (generalSettings.showClasses) {
+          <mat-panel-description>
+            Classes: {{embeddedEntity.classes.join(",")}}
+          </mat-panel-description>
+        }
       </mat-expansion-panel-header>
       <ng-template matExpansionPanelContent>
         <app-entity-view [entity]="embeddedEntity"></app-entity-view>
@@ -26,9 +28,11 @@
         <span>
           {{idx + 1 + embeddedEntities?.length}}: {{embeddedLinkEntity.relations.join(",")}}
         </span>
-        <span>
-          Classes: {{embeddedLinkEntity.classes.join(",")}}
-        </span>
+        @if (generalSettings.showClasses) {
+          <span>
+            Classes: {{embeddedLinkEntity.classes.join(",")}}
+          </span>
+        }
         <button mat-icon-button class="CopyToClipboardButton" (click)="copyToClipBoard(embeddedLinkEntity.href)" matTooltip="Copy to clipboard" color="primary">
           <mat-icon>assignment</mat-icon>
         </button>

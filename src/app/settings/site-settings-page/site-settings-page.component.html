@@ -1,8 +1,8 @@
 
 
-<app-site-settings [siteSetting]="siteSettings?.GlobalSiteSettings" [urlEditable]="false"
+<app-site-settings [siteSetting]="siteSettings.globalSiteSettings" [urlEditable]="false"
 headline="Global" [canBeDeleted]="false"></app-site-settings>
-@for (site of siteSettings?.SiteSpecificSettings; track site; let i = $index) {
+@for (site of siteSettings.siteSpecificSettings.values(); track site; let i = $index) {
   <app-site-settings [siteSetting]="site" (deleteRequested)="removeSite(i)"></app-site-settings>
 }
 

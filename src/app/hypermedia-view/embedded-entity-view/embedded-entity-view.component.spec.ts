@@ -2,6 +2,7 @@ import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { EmbeddedEntityViewComponent } from './embedded-entity-view.component';
 import { provideHypermediaClientServiceMock } from 'src/app/test/HypermediaClientServiceMock';
+import { importStore } from 'src/app/store/store-module';
 
 describe('EmbeddedEntityViewComponent', () => {
   let component: EmbeddedEntityViewComponent;
@@ -12,7 +13,9 @@ describe('EmbeddedEntityViewComponent', () => {
       declarations: [
         EmbeddedEntityViewComponent
       ],
-      imports: [],
+      imports: [
+        importStore(),
+      ],
       providers: [
         provideHypermediaClientServiceMock(),
       ],

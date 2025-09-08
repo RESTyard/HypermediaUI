@@ -1,6 +1,8 @@
 import { Component, EventEmitter, Input, OnInit, Output, SimpleChanges } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
-import { HeaderSetting, SiteSetting } from '../services/AppSettings';
+import { AppSettings, SiteSetting, SiteSettings } from '../app-settings';
+import { Store } from '@ngrx/store';
+import { addHeader, removeHeader, updateHeader, updateSiteUrl } from 'src/app/store/appsettings.actions';
 
 @Component({
     selector: 'app-site-settings',
@@ -8,8 +10,6 @@ import { HeaderSetting, SiteSetting } from '../services/AppSettings';
     styleUrls: ['./site-settings.component.scss'],
     standalone: false
 })
-
-
 export class SiteSettingsComponent implements OnInit {
   @Input() siteSetting: SiteSetting | undefined = new SiteSetting();
   @Input() urlEditable: boolean = true;
@@ -20,7 +20,9 @@ export class SiteSettingsComponent implements OnInit {
   public urlFormControl: FormControl = new FormControl();
   headerFormGroups: FormGroup[] = [];
 
-  constructor(private formBuilder: FormBuilder) {
+  constructor(
+    private formBuilder: FormBuilder,
+    private store: Store<{ appSettings: AppSettings }>) {
   }
 
   ngOnInit(): void {
@@ -28,39 +30,56 @@ export class SiteSettingsComponent implements OnInit {
       this.siteSetting = new SiteSetting();
     }
 
-    this.urlFormControl = new FormControl(this.siteSetting!.SiteUrl);
-    this.urlFormControl.valueChanges.subscribe(v => this.siteSetting!.SiteUrl = v.trim())
+    this.urlFormControl = new FormControl(this.siteSetting!.siteUrl, { updateOn: 'blur' });
 
-    const headers = this.siteSetting.Headers;
-    headers.forEach(h => {
-      this.headerFormGroups.push(
-        this.AddHeaderFormControl(h));
+    this.urlFormControl.valueChanges.subscribe(v => {
+      v = v.trim();
+      this.store.dispatch(updateSiteUrl({ previousSiteUrl: this.siteSetting!.siteUrl, newSiteUrl: v}));
     });
+
+    const headers = this.siteSetting.headers;
+    this.headerFormGroups = Array
+      .from(headers.entries())
+      .map(h => this.AddHeaderFormControl(h));
   }
 
-  private AddHeaderFormControl(headerSetting: HeaderSetting): FormGroup<any> {
-    let key = new FormControl(headerSetting.Key);
-    key.valueChanges.subscribe(v => v ? headerSetting.Key = v!.trim() : headerSetting.Key = "");
-
-    let value = new FormControl(headerSetting.Value);
-    value.valueChanges.subscribe(v => v ? headerSetting.Value = v!.trim() : headerSetting.Value = "");
-
-    return this.formBuilder.group({
-      key: key,
-      value: value
+  private AddHeaderFormControl(headerSetting: [string, string]): FormGroup<any> {
+    let key = headerSetting[0];
+    let value = headerSetting[1];
+    let keyControl = new FormControl(key, { updateOn: 'blur'});
+    keyControl.valueChanges.subscribe(v => {
+      v = (v ?? "").trim();
+      if (key === "") {
+        this.store.dispatch(addHeader({ siteUrl: this.siteSetting!.siteUrl, key: v, value: value }));
+      } else {
+        this.store.dispatch(updateHeader({ siteUrl: this.siteSetting!.siteUrl, previousKey: key, newKey: v, newValue: value }));
+      }
+      key = v;
     });
+
+    let valueControl = new FormControl(value, { updateOn: 'blur' });
+    valueControl.valueChanges.subscribe(v => {
+      v = (v ?? "").trim();
+      if (key !== "") {
+        this.store.dispatch(updateHeader({ siteUrl: this.siteSetting!.siteUrl, previousKey: key, newKey: key, newValue: v }));
+      }
+      value = v;
+    });
+
+    const result = this.formBuilder.group({
+      key: keyControl,
+      value: valueControl
+    });
+    return result;
   }
 
   addHeader() {
-    let newHeader = new HeaderSetting();
-    this.siteSetting?.Headers.push(newHeader);
-
-    this.headerFormGroups.push(this.AddHeaderFormControl(newHeader));
+    this.headerFormGroups.push(this.AddHeaderFormControl(["", ""]));
   }
 
   removeHeader(index: number) {
-    this.siteSetting?.Headers.splice(index, 1);
-    this.headerFormGroups.splice(index, 1);
+    const header = Array.from(this.siteSetting!.headers.entries())[index];
+    this.store.dispatch(removeHeader({ siteUrl: this.siteSetting!.siteUrl, key: header[0]}));
   }
 
   removeSite() {

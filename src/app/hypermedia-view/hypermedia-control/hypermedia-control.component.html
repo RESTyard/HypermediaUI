@@ -1,6 +1,6 @@
 <mat-toolbar class="headerMenue" color="primary">
   <mat-icon class="appIcon">signpost</mat-icon>
-  <span>Hypermedia UI</span>
+  <span [innerText]="title"></span>
   <span class="spacer"></span>
   @if (GeneralSettings.showHostInformation && IsInsecureConnection) {
     <mat-icon id="IsInsecureConnectionIcon" matTooltip="The connection is unencrypted (http)">lock_open</mat-icon>
@@ -11,10 +11,14 @@
   @if (GeneralSettings.showHostInformation) {
     <span class="spacer"></span>
   }
-  <app-settings-menu></app-settings-menu>
-  <button mat-icon-button matTooltip="Exit API" (click)="navigateMainPage()">
-    <mat-icon class="icon">exit_to_app</mat-icon>
-  </button>
+  @if (showSettingsIcon) {
+    <app-settings-menu></app-settings-menu>
+  }
+  @if (showExitIcon) {
+    <button mat-icon-button matTooltip="Exit API" (click)="navigateMainPage()">
+      <mat-icon class="icon">exit_to_app</mat-icon>
+    </button>
+  }
 </mat-toolbar>
 
 @if (isBusy) {
