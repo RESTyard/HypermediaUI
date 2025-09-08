@@ -1,6 +1,6 @@
-import { Injectable } from '@angular/core';
-import { HttpClient, HttpErrorResponse, HttpResponse, HttpHeaders } from '@angular/common/http';
-import { Router } from '@angular/router';
+import {Injectable} from '@angular/core';
+import {HttpClient, HttpErrorResponse, HttpHeaders, HttpResponse} from '@angular/common/http';
+import {Router} from '@angular/router';
 
 import {BehaviorSubject, lastValueFrom, tap, timeout} from 'rxjs';
 import {saveAs} from 'file-saver';
@@ -16,28 +16,40 @@ import {SettingsService} from '../settings/services/settings.service';
 import {ProblemDetailsError} from '../error-dialog/problem-details-error';
 import {MediaTypes} from "./MediaTypes";
 import {AuthService} from './auth.service';
-import {Result} from "../utils/result";
+import {Result, Unit} from "../utils/result";
 import {ProblemDetailsErrorService} from "../error-dialog/problem-details-error.service";
 import {GlobalNavigationEvents} from '../global-navigation.events';
-import { AppSettings, GeneralSettings } from '../settings/app-settings';
-import { Store } from '@ngrx/store';
-import { AppConfig } from 'src/app.config.service';
-import { selectEffectiveGeneralSettings } from '../store/selectors';
-import { CurrentEntryPoint } from '../store/entrypoint.reducer';
+import {AppSettings, GeneralSettings} from '../settings/app-settings';
+import {Store} from '@ngrx/store';
+import {AppConfig} from 'src/app.config.service';
+import {selectEffectiveGeneralSettings} from '../store/selectors';
+import {CurrentEntryPoint} from '../store/entrypoint.reducer';
 
 export interface IHypermediaClientService {
-  isBusy$ : BehaviorSubject<boolean>;
+  isBusy$: BehaviorSubject<boolean>;
+
   getHypermediaObjectStream(): BehaviorSubject<SirenClientObject>;
+
   getHypermediaObjectRawStream(): BehaviorSubject<object>;
+
   getNavPathsStream(): BehaviorSubject<Array<string>>;
-  navigateToEntryPoint() : void;
+
+  navigateToEntryPoint(): void;
+
   NavigateToApiPath(apiPath: ApiPath): void;
+
   get currentApiPath(): ApiPath;
-  Navigate(url: string) : void;
-  DownloadAsFile(downloadUrl: string) : void;
-  navigateToMainPage() : void;
+
+  Navigate(url: string): void;
+
+  DownloadAsFile(downloadUrl: string): void;
+
+  navigateToMainPage(): void;
+
   createHeaders(withContentType: string | null): HttpHeaders;
+
   createWaheStyleActionParameters(action: HypermediaAction): any;
+
   executeAction(action: HypermediaAction, actionResult: (actionResults: ActionResults, resultLocation: string | null, content: any, problemDetailsError: ProblemDetailsError | null) => void): any;
 }
 
@@ -151,8 +163,8 @@ export class HypermediaClientService implements IHypermediaClientService {
         queryParams: {
           apiPath: this.apiPath.fullPath
         },
-      browserUrl: this.buildBrowserUrl(this.path, this.apiPath)
-          });
+        browserUrl: this.buildBrowserUrl(this.path, this.apiPath)
+      });
 
       if (response.body) {
         const sirenClientObject = this.MapResponse(response.body);
@@ -165,47 +177,36 @@ export class HypermediaClientService implements IHypermediaClientService {
         throw err;
       }
 
-      if (err.status === 401 && !this.authService.isTokenRecentlyAcquired(url)) {
-
-        // https://learn.microsoft.com/en-us/entra/msal/dotnet/advanced/extract-authentication-parameters
-        const header = err.headers.get('www-authenticate');
-        let result = await (
-          this.parseWWWAuthenticateHeaderSchemeParams(header, "Bearer")
-            .bind(value => {
-              let authUri = value.get('authorization_uri')
-              let clientId = value.get('client_id');
-              return authUri && clientId ? Result.ok<{ authUri: string, clientId: string }>({
-                authUri,
-                clientId
-              }) : Result.error<{
-                authUri: string,
-                clientId: string
-              }>("authorization_uri and client_id need to be configured.");
+      // https://learn.microsoft.com/en-us/entra/msal/dotnet/advanced/extract-authentication-parameters
+      let redirectUri = window.location.origin + "/" + this.buildBrowserUrl('auth-redirect', this.apiPath, 'api_path');
+      const result = await (
+        this.assertAuthenticationError(err, url)
+          .bind(_ => Result.fromValue(err.headers.get('www-authenticate'), "No authorization challenges provided from the backend."))
+          .bind(header => this.parseWWWAuthenticateHeaderSchemeParams(header, "Bearer"))
+          .bind(authSchemaParameter => this.assertOIDCChallengeHeadersArePresent(authSchemaParameter))
+          .bindAsync(async tuple =>
+            await this.authService.login({
+              entryPoint: url,
+              authority: tuple.authUri,
+              client_id: tuple.clientId,
+              redirect_uri: redirectUri,
+              scope: 'openid profile email offline_access'
             })
-            .bindAsync(async tuple =>
-              await this.authService.login({
-                entryPoint: url,
-                authority: tuple.authUri,
-                client_id: tuple.clientId,
-                redirect_uri: window.location.origin + "/auth-redirect?api_path=" + encodeURIComponent(url),
-                scope: 'openid profile email offline_access'
-              })
-            ));
-        result.match(
-          _ => {
-            return;
-          },
-          error => {
-            console.error(error);
-            this.problemDetailsErrorService.showProblemDetailsDialog(this.MapHttpErrorResponseToProblemDetails(err));
-          }
-        )
-        return;
-      }
-
-      this.problemDetailsErrorService.showProblemDetailsDialog(this.MapHttpErrorResponseToProblemDetails(err));
+          ));
+      result.match(
+        _ => { },
+        error => {
+          console.error(error);
+          this.problemDetailsErrorService.showProblemDetailsDialog(this.MapHttpErrorResponseToProblemDetails(err));
+        }
+      )
     }
   }
+
+  private assertAuthenticationError = (error: HttpErrorResponse, url: string): Result<Unit> =>
+    error.status === 401 && !this.authService.isTokenRecentlyAcquired(url)
+      ? Result.ok(Unit.NoThing)
+      : Result.error("");
 
   private parseWWWAuthenticateHeaderSchemeParams(header: string | null, authScheme: string): Result<Map<string, string>> {
     if (!header?.startsWith('Bearer')) {
@@ -219,15 +220,23 @@ export class HypermediaClientService implements IHypermediaClientService {
     })));
   }
 
-  buildBrowserUrl(path: string | undefined, apiPath: ApiPath) {
+  private assertOIDCChallengeHeadersArePresent(authParams: Map<string, string>) : Result<{ authUri: string, clientId: string }> {
+    let authUri = authParams.get('authorization_uri')
+    let clientId = authParams.get('client_id');
+    return authUri && clientId
+      ? Result.ok({ authUri, clientId })
+      : Result.error("authorization_uri and client_id need to be configured.");
+  }
+
+  buildBrowserUrl(path: string | undefined, apiPath: ApiPath, variableName: string = 'apiPath') {
     if (path === undefined) {
       path = 'hui';
     }
-    const useApiPath = path === 'hui' ? apiPath.fullPath : apiPath.fullPath.slice(1);
+    const useApiPath = path === 'hui' || path === 'auth-redirect' ? apiPath.fullPath : apiPath.fullPath.slice(1);
     if (useApiPath.length === 0) {
       return path;
     }
-    const q = new URLSearchParams(useApiPath.map(pathSegment => ['apiPath', pathSegment]));
+    const q = new URLSearchParams(useApiPath.map(pathSegment => [variableName, pathSegment]));
     return path + '?' + q.toString();
   }
 

@@ -9,13 +9,11 @@ import {addHeader, addSite, setAuthConfig, updateHeader} from "../store/appsetti
 
 @Injectable()
 export class AuthService {
-  private userManagers: Map<string, UserManager>;
   private tokenRecentlyAcquired: Set<string>;
 
   private siteSpecificSettings: ImmutableMap<string, SiteSetting> = ImmutableMap();
 
   constructor(private settingsService: SettingsService, private store: Store<{ appSettings: AppSettings }>) {
-    this.userManagers = new Map();
     this.tokenRecentlyAcquired = new Set();
 
     this.store
@@ -40,10 +38,11 @@ export class AuthService {
       scope: scope
     })
 
-    this.userManagers.set(entryPoint, userManager)
     const siteSettings = this.getOrCreateSiteSpecificSettings(siteUrl);
 
     if (siteSettings.authConfig !== undefined) {
+      this.store.dispatch(setAuthConfig({siteUrl: siteUrl, authConfig: undefined}));
+      this.settingsService.SaveCurrentSettings();
       return Result.error("Different login is already in progress");
     }
     this.store.dispatch(setAuthConfig({
@@ -84,7 +83,7 @@ export class AuthService {
     const siteSettings = this.getOrCreateSiteSpecificSettings(siteUrl);
 
     if (!siteSettings.authConfig) {
-      return Result.error("OAuth config was not found.");
+      return Result.error("OAuth config was not found for entryPoint: " + entryPoint + ", siteUrl: " + siteUrl);
     }
 
     const authConfig = siteSettings.authConfig;

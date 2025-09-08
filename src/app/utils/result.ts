@@ -8,6 +8,12 @@
     return new Error(error);
   }
 
+  public static fromValue<T>(value: T | null | undefined, error: string = ""): Result<T> {
+    return value
+      ? Result.ok<T>(value)
+      : Result.error<T>(error)
+  }
+
   private readonly __typename: string;
 
   protected constructor(__typename: string) {
