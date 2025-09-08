@@ -16,7 +16,6 @@ import { ApiPath } from '../hypermedia-view/api-path';
   styleUrl: './alias-page.component.css'
 })
 export class AliasPageComponent {
-  showHypermediaControl: boolean = false;
   error: string | undefined = undefined;
 
   constructor(
