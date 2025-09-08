@@ -27,7 +27,8 @@ export class AuthRedirectComponent {
       .then(success =>
         success.match(
           _ => this.router.navigate(['hui'], {
-              queryParams: {
+            replaceUrl: true,
+            queryParams: {
                 apiPath: targetEntryPoint
               }
             }

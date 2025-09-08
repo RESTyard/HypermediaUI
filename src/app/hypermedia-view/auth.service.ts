@@ -14,7 +14,13 @@ export class AuthService {
     this.tokenRecentlyAquired = new Map();
   }
 
-  async login(entryPoint: string, authority: string, client_id: string, redirect_uri: string, scope: string): Promise<Result<Unit>> {
+  async login({entryPoint, authority, client_id, redirect_uri, scope}: {
+    entryPoint: string,
+    authority: string,
+    client_id: string,
+    redirect_uri: string,
+    scope: string
+  }): Promise<Result<Unit>> {
     let userManager = new UserManager({
       authority: authority,
       client_id: client_id,

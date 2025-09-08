@@ -10,7 +10,7 @@ import {
 import { ErrorModalDialogComponent } from './error-modal-dialog/error-modal-dialog.component';
 import { ThemePalette } from "@angular/material/core";
 import { ProblemDetailsError } from './problem-details-error';
-import { HypermediaClientService } from '../hypermedia-view/hypermedia-client.service';
+import { GlobalNavigationEvents } from '../global-navigation.events';
 
 @Injectable()
 export class ErrorDialogPresenter {
@@ -32,7 +32,7 @@ export class ErrorDialogPresenter {
   }
 
   constructor(
-    private hypermediaClientService: HypermediaClientService,
+    private globalNavigationEvents: GlobalNavigationEvents,
     private appRootProvider: ErrorDialogContainerProvider,
     private injector: Injector,
     private zone: NgZone
@@ -65,12 +65,12 @@ export class ErrorDialogPresenter {
 
     this.modal.instance.gotoEntryPoint.subscribe(() => {
       this.destroy();
-      this.zone.run(() => this.hypermediaClientService.navigateToEntryPoint());
+      this.zone.run(() => this.globalNavigationEvents.emitGotoEntryPoint());
     });
 
     this.modal.instance.exitApi.subscribe(() => {
       this.destroy();
-      this.zone.run(() => this.hypermediaClientService.navigateToMainPage());
+      this.zone.run(() => this.globalNavigationEvents.emitGotoMainPage());
     });
   }
 

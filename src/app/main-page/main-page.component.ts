@@ -1,6 +1,6 @@
 import { HypermediaClientService } from '../hypermedia-view/hypermedia-client.service';
 import { Component, OnInit, Input } from '@angular/core';
-import {FormControl, Validators} from '@angular/forms';
+import { FormControl, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-main-page',
@@ -17,16 +17,15 @@ export class MainPageComponent implements OnInit {
   @Input() apiEntryPoint: string = "";
 
   constructor(private hypermediaClientService: HypermediaClientService) {
-  this.urlFormControl = new FormControl("", [
+    this.urlFormControl = new FormControl("", [
       Validators.required,
       Validators.pattern(this.URL_REGEX)
     ]);
   }
 
-  ngOnInit() {}
+  ngOnInit() { }
 
   navigate() {
-    this.hypermediaClientService.Navigate(this.urlFormControl.value).catch(err => { throw err; });
+    this.hypermediaClientService.Navigate(this.urlFormControl.value);
   }
-
 }

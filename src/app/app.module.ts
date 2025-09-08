@@ -29,12 +29,14 @@ import { MatTableModule } from '@angular/material/table';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { CustomHeadersInterceptor } from './settings/custom-headers.interceptor';
 import { AuthRedirectComponent } from './auth-redirect/auth-redirect.component';
+import { ProblemDetailsErrorService } from './error-dialog/problem-details-error.service';
+import { GlobalNavigationEvents } from './global-navigation.events';
 
 const appRoutes: Routes = [
   {
     path: 'hui',
     component: HypermediaControlComponent
-  },  
+  },
   {
     path: 'auth-redirect',
     component: AuthRedirectComponent
@@ -91,7 +93,9 @@ export const myCustomTooltipDefaults: MatTooltipDefaultOptions = {
   {
     provide: MAT_TOOLTIP_DEFAULT_OPTIONS,
     useValue: myCustomTooltipDefaults
-  }
+  },
+  ProblemDetailsErrorService,
+  GlobalNavigationEvents,
   ],
   bootstrap: [AppComponent]
 })
