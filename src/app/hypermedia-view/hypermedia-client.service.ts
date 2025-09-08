@@ -124,7 +124,7 @@ export class HypermediaClientService {
       this.currentNavPaths$.next(this.apiPath.fullPath);
     } catch (err: any) {
       if (!(err instanceof HttpErrorResponse)) {
-        return;
+        throw err;
       }
 
       if (err.status === 401 && !this.authService.isTokenRecentlyAcquired(url)) {
