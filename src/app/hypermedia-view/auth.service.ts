@@ -1,17 +1,26 @@
 import {Injectable} from '@angular/core';
 import {User, UserManager} from 'oidc-client-ts';
 import {SettingsService} from '../settings/services/settings.service';
-import {AuthenticationConfiguration, HeaderSetting} from '../settings/services/AppSettings';
 import {Result, Unit} from "../utils/result";
+import {Store} from "@ngrx/store";
+import {AppSettings, AuthenticationConfiguration, SiteSetting} from "../settings/app-settings";
+import {Map as ImmutableMap} from "immutable";
+import {addHeader, addSite, setAuthConfig, updateHeader} from "../store/appsettings.actions";
 
 @Injectable()
 export class AuthService {
   private userManagers: Map<string, UserManager>;
-  private tokenRecentlyAquired: Set<string>;
+  private tokenRecentlyAcquired: Set<string>;
 
-  constructor(private settingsService: SettingsService) {
+  private siteSpecificSettings: ImmutableMap<string, SiteSetting> = ImmutableMap();
+
+  constructor(private settingsService: SettingsService, private store: Store<{ appSettings: AppSettings }>) {
     this.userManagers = new Map();
-    this.tokenRecentlyAquired = new Set();
+    this.tokenRecentlyAcquired = new Set();
+
+    this.store
+      .select(s => s.appSettings.siteSettings.siteSpecificSettings)
+      .subscribe(settings => this.siteSpecificSettings = settings);
   }
 
   async login({entryPoint, authority, client_id, redirect_uri, scope}: {
@@ -21,7 +30,9 @@ export class AuthService {
     redirect_uri: string,
     scope: string
   }): Promise<Result<Unit>> {
-    let userManager = new UserManager({
+    const siteUrl = new URL(entryPoint).host;
+
+    const userManager = new UserManager({
       authority: authority,
       client_id: client_id,
       redirect_uri: redirect_uri,
@@ -30,15 +41,17 @@ export class AuthService {
     })
 
     this.userManagers.set(entryPoint, userManager)
+    const siteSettings = this.getOrCreateSiteSpecificSettings(siteUrl);
 
-    let siteSettings = this.settingsService.getSettingsForSite(new URL(entryPoint).host);
-    if (siteSettings.AuthConfig !== null) {
+    if (siteSettings.authConfig !== undefined) {
       return Result.error("Different login is already in progress");
     }
+    this.store.dispatch(setAuthConfig({
+      siteUrl: siteUrl,
+      authConfig: new AuthenticationConfiguration({authority, client_id, redirect_uri, scope})
+    }));
+    this.settingsService.SaveCurrentSettings();
 
-    siteSettings.AuthConfig = new AuthenticationConfiguration(authority, client_id, redirect_uri, scope);
-
-    this.settingsService.saveSettingsForSite(siteSettings);
     try {
       await userManager.signinRedirect();
       return Result.ok(Unit.NoThing);
@@ -47,23 +60,34 @@ export class AuthService {
     }
   }
 
+  private getOrCreateSiteSpecificSettings(siteUrl: string) {
+    let siteSettings = this.siteSpecificSettings.get(siteUrl)
+
+    if (!siteSettings) {
+      this.store.dispatch(addSite({siteUrl: siteUrl}));
+      siteSettings = new SiteSetting({siteUrl: siteUrl});
+    }
+    return siteSettings;
+  }
+
   isTokenRecentlyAcquired(entryPoint: string): boolean {
-    return this.tokenRecentlyAquired.has(entryPoint);
+    return this.tokenRecentlyAcquired.has(entryPoint);
   }
 
   authSuccessfulWithTokenFor(entryPoint: string) {
-    this.tokenRecentlyAquired.delete(entryPoint);
+    this.tokenRecentlyAcquired.delete(entryPoint);
   }
 
   async handleCallback(entryPoint: string): Promise<Result<Unit>> {
 
-    let siteSettings = this.settingsService.getSettingsForSite(new URL(entryPoint).host);
+    const siteUrl = new URL(entryPoint).host;
+    const siteSettings = this.getOrCreateSiteSpecificSettings(siteUrl);
 
-    if (!siteSettings.AuthConfig) {
+    if (!siteSettings.authConfig) {
       return Result.error("OAuth config was not found.");
     }
 
-    let authConfig = siteSettings.AuthConfig;
+    const authConfig = siteSettings.authConfig;
 
     const userManager = new UserManager({
       authority: authConfig.authority,
@@ -73,15 +97,10 @@ export class AuthService {
       scope: authConfig.scope
     });
 
-    if (userManager === undefined) {
-      return Result.error("UserManager could not be created.");
-    }
-
     let user: User | undefined = undefined
 
     try {
       user = await userManager.signinCallback();
-
     } catch {
       return Result.error("Error handling response from OAuth Provider.");
     }
@@ -92,15 +111,25 @@ export class AuthService {
 
     const token = user.access_token;
 
-    let headers = siteSettings.Headers.find(h => h.Key === "Authorization");
-    if (!headers) {
-      siteSettings.Headers.push(new HeaderSetting("Authorization", "Bearer " + token))
-    } else {
-      headers.Value = "Bearer " + token;
-    }
-    this.tokenRecentlyAquired.add(entryPoint);
-    siteSettings.AuthConfig = null;
+    const authorizationHeaderKey = "Authorization";
+    const newTokenHeader = "Bearer " + token;
 
+    if (siteSettings.headers.has(authorizationHeaderKey)) {
+      this.store.dispatch(updateHeader({
+        siteUrl: siteUrl,
+        previousKey: authorizationHeaderKey,
+        newKey: authorizationHeaderKey,
+        newValue: newTokenHeader
+      }));
+    } else {
+      this.store.dispatch(addHeader({
+        siteUrl: siteUrl,
+        key: authorizationHeaderKey,
+        value: newTokenHeader
+      }));
+    }
+    this.tokenRecentlyAcquired.add(entryPoint);
+    this.store.dispatch(setAuthConfig({siteUrl: siteUrl, authConfig: undefined}))
     this.settingsService.SaveCurrentSettings();
     return Result.ok(Unit.NoThing);
   }

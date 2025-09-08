@@ -6,7 +6,8 @@ import {ProblemDetailsError} from '../error-dialog/problem-details-error';
 @Component({
   selector: 'app-auth-redirect',
   templateUrl: './auth-redirect.component.html',
-  styleUrls: ['./auth-redirect.component.css']
+  styleUrls: ['./auth-redirect.component.css'],
+  standalone: false
 })
 export class AuthRedirectComponent {
   constructor(

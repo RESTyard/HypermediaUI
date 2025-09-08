@@ -37,13 +37,13 @@ export class GeneralSettingsStorageModel {
 }
 
 export class SiteSettingsStorageModel {
-    GlobalSiteSettings: SiteSettingStorageModel = new SiteSettingStorageModel("Global");
+    GlobalSiteSettings: SiteSettingStorageModel = new SiteSettingStorageModel("Global", [], undefined);
     SiteSpecificSettings: SiteSettingStorageModel[] = [];
 }
 
 export class SiteSettingStorageModel {
-   constructor(public SiteUrl: string = "", public Headers: HeaderSettingStorageModel[] = [], public AuthConfig : AuthenticationConfiguration | null = null){
-   }
+  constructor(public SiteUrl: string = "", public Headers: HeaderSettingStorageModel[], public AuthConfig: AuthenticationConfigurationStorageModel | undefined) {
+  }
 }
 
 export class HeaderSettingStorageModel {
@@ -51,7 +51,7 @@ export class HeaderSettingStorageModel {
     }
 }
 
-export class AuthenticationConfiguration {
+export class AuthenticationConfigurationStorageModel {
     constructor(public authority: string, public client_id: string, public redirect_uri: string, public scope: string) {
     }
 }

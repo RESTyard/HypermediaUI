@@ -200,6 +200,7 @@ export class HypermediaClientService implements IHypermediaClientService {
             this.problemDetailsErrorService.showProblemDetailsDialog(this.MapHttpErrorResponseToProblemDetails(err));
           }
         )
+        return;
       }
 
       this.problemDetailsErrorService.showProblemDetailsDialog(this.MapHttpErrorResponseToProblemDetails(err));
