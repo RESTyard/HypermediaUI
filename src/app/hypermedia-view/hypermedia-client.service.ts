@@ -74,7 +74,6 @@ export class HypermediaClientService implements IHypermediaClientService {
     private schemaCache: ObservableLruCache<object>,
     private sirenDeserializer: SirenDeserializer,
     private router: Router,
-    private settingsService: SettingsService,
     private authService: AuthService,
     private problemDetailsErrorService: ProblemDetailsErrorService,
     private store: Store<{ appSettings: AppSettings, appConfig: AppConfig, currentEntryPoint: CurrentEntryPoint }>) {
@@ -125,20 +124,20 @@ export class HypermediaClientService implements IHypermediaClientService {
     this.Navigate(this.apiPath.firstSegment);
   }
 
-  NavigateToApiPath(apiPath: ApiPath) {
+  NavigateToApiPath(apiPath: ApiPath, options?: { inplace: boolean }) {
     if (!apiPath || !apiPath.hasPath) {
-      this.router.navigate(['']);
+      this.router.navigate([''], { replaceUrl: options?.inplace ?? false });
     }
 
     this.apiPath = apiPath;
-    this.Navigate(this.apiPath.firstSegment);
+    this.Navigate(this.apiPath.newestSegment, options);
   }
 
   get currentApiPath(): ApiPath {
     return this.apiPath;
   }
 
-  async Navigate(url: string) {
+  async Navigate(url: string, options?: { inplace: boolean }) {
     this.apiPath.addStep(url);
 
     // todo use media type of link if exists in siren, maybe check for supported types?
@@ -159,12 +158,15 @@ export class HypermediaClientService implements IHypermediaClientService {
           })));
       this.authService.authSuccessfulWithTokenFor(url);
 
-      this.router.navigate(['hui'], {
-        queryParams: {
-          apiPath: this.apiPath.fullPath
-        },
-        browserUrl: this.buildBrowserUrl(this.path, this.apiPath)
-      });
+      this.router.navigate(
+        ['hui'],
+        {
+          replaceUrl: options?.inplace ?? false,
+          queryParams: {
+            apiPath: this.apiPath.fullPath
+          },
+          browserUrl: this.buildBrowserUrl(this.path, this.apiPath),
+        });
 
       if (response.body) {
         const sirenClientObject = this.MapResponse(response.body);
@@ -178,7 +180,11 @@ export class HypermediaClientService implements IHypermediaClientService {
       }
 
       // https://learn.microsoft.com/en-us/entra/msal/dotnet/advanced/extract-authentication-parameters
-      let redirectUri = window.location.origin + "/" + this.buildBrowserUrl('auth-redirect', this.apiPath, 'api_path');
+      let queryParams = this.buildApiPathSearchParams(this.apiPath.fullPath, 'apiPath');
+      if (this.path) {
+        queryParams.append('path', this.path);
+      }
+      let redirectUri = window.location.origin + "/auth-redirect?" + queryParams.toString();
       const result = await (
         this.assertAuthenticationError(err, url)
           .bind(_ => Result.fromValue(err.headers.get('www-authenticate'), "No authorization challenges provided from the backend."))
@@ -228,16 +234,19 @@ export class HypermediaClientService implements IHypermediaClientService {
       : Result.error("authorization_uri and client_id need to be configured.");
   }
 
-  buildBrowserUrl(path: string | undefined, apiPath: ApiPath, variableName: string = 'apiPath') {
-    if (path === undefined) {
-      path = 'hui';
-    }
-    const useApiPath = path === 'hui' || path === 'auth-redirect' ? apiPath.fullPath : apiPath.fullPath.slice(1);
+  buildBrowserUrl(path: string | undefined, apiPath: ApiPath) {
+    const usePath = path ?? 'hui';
+    const useApiPath = path === 'hui' ? apiPath.fullPath : apiPath.fullPath.slice(1);
     if (useApiPath.length === 0) {
-      return path;
+      return usePath;
     }
-    const q = new URLSearchParams(useApiPath.map(pathSegment => [variableName, pathSegment]));
-    return path + '?' + q.toString();
+    const queryParams = this.buildApiPathSearchParams(useApiPath, 'apiPath');
+    return usePath + '?' + queryParams.toString();
+  }
+
+  buildApiPathSearchParams(apiPath: string[], variableName: string) {
+    const queryParams = new URLSearchParams(apiPath.map(pathSegment => [variableName, pathSegment]));
+    return queryParams;
   }
 
   DownloadAsFile(downloadUrl: string) {

@@ -1,3 +1,5 @@
+import { Params } from "@angular/router";
+
 export class ApiPath {
    private apiPath: Array<string> = [];
 
@@ -5,7 +7,7 @@ export class ApiPath {
       this.apiPath = apiPath;
     }
 
-    initFromRouterParams(routerParameters: any) {
+    initFromRouterParams(routerParameters: Params) {
       let apiPath: any;
       apiPath = routerParameters['apiPath'];
 
