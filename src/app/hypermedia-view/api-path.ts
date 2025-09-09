@@ -1,3 +1,5 @@
+import { Params } from "@angular/router";
+
 export class ApiPath {
    private apiPath: Array<string> = [];
 
@@ -5,7 +7,7 @@ export class ApiPath {
       this.apiPath = apiPath;
     }
 
-    initFromRouterParams(routerParameters: any) {
+    initFromRouterParams(routerParameters: Params) {
       let apiPath: any;
       apiPath = routerParameters['apiPath'];
 
@@ -63,9 +65,9 @@ export class ApiPath {
       return [...this.apiPath];
     }
 
-    addStep(stepUrl: string) {
+    setCurrentStep(stepUrl: string) {
       const stepIndex = this.getStepIndex(stepUrl);
-      if (stepIndex === -1 ) {
+      if (stepIndex === -1) {
         this.apiPath.push(stepUrl);
         return;
       }

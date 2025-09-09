@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { HypermediaClientService } from '../hypermedia-view/hypermedia-client.service';
 import { AppConfig } from 'src/app.config.service';
 import { ActivatedRoute } from '@angular/router';
@@ -6,8 +6,8 @@ import { Store } from '@ngrx/store';
 import { HypermediaViewModule } from "../hypermedia-view/hypermedia-view.module";
 import { combineLatest } from 'rxjs';
 import { CurrentEntryPoint } from '../store/entrypoint.reducer';
-import { updateEntryPoint } from '../store/entrypoint.actions';
 import { ApiPath } from '../hypermedia-view/api-path';
+import { redirectToHuiPage } from '../utils/redirect';
 
 @Component({
   selector: 'app-alias-page',
@@ -15,18 +15,21 @@ import { ApiPath } from '../hypermedia-view/api-path';
   templateUrl: './alias-page.component.html',
   styleUrl: './alias-page.component.css'
 })
-export class AliasPageComponent {
+export class AliasPageComponent implements OnInit {
   error: string | undefined = undefined;
 
   constructor(
-    hypermediaClientService: HypermediaClientService,
-    store: Store<{ appConfig: AppConfig, currentEntryPoint: CurrentEntryPoint }>,
-    activatedRoute: ActivatedRoute) {
-      combineLatest(
+    private hypermediaClientService: HypermediaClientService,
+    private store: Store<{ appConfig: AppConfig, currentEntryPoint: CurrentEntryPoint }>,
+    private activatedRoute: ActivatedRoute) {
+    }
+
+  ngOnInit() {
+    combineLatest(
         [
-          store.select(state => state.appConfig.configuredEntryPoints),
-          activatedRoute.url,
-          activatedRoute.queryParams,
+          this.store.select(state => state.appConfig.configuredEntryPoints),
+          this.activatedRoute.url,
+          this.activatedRoute.queryParams,
         ])
         .subscribe({
           next: tuple => {
@@ -38,13 +41,18 @@ export class AliasPageComponent {
                 const apiPath = new ApiPath();
                 apiPath.initFromRouterParams(queryParams);
                 apiPath.insert(config.entryPointUri, 0);
-                store.dispatch(updateEntryPoint({ newEntryPoint: { title: config.title, path: config.alias, entryPoint: config.entryPointUri }}));
-                hypermediaClientService.NavigateToApiPath(apiPath);
+                redirectToHuiPage(
+                  config.title,
+                  path,
+                  apiPath,
+                  this.store,
+                  this.hypermediaClientService,
+                  { inplace: true });
               } else {
                 this.error = "Error";
               }
             }
           }
         });
-    }
+  }
 }

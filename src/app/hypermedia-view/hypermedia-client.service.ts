@@ -1,44 +1,62 @@
+import {Injectable} from '@angular/core';
+import {HttpClient, HttpErrorResponse, HttpHeaders, HttpResponse} from '@angular/common/http';
+import {Router} from '@angular/router';
 
-import { Injectable } from '@angular/core';
-import { HttpClient, HttpErrorResponse, HttpResponse, HttpHeaders } from '@angular/common/http';
-import { Router } from '@angular/router';
+import {BehaviorSubject, lastValueFrom, tap, timeout} from 'rxjs';
+import {saveAs} from 'file-saver';
 
-import { Observable, BehaviorSubject, map, catchError, Subject, tap, timeout } from 'rxjs';
-import { saveAs } from 'file-saver';
+import {SirenDeserializer} from './siren-parser/siren-deserializer';
+import {ObservableLruCache} from './api-access/observable-lru-cache';
+import {SirenClientObject} from './siren-parser/siren-client-object';
+import {ActionType, HypermediaAction} from './siren-parser/hypermedia-action';
+import {ApiPath} from './api-path';
 
-import { SirenDeserializer } from './siren-parser/siren-deserializer';
-import { ObservableLruCache } from './api-access/observable-lru-cache';
-import { SirenClientObject } from './siren-parser/siren-client-object';
-import {HypermediaAction, HttpMethodTypes, ActionType} from './siren-parser/hypermedia-action';
-import { ApiPath } from './api-path';
+import {SettingsService} from '../settings/services/settings.service';
 
-import { SettingsService } from '../settings/services/settings.service';
-
-import { ProblemDetailsError } from '../error-dialog/problem-details-error';
+import {ProblemDetailsError} from '../error-dialog/problem-details-error';
 import {MediaTypes} from "./MediaTypes";
-import { AppSettings, GeneralSettings } from '../settings/app-settings';
-import { Store } from '@ngrx/store';
-import { AppConfig } from 'src/app.config.service';
-import { selectEffectiveGeneralSettings } from '../store/selectors';
-import { CurrentEntryPoint } from '../store/entrypoint.reducer';
+import {AuthService} from './auth.service';
+import {Result, Success, Failure, bind, bindAsync, isFailure} from 'fnxt/result';
+import {pipe as resultPipe} from 'fnxt/pipe';
+import {ProblemDetailsErrorService} from "../error-dialog/problem-details-error.service";
+import {GlobalNavigationEvents} from '../global-navigation.events';
+import {AppSettings, GeneralSettings} from '../settings/app-settings';
+import {Store} from '@ngrx/store';
+import {AppConfig} from 'src/app.config.service';
+import {selectEffectiveGeneralSettings} from '../store/selectors';
+import {CurrentEntryPoint} from '../store/entrypoint.reducer';
+import { Unit } from '../utils/unit';
 
 export interface IHypermediaClientService {
-  isBusy$ : BehaviorSubject<boolean>;
+  isBusy$: BehaviorSubject<boolean>;
+
   getHypermediaObjectStream(): BehaviorSubject<SirenClientObject>;
+
   getHypermediaObjectRawStream(): BehaviorSubject<object>;
+
   getNavPathsStream(): BehaviorSubject<Array<string>>;
-  navigateToEntryPoint() : void;
+
+  navigateToEntryPoint(): void;
+
   NavigateToApiPath(apiPath: ApiPath): void;
+
   get currentApiPath(): ApiPath;
-  Navigate(url: string) : void;
-  DownloadAsFile(downloadUrl: string) : void;
-  navigateToMainPage() : void;
+
+  Navigate(url: string): void;
+
+  DownloadAsFile(downloadUrl: string): void;
+
+  navigateToMainPage(): void;
+
   createHeaders(withContentType: string | null): HttpHeaders;
+
   createWaheStyleActionParameters(action: HypermediaAction): any;
+
   executeAction(action: HypermediaAction, actionResult: (actionResults: ActionResults, resultLocation: string | null, content: any, problemDetailsError: ProblemDetailsError | null) => void): any;
 }
 
 const problemDetailsMimeType = "application/problem+json";
+
 @Injectable()
 export class HypermediaClientService implements IHypermediaClientService {
   private currentClientObject$: BehaviorSubject<SirenClientObject> = new BehaviorSubject<SirenClientObject>(new SirenClientObject());
@@ -53,23 +71,39 @@ export class HypermediaClientService implements IHypermediaClientService {
   private generalSettings: GeneralSettings = new GeneralSettings();
 
   constructor(
+    globalNavigationEvents: GlobalNavigationEvents,
     private httpClient: HttpClient,
     private schemaCache: ObservableLruCache<object>,
     private sirenDeserializer: SirenDeserializer,
     private router: Router,
+    private authService: AuthService,
+    private problemDetailsErrorService: ProblemDetailsErrorService,
     private store: Store<{ appSettings: AppSettings, appConfig: AppConfig, currentEntryPoint: CurrentEntryPoint }>) {
-      store
-        .select(selectEffectiveGeneralSettings)
-        .subscribe({
-          next: generalSettings => {
-            this.generalSettings = generalSettings;
-          }
-        });
-      store
-        .select(state => state.currentEntryPoint)
-        .subscribe({
-          next: entryPoint => this.path = entryPoint.path,
-        });
+
+    store
+      .select(selectEffectiveGeneralSettings)
+      .subscribe({
+        next: generalSettings => {
+          this.generalSettings = generalSettings;
+        }
+      });
+    store
+      .select(state => state.currentEntryPoint)
+      .subscribe({
+        next: entryPoint => this.path = entryPoint.path,
+      });
+
+    globalNavigationEvents.onGotoEntryPoint.subscribe({
+      next: _ => {
+        this.navigateToEntryPoint();
+      }
+    });
+
+    globalNavigationEvents.onGotoMainPage.subscribe({
+      next: _ => {
+        this.navigateToMainPage();
+      }
+    });
   }
 
   getHypermediaObjectStream(): BehaviorSubject<SirenClientObject> {
@@ -92,71 +126,136 @@ export class HypermediaClientService implements IHypermediaClientService {
     this.Navigate(this.apiPath.firstSegment);
   }
 
-  NavigateToApiPath(apiPath: ApiPath) {
+  NavigateToApiPath(apiPath: ApiPath, options?: { inplace: boolean }) {
     if (!apiPath || !apiPath.hasPath) {
-      this.router.navigate(['']);
+      this.router.navigate([''], { replaceUrl: options?.inplace ?? false });
     }
 
     this.apiPath = apiPath;
-    this.Navigate(this.apiPath.newestSegment);
+    this.Navigate(this.apiPath.newestSegment, options);
   }
 
   get currentApiPath(): ApiPath {
     return this.apiPath;
   }
 
-  Navigate(url: string) {
-    this.apiPath.addStep(url);
+  async Navigate(url: string, options?: { inplace: boolean }) {
+    this.apiPath.setCurrentStep(url);
 
     // todo use media type of link if exists in siren, maybe check for supported types?
     const headers = new HttpHeaders().set('Accept', MediaTypes.Siren);
 
     this.AddBusyRequest();
-    this.httpClient
-      .get(url, {
-        headers: headers,
-        observe: 'response',
-        // responseType:'blob' // use for generic access
-      })
-      .pipe(
-        tap({
-          next: () => this.RemoveBusyRequest(),
-          error: () => this.RemoveBusyRequest()
-        }))
-      .subscribe({
-        next: response =>
-        {
-          this.router.navigate(
-            ['hui'],
-            {
-              queryParams: {
-                apiPath: this.apiPath.fullPath
-              },
-              browserUrl: this.buildBrowserUrl(this.path, this.apiPath)
-          });
-
-          if (response.body) {
-            const sirenClientObject = this.MapResponse(response.body);
-
-            this.currentClientObject$.next(sirenClientObject);
-            this.currentClientObjectRaw$.next(response.body);
-            this.currentNavPaths$.next(this.apiPath.fullPath);
-          }
+    let response: HttpResponse<object>;
+    try {
+      response = await lastValueFrom(this.httpClient
+        .get(url, {
+          headers: headers,
+          observe: 'response',
+          // responseType:'blob' // use for generic access
+        })
+        .pipe(
+          tap({
+            next: () => this.RemoveBusyRequest(),
+            error: () => this.RemoveBusyRequest()
+          })));
+    } catch (err: any) {
+      await this.handleNavigateError(url, err);
+      return;
+    }
+    
+    this.authService.requestSuccessfulFor(url);
+    this.router.navigate(
+      ['hui'],
+      {
+        replaceUrl: options?.inplace ?? false,
+        queryParams: {
+          apiPath: this.apiPath.fullPath
         },
-        error: (err: HttpErrorResponse) => { throw this.MapHttpErrorResponseToProblemDetails(err); }
+        browserUrl: this.buildBrowserUrl(this.path, this.apiPath),
       });
+
+    if (response.body) {
+      const sirenClientObject = this.MapResponse(response.body);
+      this.currentClientObject$.next(sirenClientObject);
+      this.currentClientObjectRaw$.next(response.body!);
+      this.currentNavPaths$.next(this.apiPath.fullPath);
+    }
+  }
+
+  private async handleNavigateError(url: string, err: any) {
+    if (!(err instanceof HttpErrorResponse)) {
+      throw err;
+    }
+
+    // https://learn.microsoft.com/en-us/entra/msal/dotnet/advanced/extract-authentication-parameters
+    let queryParams = this.buildApiPathSearchParams(this.apiPath.fullPath, 'apiPath');
+    if (this.path) {
+      queryParams.append('path', this.path);
+    }
+    let redirectUri = window.location.origin + "/auth-redirect?" + queryParams.toString();
+    const result = await resultPipe(
+      () => this.assertAuthenticationError(err, url),
+      bind(_ => {
+        const header = err.headers.get('www-authenticate');
+        return header ? Success(header) : Failure('No authorization challenges provided from the backend.');
+      }),
+      bind((header: string) => this.parseWWWAuthenticateHeaderSchemeParams(header, "Bearer")),
+      bind((authSchemaParameter: Map<string, string>) => this.assertOIDCChallengeHeadersArePresent(authSchemaParameter)),
+      bindAsync((tuple: { authUri: string, clientId: string }) => this.authService.login({
+        entryPoint: url,
+              authority: tuple.authUri,
+              client_id: tuple.clientId,
+              redirect_uri: redirectUri,
+              scope: 'openid profile email offline_access'
+      })),
+    )(0);
+    if (isFailure(result)) {
+        console.error(result.value);
+        this.problemDetailsErrorService.showErrorDialog(
+          "Authentication error",
+          result.value);
+    }
+  }
+
+  private assertAuthenticationError = (error: HttpErrorResponse, url: string): Result<Unit, string> =>
+    error.status === 401 && !this.authService.isTokenRecentlyAcquired(url)
+      ? Success(Unit.NoThing)
+      : Failure("");
+
+  private parseWWWAuthenticateHeaderSchemeParams(header: string | null, authScheme: string): Result<Map<string, string>, string> {
+    if (!header?.startsWith('Bearer')) {
+      return Failure("");
+    }
+
+    let kvpAsString = header?.replace(authScheme, "").split(',',) ?? []
+    return Success(new Map(kvpAsString.map(v => {
+      let keyAndValue = v.split('=');
+      return [keyAndValue[0].trim(), keyAndValue[1].substring(1, keyAndValue[1].length - 1).trim()];
+    })));
+  }
+
+  private assertOIDCChallengeHeadersArePresent(authParams: Map<string, string>) : Result<{ authUri: string, clientId: string }, string> {
+    let authUri = authParams.get('authorization_uri')
+    let clientId = authParams.get('client_id');
+    return authUri && clientId
+      ? Success({ authUri, clientId })
+      : Failure("authorization_uri and client_id need to be configured.");
   }
 
   buildBrowserUrl(path: string | undefined, apiPath: ApiPath) {
-    if (path === undefined) {
-      path = 'hui';
-    }
+    const usePath = path ?? 'hui';
     const useApiPath = path === 'hui' ? apiPath.fullPath : apiPath.fullPath.slice(1);
     if (useApiPath.length === 0) {
-      return path;
+      return usePath;
     }
-    const q = new URLSearchParams(useApiPath.map(pathSegment => ['apiPath', pathSegment]));
-    return path + '?' + q.toString();
+    const queryParams = this.buildApiPathSearchParams(useApiPath, 'apiPath');
+    return usePath + '?' + queryParams.toString();
+  }
+
+  buildApiPathSearchParams(apiPath: string[], variableName: string) {
+    const queryParams = new URLSearchParams(apiPath.map(pathSegment => [variableName, pathSegment]));
+    return queryParams;
   }
 
   DownloadAsFile(downloadUrl: string) {
@@ -187,6 +286,7 @@ export class HypermediaClientService implements IHypermediaClientService {
     this.busyRequestsCounter++;
     this.isBusy$.next(this.busyRequestsCounter != 0);
   }
+
   private RemoveBusyRequest() {
     this.busyRequestsCounter--;
     this.isBusy$.next(this.busyRequestsCounter != 0);
@@ -231,9 +331,9 @@ export class HypermediaClientService implements IHypermediaClientService {
       .pipe(
         timeout(this.generalSettings.actionExecutionTimeoutMs),
         tap({
-          next: () => this.RemoveBusyRequest(),
-          error: () => this.RemoveBusyRequest()
-        }
+            next: () => this.RemoveBusyRequest(),
+            error: () => this.RemoveBusyRequest()
+          }
         ));
   }
 
@@ -253,7 +353,7 @@ export class HypermediaClientService implements IHypermediaClientService {
   executeAction(action: HypermediaAction, actionResult: (actionResults: ActionResults, resultLocation: string | null, content: any, problemDetailsError: ProblemDetailsError | null) => void): any {
     let requestBody = null;
 
-    switch (action.actionType){
+    switch (action.actionType) {
       case ActionType.NoParameters: {
         break;
       }
@@ -291,7 +391,9 @@ export class HypermediaClientService implements IHypermediaClientService {
 
       case MediaTypes.FormData:
         let formData = new FormData();
-        action.files.forEach((file) => { formData.append('files', file); });
+        action.files.forEach((file) => {
+          formData.append('files', file);
+        });
         return formData;
       case MediaTypes.OctetStream:
         if (action.files.length > 1) {
@@ -344,7 +446,7 @@ export class HypermediaClientService implements IHypermediaClientService {
       const contentType = errorResponse.headers.get('Content-Type')
       if (contentType?.includes(problemDetailsMimeType)) {
         console.error("API Error:" + JSON.stringify(errorResponse.error, null, 4));
-        return Object.assign(new ProblemDetailsError({ rawObject: errorResponse.error }), errorResponse.error);
+        return Object.assign(new ProblemDetailsError({rawObject: errorResponse.error}), errorResponse.error);
       }
     }
 
@@ -353,8 +455,7 @@ export class HypermediaClientService implements IHypermediaClientService {
     if (errorResponse.error) {
       rawBody = JSON.stringify(errorResponse.error, null, 4);
       console.error(`API Error ${errorResponse.status}: ${rawBody}`);
-    }
-    else {
+    } else {
       console.error(`API Error ${errorResponse.status}:`, errorResponse);
     }
 
@@ -374,8 +475,7 @@ export class HypermediaClientService implements IHypermediaClientService {
   }
 
   private MapResponse(response: any): SirenClientObject {
-    const hco = this.sirenDeserializer.deserialize(response);
-    return hco;
+    return this.sirenDeserializer.deserialize(response);
   }
 }
 

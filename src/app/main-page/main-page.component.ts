@@ -1,11 +1,12 @@
 import { HypermediaClientService } from '../hypermedia-view/hypermedia-client.service';
 import { Component, OnInit, Input } from '@angular/core';
-import {FormControl, Validators} from '@angular/forms';
+import { FormControl, Validators } from '@angular/forms';
 import { AppConfig } from 'src/app.config.service';
 import { Store } from '@ngrx/store';
 import { CurrentEntryPoint } from '../store/entrypoint.reducer';
-import { updateEntryPoint } from '../store/entrypoint.actions';
 import { Router } from '@angular/router';
+import { redirectToHuiPage } from '../utils/redirect';
+import { ApiPath } from '../hypermedia-view/api-path';
 
 @Component({
     selector: 'app-main-page',
@@ -34,7 +35,15 @@ export class MainPageComponent implements OnInit {
           this.showSettingsIcon = !appConfig.disableDeveloperControls;
           if (appConfig.onlyAllowConfiguredEntryPoints && appConfig.configuredEntryPoints !== undefined) {
             if (appConfig.configuredEntryPoints.length > 0) {
-              router.navigate([appConfig.configuredEntryPoints[0].alias]);
+              const config = appConfig.configuredEntryPoints[0];
+              redirectToHuiPage(
+                config.title,
+                config.alias,
+                new ApiPath([config.entryPointUri]),
+                this.store,
+                this.hypermediaClientService,
+                { inplace: true }
+              );
             }
           }
         }
@@ -45,11 +54,16 @@ export class MainPageComponent implements OnInit {
       ]);
   }
 
-  ngOnInit() {}
+  ngOnInit() { }
 
   navigate() {
-    this.store.dispatch(updateEntryPoint({ newEntryPoint: { title: "Hypermedia UI", path: "hui", entryPoint: this.urlFormControl.value }}));
-    this.hypermediaClientService.Navigate(this.urlFormControl.value);
+    redirectToHuiPage(
+      'Hypermedia UI',
+      'hui',
+      new ApiPath([this.urlFormControl.value]),
+      this.store,
+      this.hypermediaClientService,
+      { inplace: false}
+    )
   }
-
 }

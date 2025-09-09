@@ -1,10 +1,17 @@
-import { Injectable } from '@angular/core';
-import { AppSettingsStorageModel, GeneralSettingsStorageModel, HeaderSettingStorageModel, SiteSettingsStorageModel, SiteSettingStorageModel } from './AppSettings';
-import { ProblemDetailsError } from 'src/app/error-dialog/problem-details-error';
-import { Store } from '@ngrx/store';
-import { Map } from 'immutable';
-import { updateAppSettings } from 'src/app/store/appsettings.actions';
-import { AppSettings, GeneralSettings, SiteSetting, SiteSettings } from '../app-settings';
+import {Injectable} from '@angular/core';
+import {
+  AppSettingsStorageModel,
+  AuthenticationConfigurationStorageModel,
+  GeneralSettingsStorageModel,
+  HeaderSettingStorageModel,
+  SiteSettingsStorageModel,
+  SiteSettingStorageModel
+} from './AppSettings';
+import {ProblemDetailsError} from 'src/app/error-dialog/problem-details-error';
+import {Store} from '@ngrx/store';
+import {Map} from 'immutable';
+import {updateAppSettings} from 'src/app/store/appsettings.actions';
+import {AppSettings, AuthenticationConfiguration, GeneralSettings, SiteSetting, SiteSettings} from '../app-settings';
 
 @Injectable()
 export class SettingsService {
@@ -32,7 +39,7 @@ export class SettingsService {
     } else {
       newSettings = new AppSettingsStorageModel();
     }
-    this.store.dispatch(updateAppSettings({ newSettings: this.mapFromStorageModel(newSettings) }));
+    this.store.dispatch(updateAppSettings({newSettings: this.mapFromStorageModel(newSettings)}));
   }
 
   private mapFromStorageModel(storageModel: AppSettingsStorageModel): AppSettings {
@@ -42,7 +49,7 @@ export class SettingsService {
     });
   }
 
-  private mapGeneralSettingsFromStorageModel(storageModel: GeneralSettingsStorageModel) : GeneralSettings {
+  private mapGeneralSettingsFromStorageModel(storageModel: GeneralSettingsStorageModel): GeneralSettings {
     return new GeneralSettings({
       showRawTab: storageModel.showRawTab,
       showClasses: storageModel.showClasses,
@@ -57,28 +64,29 @@ export class SettingsService {
     });
   }
 
-  private mapSiteSettingsFromStorageModel(storageModel: SiteSettingsStorageModel) : SiteSettings {
+  private mapSiteSettingsFromStorageModel(storageModel: SiteSettingsStorageModel): SiteSettings {
     return new SiteSettings({
       globalSiteSettings: this.mapSiteSettingFromStorageModel(storageModel.GlobalSiteSettings),
       siteSpecificSettings: Map(storageModel.SiteSpecificSettings.map(setting => [setting.SiteUrl, this.mapSiteSettingFromStorageModel(setting)] as const)),
     });
   }
 
-  private mapSiteSettingFromStorageModel(storageModel: SiteSettingStorageModel) : SiteSetting {
+  private mapSiteSettingFromStorageModel(storageModel: SiteSettingStorageModel): SiteSetting {
     return new SiteSetting({
       siteUrl: storageModel.SiteUrl,
       headers: Map(storageModel.Headers.map(h => [h.Key, h.Value] as const)),
+      authConfig: this.mapAuthConfigFromStorageModel(storageModel.AuthConfig),
     });
   }
 
-  private mapToStorageModel(appModel: AppSettings) : AppSettingsStorageModel {
+  private mapToStorageModel(appModel: AppSettings): AppSettingsStorageModel {
     return new AppSettingsStorageModel({
       GeneralSettings: this.mapGeneralSettingsToStorageModel(appModel.generalSettings),
       SiteSettings: this.mapSiteSettingsToStorageModel(appModel.siteSettings),
     });
   }
 
-  private mapGeneralSettingsToStorageModel(appModel: GeneralSettings) : GeneralSettingsStorageModel {
+  private mapGeneralSettingsToStorageModel(appModel: GeneralSettings): GeneralSettingsStorageModel {
     return {
       showRawTab: appModel.showRawTab,
       showClasses: appModel.showClasses,
@@ -93,17 +101,18 @@ export class SettingsService {
     };
   }
 
-  private mapSiteSettingsToStorageModel(appModel: SiteSettings) : SiteSettingsStorageModel {
+  private mapSiteSettingsToStorageModel(appModel: SiteSettings): SiteSettingsStorageModel {
     return {
       GlobalSiteSettings: this.mapSiteSettingToStorageModel(appModel.globalSiteSettings),
       SiteSpecificSettings: Array.from(appModel.siteSpecificSettings.values()).map(setting => this.mapSiteSettingToStorageModel(setting)),
     }
   }
 
-  private mapSiteSettingToStorageModel(appModel: SiteSetting) : SiteSettingStorageModel {
+  private mapSiteSettingToStorageModel(appModel: SiteSetting): SiteSettingStorageModel {
     return new SiteSettingStorageModel(
       appModel.siteUrl,
-      Array.from(appModel.headers.entries()).map(e => new HeaderSettingStorageModel(e[0], e[1]))
+      Array.from(appModel.headers.entries()).map(e => new HeaderSettingStorageModel(e[0], e[1])),
+      this.mapAuthConfigToStorageModel(appModel.authConfig),
     );
   }
 
@@ -132,4 +141,22 @@ export class SettingsService {
     return specificSettings[0].Headers;
   }
 
+  private mapAuthConfigToStorageModel(authConfig: AuthenticationConfiguration | undefined): AuthenticationConfigurationStorageModel | undefined {
+    if (authConfig === undefined) {
+      return undefined;
+    }
+    return new AuthenticationConfigurationStorageModel(authConfig.authority, authConfig.client_id, authConfig.redirect_uri, authConfig.scope);
+  }
+
+  private mapAuthConfigFromStorageModel(authConfig: AuthenticationConfigurationStorageModel | undefined): AuthenticationConfiguration | undefined {
+    if (authConfig === undefined) {
+      return undefined;
+    }
+    return new AuthenticationConfiguration({
+      authority: authConfig.authority,
+      client_id: authConfig.client_id,
+      redirect_uri: authConfig.redirect_uri,
+      scope: authConfig.scope
+    });
+  }
 }
