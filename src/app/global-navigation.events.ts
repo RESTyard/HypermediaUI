@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { Subject } from "rxjs";
-import { Unit } from "./utils/result";
+import { Unit } from "./utils/unit";
 
 @Injectable()
 export class GlobalNavigationEvents {

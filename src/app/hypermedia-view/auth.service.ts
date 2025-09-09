@@ -1,7 +1,8 @@
 import {Injectable} from '@angular/core';
 import {User, UserManager} from 'oidc-client-ts';
 import {SettingsService} from '../settings/services/settings.service';
-import {Result, Unit} from "../utils/result";
+import {Unit} from "../utils/unit";
+import {Result, Success, Failure} from 'fnxt/result';
 import {Store} from "@ngrx/store";
 import {AppSettings, AuthenticationConfiguration, SiteSetting} from "../settings/app-settings";
 import {Map as ImmutableMap} from "immutable";
@@ -27,7 +28,7 @@ export class AuthService {
     client_id: string,
     redirect_uri: string,
     scope: string
-  }): Promise<Result<Unit>> {
+  }): Promise<Result<Unit, string>> {
     const siteUrl = new URL(entryPoint).host;
 
     const userManager = new UserManager({
@@ -43,7 +44,7 @@ export class AuthService {
     if (siteSettings.authConfig !== undefined) {
       this.store.dispatch(setAuthConfig({siteUrl: siteUrl, authConfig: undefined}));
       this.settingsService.SaveCurrentSettings();
-      return Result.error("Different login is already in progress");
+      return Failure("Different login is already in progress");
     }
     this.store.dispatch(setAuthConfig({
       siteUrl: siteUrl,
@@ -53,9 +54,9 @@ export class AuthService {
 
     try {
       await userManager.signinRedirect();
-      return Result.ok(Unit.NoThing);
+      return Success(Unit.NoThing);
     } catch {
-      return Result.error("Error during authentication");
+      return Failure("Error during authentication");
     }
   }
 
@@ -73,17 +74,17 @@ export class AuthService {
     return this.tokenRecentlyAcquired.has(entryPoint);
   }
 
-  authSuccessfulWithTokenFor(entryPoint: string) {
+  requestSuccessfulFor(entryPoint: string) {
     this.tokenRecentlyAcquired.delete(entryPoint);
   }
 
-  async handleCallback(entryPoint: string): Promise<Result<Unit>> {
+  async handleCallback(entryPoint: string): Promise<Result<Unit, string>> {
 
     const siteUrl = new URL(entryPoint).host;
     const siteSettings = this.getOrCreateSiteSpecificSettings(siteUrl);
 
     if (!siteSettings.authConfig) {
-      return Result.error("OAuth config was not found for entryPoint: " + entryPoint + ", siteUrl: " + siteUrl);
+      return Failure("OAuth config was not found for entryPoint: " + entryPoint + ", siteUrl: " + siteUrl);
     }
 
     const authConfig = siteSettings.authConfig;
@@ -101,11 +102,11 @@ export class AuthService {
     try {
       user = await userManager.signinCallback();
     } catch {
-      return Result.error("Error handling response from OAuth Provider.");
+      return Failure("Error handling response from OAuth Provider.");
     }
 
     if (!user) {
-      return Result.error("User could not be Authenticated.");
+      return Failure("User could not be Authenticated.");
     }
 
     const token = user.access_token;
@@ -130,6 +131,6 @@ export class AuthService {
     this.tokenRecentlyAcquired.add(entryPoint);
     this.store.dispatch(setAuthConfig({siteUrl: siteUrl, authConfig: undefined}))
     this.settingsService.SaveCurrentSettings();
-    return Result.ok(Unit.NoThing);
+    return Success(Unit.NoThing);
   }
 }

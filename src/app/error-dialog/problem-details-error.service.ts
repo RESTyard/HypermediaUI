@@ -10,4 +10,8 @@ export class ProblemDetailsErrorService {
   public showProblemDetailsDialog(error: ProblemDetailsError) {
     this.zone.run(() => this.errorDialog.openProblemDetails(error));
   }
+
+  public showErrorDialog(title: string, message: string) {
+    this.zone.run(() => this.errorDialog.open(title, message));
+  }
 }

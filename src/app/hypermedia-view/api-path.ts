@@ -65,9 +65,9 @@ export class ApiPath {
       return [...this.apiPath];
     }
 
-    addStep(stepUrl: string) {
+    setCurrentStep(stepUrl: string) {
       const stepIndex = this.getStepIndex(stepUrl);
-      if (stepIndex === -1 ) {
+      if (stepIndex === -1) {
         this.apiPath.push(stepUrl);
         return;
       }

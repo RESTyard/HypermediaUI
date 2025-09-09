@@ -16,7 +16,8 @@ import {SettingsService} from '../settings/services/settings.service';
 import {ProblemDetailsError} from '../error-dialog/problem-details-error';
 import {MediaTypes} from "./MediaTypes";
 import {AuthService} from './auth.service';
-import {Result, Unit} from "../utils/result";
+import {Result, Success, Failure, bind, bindAsync, isFailure} from 'fnxt/result';
+import {pipe as resultPipe} from 'fnxt/pipe';
 import {ProblemDetailsErrorService} from "../error-dialog/problem-details-error.service";
 import {GlobalNavigationEvents} from '../global-navigation.events';
 import {AppSettings, GeneralSettings} from '../settings/app-settings';
@@ -24,6 +25,7 @@ import {Store} from '@ngrx/store';
 import {AppConfig} from 'src/app.config.service';
 import {selectEffectiveGeneralSettings} from '../store/selectors';
 import {CurrentEntryPoint} from '../store/entrypoint.reducer';
+import { Unit } from '../utils/unit';
 
 export interface IHypermediaClientService {
   isBusy$: BehaviorSubject<boolean>;
@@ -138,14 +140,15 @@ export class HypermediaClientService implements IHypermediaClientService {
   }
 
   async Navigate(url: string, options?: { inplace: boolean }) {
-    this.apiPath.addStep(url);
+    this.apiPath.setCurrentStep(url);
 
     // todo use media type of link if exists in siren, maybe check for supported types?
     const headers = new HttpHeaders().set('Accept', MediaTypes.Siren);
 
     this.AddBusyRequest();
+    let response: HttpResponse<object>;
     try {
-      var response = await lastValueFrom(this.httpClient
+      response = await lastValueFrom(this.httpClient
         .get(url, {
           headers: headers,
           observe: 'response',
@@ -156,82 +159,88 @@ export class HypermediaClientService implements IHypermediaClientService {
             next: () => this.RemoveBusyRequest(),
             error: () => this.RemoveBusyRequest()
           })));
-      this.authService.authSuccessfulWithTokenFor(url);
-
-      this.router.navigate(
-        ['hui'],
-        {
-          replaceUrl: options?.inplace ?? false,
-          queryParams: {
-            apiPath: this.apiPath.fullPath
-          },
-          browserUrl: this.buildBrowserUrl(this.path, this.apiPath),
-        });
-
-      if (response.body) {
-        const sirenClientObject = this.MapResponse(response.body);
-        this.currentClientObject$.next(sirenClientObject);
-        this.currentClientObjectRaw$.next(response.body!);
-        this.currentNavPaths$.next(this.apiPath.fullPath);
-      }
     } catch (err: any) {
-      if (!(err instanceof HttpErrorResponse)) {
-        throw err;
-      }
+      await this.handleNavigateError(url, err);
+      return;
+    }
+    
+    this.authService.requestSuccessfulFor(url);
+    this.router.navigate(
+      ['hui'],
+      {
+        replaceUrl: options?.inplace ?? false,
+        queryParams: {
+          apiPath: this.apiPath.fullPath
+        },
+        browserUrl: this.buildBrowserUrl(this.path, this.apiPath),
+      });
 
-      // https://learn.microsoft.com/en-us/entra/msal/dotnet/advanced/extract-authentication-parameters
-      let queryParams = this.buildApiPathSearchParams(this.apiPath.fullPath, 'apiPath');
-      if (this.path) {
-        queryParams.append('path', this.path);
-      }
-      let redirectUri = window.location.origin + "/auth-redirect?" + queryParams.toString();
-      const result = await (
-        this.assertAuthenticationError(err, url)
-          .bind(_ => Result.fromValue(err.headers.get('www-authenticate'), "No authorization challenges provided from the backend."))
-          .bind(header => this.parseWWWAuthenticateHeaderSchemeParams(header, "Bearer"))
-          .bind(authSchemaParameter => this.assertOIDCChallengeHeadersArePresent(authSchemaParameter))
-          .bindAsync(async tuple =>
-            await this.authService.login({
-              entryPoint: url,
+    if (response.body) {
+      const sirenClientObject = this.MapResponse(response.body);
+      this.currentClientObject$.next(sirenClientObject);
+      this.currentClientObjectRaw$.next(response.body!);
+      this.currentNavPaths$.next(this.apiPath.fullPath);
+    }
+  }
+
+  private async handleNavigateError(url: string, err: any) {
+    if (!(err instanceof HttpErrorResponse)) {
+      throw err;
+    }
+
+    // https://learn.microsoft.com/en-us/entra/msal/dotnet/advanced/extract-authentication-parameters
+    let queryParams = this.buildApiPathSearchParams(this.apiPath.fullPath, 'apiPath');
+    if (this.path) {
+      queryParams.append('path', this.path);
+    }
+    let redirectUri = window.location.origin + "/auth-redirect?" + queryParams.toString();
+    const result = await resultPipe(
+      () => this.assertAuthenticationError(err, url),
+      bind(_ => {
+        const header = err.headers.get('www-authenticate');
+        return header ? Success(header) : Failure('No authorization challenges provided from the backend.');
+      }),
+      bind((header: string) => this.parseWWWAuthenticateHeaderSchemeParams(header, "Bearer")),
+      bind((authSchemaParameter: Map<string, string>) => this.assertOIDCChallengeHeadersArePresent(authSchemaParameter)),
+      bindAsync((tuple: { authUri: string, clientId: string }) => this.authService.login({
+        entryPoint: url,
               authority: tuple.authUri,
               client_id: tuple.clientId,
               redirect_uri: redirectUri,
               scope: 'openid profile email offline_access'
-            })
-          ));
-      result.match(
-        _ => { },
-        error => {
-          console.error(error);
-          this.problemDetailsErrorService.showProblemDetailsDialog(this.MapHttpErrorResponseToProblemDetails(err));
-        }
-      )
+      })),
+    )(0);
+    if (isFailure(result)) {
+        console.error(result.value);
+        this.problemDetailsErrorService.showErrorDialog(
+          "Authentication error",
+          result.value);
     }
   }
 
-  private assertAuthenticationError = (error: HttpErrorResponse, url: string): Result<Unit> =>
+  private assertAuthenticationError = (error: HttpErrorResponse, url: string): Result<Unit, string> =>
     error.status === 401 && !this.authService.isTokenRecentlyAcquired(url)
-      ? Result.ok(Unit.NoThing)
-      : Result.error("");
+      ? Success(Unit.NoThing)
+      : Failure("");
 
-  private parseWWWAuthenticateHeaderSchemeParams(header: string | null, authScheme: string): Result<Map<string, string>> {
+  private parseWWWAuthenticateHeaderSchemeParams(header: string | null, authScheme: string): Result<Map<string, string>, string> {
     if (!header?.startsWith('Bearer')) {
-      return Result.error("");
+      return Failure("");
     }
 
     let kvpAsString = header?.replace(authScheme, "").split(',',) ?? []
-    return Result.ok(new Map(kvpAsString.map(v => {
+    return Success(new Map(kvpAsString.map(v => {
       let keyAndValue = v.split('=');
       return [keyAndValue[0].trim(), keyAndValue[1].substring(1, keyAndValue[1].length - 1).trim()];
     })));
   }
 
-  private assertOIDCChallengeHeadersArePresent(authParams: Map<string, string>) : Result<{ authUri: string, clientId: string }> {
+  private assertOIDCChallengeHeadersArePresent(authParams: Map<string, string>) : Result<{ authUri: string, clientId: string }, string> {
     let authUri = authParams.get('authorization_uri')
     let clientId = authParams.get('client_id');
     return authUri && clientId
-      ? Result.ok({ authUri, clientId })
-      : Result.error("authorization_uri and client_id need to be configured.");
+      ? Success({ authUri, clientId })
+      : Failure("authorization_uri and client_id need to be configured.");
   }
 
   buildBrowserUrl(path: string | undefined, apiPath: ApiPath) {
