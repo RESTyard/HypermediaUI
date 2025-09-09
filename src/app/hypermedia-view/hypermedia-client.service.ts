@@ -275,7 +275,7 @@ export class HypermediaClientService implements IHypermediaClientService {
           fileName = "download.dat"
         }
 
-        const blob = response.body!;
+        const blob = response.body;
         if (blob) {
           saveAs(blob, fileName)
         }
