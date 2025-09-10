@@ -245,7 +245,7 @@ export class HypermediaClientService implements IHypermediaClientService {
 
   buildBrowserUrl(path: string | undefined, apiPath: ApiPath) {
     const usePath = path ?? 'hui';
-    const useApiPath = path === 'hui' ? apiPath.fullPath : apiPath.fullPath.slice(1);
+    const useApiPath = usePath === 'hui' ? apiPath.fullPath : apiPath.fullPath.slice(1);
     if (useApiPath.length === 0) {
       return usePath;
     }
