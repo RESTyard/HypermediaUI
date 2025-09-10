@@ -6,7 +6,15 @@ import {Result, Success, Failure} from 'fnxt/result';
 import {Store} from "@ngrx/store";
 import {AppSettings, AuthenticationConfiguration, SiteSetting} from "../settings/app-settings";
 import {Map as ImmutableMap} from "immutable";
-import {addHeader, addSite, setAuthConfig, updateHeader} from "../store/appsettings.actions";
+import {
+  addHeader,
+  addSite,
+  setAuthConfig,
+  setAuthenticationInProgress,
+  updateHeader
+} from "../store/appsettings.actions";
+import {CurrentUser} from "../store/user.reducer";
+import {setCurrentUser} from "../store/user.actions";
 
 @Injectable()
 export class AuthService {
@@ -14,7 +22,7 @@ export class AuthService {
 
   private siteSpecificSettings: ImmutableMap<string, SiteSetting> = ImmutableMap();
 
-  constructor(private settingsService: SettingsService, private store: Store<{ appSettings: AppSettings }>) {
+  constructor(private settingsService: SettingsService, private store: Store<{ appSettings: AppSettings, currentUser: CurrentUser }>) {
     this.tokenRecentlyAcquired = new Set();
 
     this.store
@@ -41,7 +49,7 @@ export class AuthService {
 
     const siteSettings = this.getOrCreateSiteSpecificSettings(siteUrl);
 
-    if (siteSettings.authConfig !== undefined) {
+    if (siteSettings.authenticationInProgress) {
       this.store.dispatch(setAuthConfig({siteUrl: siteUrl, authConfig: undefined}));
       this.settingsService.SaveCurrentSettings();
       return Failure("Different login is already in progress");
@@ -50,6 +58,7 @@ export class AuthService {
       siteUrl: siteUrl,
       authConfig: new AuthenticationConfiguration({authority, client_id, redirect_uri, scope})
     }));
+    this.store.dispatch(setAuthenticationInProgress({siteUrl: siteUrl, authenticationInProgress: true}))
     this.settingsService.SaveCurrentSettings();
 
     try {
@@ -114,6 +123,8 @@ export class AuthService {
     const authorizationHeaderKey = "Authorization";
     const newTokenHeader = "Bearer " + token;
 
+    this.store.dispatch(setCurrentUser({ currentUser: { name: user.profile.name ?? "" }}))
+
     if (siteSettings.headers.has(authorizationHeaderKey)) {
       this.store.dispatch(updateHeader({
         siteUrl: siteUrl,
@@ -129,8 +140,62 @@ export class AuthService {
       }));
     }
     this.tokenRecentlyAcquired.add(entryPoint);
-    this.store.dispatch(setAuthConfig({siteUrl: siteUrl, authConfig: undefined}))
+    this.store.dispatch(setAuthenticationInProgress({siteUrl: siteUrl, authenticationInProgress: false}))
     this.settingsService.SaveCurrentSettings();
     return Success(Unit.NoThing);
+  }
+
+  async handleLogout(params: {entryPoint: string, redirect_uri: string}): Promise<Result<Unit, string>> {
+    const siteUrl = new URL(params.entryPoint).host;
+    const siteSettings = this.getOrCreateSiteSpecificSettings(siteUrl);
+
+    if (!siteSettings.authConfig) {
+      return Failure("OAuth config was not found for entryPoint: " + params.entryPoint + ", siteUrl: " + siteUrl);
+    }
+
+    const authConfig = siteSettings.authConfig;
+
+    const userManager = new UserManager({
+      authority: authConfig.authority,
+      client_id: authConfig.client_id,
+      redirect_uri: authConfig.redirect_uri,
+      post_logout_redirect_uri: params.redirect_uri,
+      response_type: 'code',
+      scope: authConfig.scope
+    });
+
+    try {
+      await userManager.signoutRedirect();
+      return Success(Unit.NoThing);
+    } catch {
+      return Failure("Error redirecting to OAuth Provider for signout.");
+    }
+  }
+
+  async handleLogoutCallback(entryPoint: string): Promise<Result<Unit, string>> {
+    const siteUrl = new URL(entryPoint).host;
+    const siteSettings = this.getOrCreateSiteSpecificSettings(siteUrl);
+
+    if (!siteSettings.authConfig) {
+      return Failure("OAuth config was not found for entryPoint: " + entryPoint + ", siteUrl: " + siteUrl);
+    }
+
+    const authConfig = siteSettings.authConfig;
+
+    const userManager = new UserManager({
+      authority: authConfig.authority,
+      client_id: authConfig.client_id,
+      redirect_uri: authConfig.redirect_uri,
+      response_type: 'code',
+      scope: authConfig.scope
+    });
+
+    try {
+      await userManager.signoutCallback();
+      this.store.dispatch(setAuthConfig({siteUrl: siteUrl, authConfig: undefined}))
+      return Success(Unit.NoThing);
+    } catch(err) {
+      return Failure("Error handling response from OAuth provider.");
+    }
   }
 }

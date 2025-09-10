@@ -1,8 +1,9 @@
 import { ModuleWithProviders } from "@angular/core";
 import { StoreModule, StoreRootModule } from "@ngrx/store";
-import { appSettingsReducer } from "../store/appsettings.reducer";
-import { appConfigReducer } from "../store/appconfig.reducer";
+import { appSettingsReducer } from "./appsettings.reducer";
+import { appConfigReducer } from "./appconfig.reducer";
 import { entryPointReducer } from "./entrypoint.reducer";
+import {userReducer} from "./user.reducer";
 
 
 export function importStore() : ModuleWithProviders<StoreRootModule> {
@@ -10,5 +11,6 @@ export function importStore() : ModuleWithProviders<StoreRootModule> {
         appSettings: appSettingsReducer,
         appConfig: appConfigReducer,
         currentEntryPoint: entryPointReducer,
+        user: userReducer,
     });
 }

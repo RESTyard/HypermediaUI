@@ -10,6 +10,7 @@ import { AppConfig } from 'src/app.config.service';
 import { selectEffectiveGeneralSettings } from 'src/app/store/selectors';
 import { combineLatest, merge } from 'rxjs';
 import { CurrentEntryPoint } from 'src/app/store/entrypoint.reducer';
+import {CurrentUser} from "../../store/user.reducer";
 
 @Component({
     selector: 'app-hypermedia-control',
@@ -26,7 +27,8 @@ export class HypermediaControlComponent implements OnInit {
   public CurrentEntryPoint: string = "";
   GeneralSettings: GeneralSettings = new GeneralSettings();
   showSettingsIcon: boolean = true;
-  showExitIcon: boolean = true;
+  userName: string | undefined = "";
+  allowOnlyConfiguredEntryPoints: boolean = true
   IsInsecureConnection: boolean = false;
   title: string = "";
 
@@ -35,7 +37,7 @@ export class HypermediaControlComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     location: PlatformLocation,
-    private store: Store<{ appSettings: AppSettings, appConfig: AppConfig, currentEntryPoint: CurrentEntryPoint }>) {
+    private store: Store<{ appSettings: AppSettings, appConfig: AppConfig, currentEntryPoint: CurrentEntryPoint, currentUser: CurrentUser }>) {
       store
         .select(selectEffectiveGeneralSettings)
         .subscribe({
@@ -46,7 +48,7 @@ export class HypermediaControlComponent implements OnInit {
         .subscribe({
           next: appConfig => {
             this.showSettingsIcon = !appConfig.disableDeveloperControls;
-            this.showExitIcon = !appConfig.onlyAllowConfiguredEntryPoints;
+            this.allowOnlyConfiguredEntryPoints = !appConfig.onlyAllowConfiguredEntryPoints;
           }
         });
       store
@@ -56,6 +58,14 @@ export class HypermediaControlComponent implements OnInit {
             this.title = entryPoint.title ?? "Hypermedia UI";
           }
         });
+
+      store
+        .select(state => state.currentUser)
+        .subscribe({
+          next: user => {
+            this.userName = user.name;
+          }
+        })
       combineLatest(
         [
           store.select(state => state.appConfig),
@@ -141,6 +151,10 @@ export class HypermediaControlComponent implements OnInit {
   }
 
   public navigateMainPage() {
+    if(this.allowOnlyConfiguredEntryPoints) {
+      this.hypermediaClient.navigateToEntryPoint()
+    }
+
     this.hypermediaClient.navigateToMainPage();
   }
 }
