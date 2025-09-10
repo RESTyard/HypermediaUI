@@ -48,19 +48,10 @@ export class ParameterActionComponent implements OnInit {
             if (types.includes('string') && mapSource.format === 'date') {
               mappedField.type = 'date';
               mappedField.parsers = [
-                v => {
-                  const result = (v instanceof Date ? this.formatDate(v) : v);
-                  return result;
-                },
+                v => (v instanceof Date ? this.formatDate(v) : v),
               ];
               mappedField.validators = { 
-                required: (control: AbstractControl) => {
-                  if (types.includes('null')) {
-                    return true;
-                  } else {
-                    return control.value !== null && control.value !== undefined;
-                  }
-                },
+                required: (control: AbstractControl) => (types.includes('null') || (control.value !== null && control.value !== undefined)),
               };
             }
             return mappedField;
@@ -75,7 +66,8 @@ export class ParameterActionComponent implements OnInit {
     const year = date.getFullYear();
     const month = date.getMonth() + 1;
     const day = date.getDate();
-    return `${year}-${month < 10 ? '0' + month : month}-${day < 10 ? '0' + day : day}`;
+    const padLeft = (num: number) => `${num < 10 ? '0' + num : num}`;
+    return `${year}-${padLeft(month)}-${padLeft(day)}`;
   }
 
   public onActionSubmitted() {
