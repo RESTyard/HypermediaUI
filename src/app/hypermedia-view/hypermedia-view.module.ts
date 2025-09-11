@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { HttpClient, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
-import { NgModule } from '@angular/core';
+import { LOCALE_ID, NgModule } from '@angular/core';
 
 import { ActionsViewComponent } from './actions-view/actions-view.component';
 import { ParameterActionComponent } from './actions-view/parameter-action/parameter-action.component';
@@ -53,7 +53,7 @@ import { NullTypeComponent } from './actions-view/parameter-action/formly-types/
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { BooleanTypeComponent } from './actions-view/parameter-action/formly-types/boolean-type';
 import { AuthService } from './auth.service';
-import { MatNativeDateModule } from '@angular/material/core';
+import { MAT_DATE_FORMATS, MAT_DATE_LOCALE, MatNativeDateModule } from '@angular/material/core';
 
 @NgModule({
   exports: [HypermediaControlComponent],
@@ -155,6 +155,10 @@ import { MatNativeDateModule } from '@angular/material/core';
     SchemaSimplifier,
     HttpClient,
     provideHttpClient(withInterceptorsFromDi()),
+    {
+      provide: LOCALE_ID,
+      useValue: navigator.language,
+    },
   ]})
 export class HypermediaViewModule {}
 
