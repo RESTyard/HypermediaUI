@@ -6,7 +6,7 @@ import {
 } from '../../hypermedia-client.service';
 import { HypermediaAction } from '../../siren-parser/hypermedia-action';
 import { FormlyFieldConfig } from '@ngx-formly/core';
-import { FormGroup } from '@angular/forms';
+import { AbstractControl, FormGroup } from '@angular/forms';
 import { FormlyJsonschema } from '@ngx-formly/core/json-schema';
 
 @Component({
@@ -44,12 +44,30 @@ export class ParameterActionComponent implements OnInit {
             if (mappedField.key && mappedField.props) {
               mappedField.props.label = mappedField.key + '';
             }
+            const types = mapSource.type === undefined ? [] : mapSource.type instanceof Array ? mapSource.type : [mapSource.type];
+            if (types.includes('string') && mapSource.format === 'date') {
+              mappedField.type = 'date';
+              mappedField.parsers = [
+                v => (v instanceof Date ? this.formatDate(v) : v),
+              ];
+              mappedField.validators = { 
+                required: (control: AbstractControl) => (types.includes('null') || (control.value !== null && control.value !== undefined)),
+              };
+            }
             return mappedField;
           },
         }),
       ];
       this.model = this.action.defaultValues;
     });
+  }
+
+  private formatDate(date: Date) {
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1;
+    const day = date.getDate();
+    const padLeft = (num: number) => `${num < 10 ? '0' + num : num}`;
+    return `${year}-${padLeft(month)}-${padLeft(day)}`;
   }
 
   public onActionSubmitted() {

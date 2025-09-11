@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { HttpClient, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
-import { NgModule } from '@angular/core';
+import { LOCALE_ID, NgModule } from '@angular/core';
 
 import { ActionsViewComponent } from './actions-view/actions-view.component';
 import { ParameterActionComponent } from './actions-view/parameter-action/parameter-action.component';
@@ -18,6 +18,7 @@ import { SirenDeserializer } from './siren-parser/siren-deserializer';
 import { ClipboardModule } from 'ngx-clipboard';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatExpansionModule } from '@angular/material/expansion';
@@ -44,6 +45,7 @@ import { MatStepperModule } from '@angular/material/stepper';
 import { ReactiveFormsModule } from '@angular/forms';
 import { FormlyFieldConfig, FormlyModule } from '@ngx-formly/core';
 import { FormlyMaterialModule } from '@ngx-formly/material';
+import { FormlyFieldDatepicker, FormlyMatDatepickerModule } from '@ngx-formly/material/datepicker';
 import { ArrayTypeComponent } from './actions-view/parameter-action/formly-types/array-type';
 import { ObjectTypeComponent } from './actions-view/parameter-action/formly-types/object-type';
 import { MultiSchemaTypeComponent } from './actions-view/parameter-action/formly-types/multi-schema-type';
@@ -51,6 +53,7 @@ import { NullTypeComponent } from './actions-view/parameter-action/formly-types/
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { BooleanTypeComponent } from './actions-view/parameter-action/formly-types/boolean-type';
 import { AuthService } from './auth.service';
+import { MAT_DATE_FORMATS, MAT_DATE_LOCALE, MatNativeDateModule } from '@angular/material/core';
 
 @NgModule({
   exports: [HypermediaControlComponent],
@@ -73,6 +76,7 @@ import { AuthService } from './auth.service';
   ],
   imports: [
     CommonModule,
+    FormlyMatDatepickerModule,
     MatCardModule,
     MatButtonModule,
     MatGridListModule,
@@ -85,6 +89,8 @@ import { AuthService } from './auth.service';
     MatListModule,
     MatInputModule,
     MatSelectModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
     MatMenuModule,
     ErrorDialogModule,
     MatProgressSpinnerModule,
@@ -127,6 +133,11 @@ import { AuthService } from './auth.service';
                 component: BooleanTypeComponent,
                 wrappers: ['form-field'],
             },
+            {
+              name: 'date',
+              component: FormlyFieldDatepicker,
+              wrappers: ['form-field'],
+            }
         ],
     }),
     FormlyMaterialModule,
@@ -144,6 +155,10 @@ import { AuthService } from './auth.service';
     SchemaSimplifier,
     HttpClient,
     provideHttpClient(withInterceptorsFromDi()),
+    {
+      provide: LOCALE_ID,
+      useValue: navigator.language,
+    },
   ]})
 export class HypermediaViewModule {}
 
