@@ -8,26 +8,28 @@ import {AppSettings, AuthenticationConfiguration, SiteSetting} from "../settings
 import {Map as ImmutableMap} from "immutable";
 import {
   addHeader,
-  addSite,
-  setAuthConfig,
+  addSite, removeHeader, setAuthConfig,
   setAuthenticationInProgress,
   updateHeader
 } from "../store/appsettings.actions";
-import {CurrentUser} from "../store/user.reducer";
-import {setCurrentUser} from "../store/user.actions";
+import {CurrentEntryPoint} from "../store/entrypoint.reducer";
 
 @Injectable()
 export class AuthService {
   private tokenRecentlyAcquired: Set<string>;
 
   private siteSpecificSettings: ImmutableMap<string, SiteSetting> = ImmutableMap();
+  private currentEntryPoint: CurrentEntryPoint = {};
 
-  constructor(private settingsService: SettingsService, private store: Store<{ appSettings: AppSettings, currentUser: CurrentUser }>) {
+  constructor(private settingsService: SettingsService, private store: Store<{ appSettings: AppSettings, currentEntryPoint: CurrentEntryPoint }>) {
     this.tokenRecentlyAcquired = new Set();
 
     this.store
       .select(s => s.appSettings.siteSettings.siteSpecificSettings)
       .subscribe(settings => this.siteSpecificSettings = settings);
+    this.store
+      .select(s => s.currentEntryPoint)
+      .subscribe({ next: entryPoint => this.currentEntryPoint = entryPoint})
   }
 
   async login({entryPoint, authority, client_id, redirect_uri, scope}: {
@@ -123,8 +125,6 @@ export class AuthService {
     const authorizationHeaderKey = "Authorization";
     const newTokenHeader = "Bearer " + token;
 
-    this.store.dispatch(setCurrentUser({ currentUser: { name: user.profile.name ?? "" }}))
-
     if (siteSettings.headers.has(authorizationHeaderKey)) {
       this.store.dispatch(updateHeader({
         siteUrl: siteUrl,
@@ -145,24 +145,37 @@ export class AuthService {
     return Success(Unit.NoThing);
   }
 
-  async handleLogout(params: {entryPoint: string, redirect_uri: string}): Promise<Result<Unit, string>> {
-    const siteUrl = new URL(params.entryPoint).host;
+  async handleLogout(): Promise<Result<Unit, string>> {
+    const entryPoint = this.currentEntryPoint.entryPoint;
+    if(!entryPoint) {
+      return Failure("Logout without entryPoint");
+    }
+
+    const siteUrl = new URL(entryPoint).host;
     const siteSettings = this.getOrCreateSiteSpecificSettings(siteUrl);
 
     if (!siteSettings.authConfig) {
-      return Failure("OAuth config was not found for entryPoint: " + params.entryPoint + ", siteUrl: " + siteUrl);
+      return Failure("OAuth config was not found for entryPoint: " + entryPoint + ", siteUrl: " + siteUrl);
     }
 
     const authConfig = siteSettings.authConfig;
+
+    let redirectUri = window.location.origin + '/logout-redirect?entrypoint_uri=' + entryPoint;
+    if(this.currentEntryPoint.path !== undefined && this.currentEntryPoint.path !== 'hui') {
+      redirectUri += '&path=' + this.currentEntryPoint.path;
+    }
 
     const userManager = new UserManager({
       authority: authConfig.authority,
       client_id: authConfig.client_id,
       redirect_uri: authConfig.redirect_uri,
-      post_logout_redirect_uri: params.redirect_uri,
+      post_logout_redirect_uri: redirectUri,
       response_type: 'code',
       scope: authConfig.scope
     });
+
+    this.store.dispatch(removeHeader({siteUrl: siteUrl, key: "Authorization"}));
+    this.settingsService.SaveCurrentSettings();
 
     try {
       await userManager.signoutRedirect();

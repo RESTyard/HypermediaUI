@@ -1,0 +1,15 @@
+<mat-toolbar class="headerMenue" color="primary">
+  <mat-icon class="appIcon">signpost</mat-icon>
+  <span [innerText]="title"></span>
+  <span class="spacer"></span>
+</mat-toolbar>
+
+
+<mat-card>
+  @if (isSuccess) {
+    <span>Logout successful</span>
+  } @else {
+    <span>Error during logout: {{errorMessage}}</span>
+  }
+  <button matButton (click)="exit()">Exit</button>
+</mat-card>

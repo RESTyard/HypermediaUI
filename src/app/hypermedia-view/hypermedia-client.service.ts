@@ -11,8 +11,6 @@ import {SirenClientObject} from './siren-parser/siren-client-object';
 import {ActionType, HypermediaAction} from './siren-parser/hypermedia-action';
 import {ApiPath} from './api-path';
 
-import {SettingsService} from '../settings/services/settings.service';
-
 import {ProblemDetailsError} from '../error-dialog/problem-details-error';
 import {MediaTypes} from "./MediaTypes";
 import {AuthService} from './auth.service';
@@ -121,9 +119,9 @@ export class HypermediaClientService implements IHypermediaClientService {
   navigateToEntryPoint() {
     if (!this.apiPath || !this.apiPath.hasPath) {
       this.router.navigate(['']);
+    } else {
+      this.Navigate(this.apiPath.firstSegment);
     }
-
-    this.Navigate(this.apiPath.firstSegment);
   }
 
   NavigateToApiPath(apiPath: ApiPath, options?: { inplace: boolean }) {
@@ -163,7 +161,7 @@ export class HypermediaClientService implements IHypermediaClientService {
       await this.handleNavigateError(url, err);
       return;
     }
-    
+
     this.authService.requestSuccessfulFor(url);
     this.router.navigate(
       ['hui'],
