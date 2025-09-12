@@ -68,7 +68,6 @@ export class AuthService {
 
     try {
       const prompt = this.recentlyLoggedOut.has(siteUrl) ? 'select_account' : undefined;
-      console.log(prompt);
       await userManager.signinRedirect({prompt: prompt});
       return Success(Unit.NoThing);
     } catch {
