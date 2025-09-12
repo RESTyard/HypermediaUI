@@ -39,6 +39,9 @@ export class LogoutRedirectComponent implements OnInit {
   title: string = "";
   private configuredEntryPoint: ConfiguredEntryPoint | undefined;
 
+  public static readonly pathUriParameterKey : string = 'path';
+  public static readonly entrypointUriParameterKey: string = 'entrypoint_uri';
+
   constructor(
     private authService: AuthService,
     private activatedRoute: ActivatedRoute,
@@ -58,10 +61,10 @@ export class LogoutRedirectComponent implements OnInit {
         filter(tuple => tuple[0] !== undefined),
       ));
     const [configuredEntryPoints, queryParams] = tuple;
-    const path = queryParams['path'];
+    const path = queryParams[LogoutRedirectComponent.pathUriParameterKey];
     this.configuredEntryPoint = configuredEntryPoints?.find(e => e.alias === path);
 
-    const entryPoint = queryParams['entrypoint_uri'];
+    const entryPoint = queryParams[LogoutRedirectComponent.entrypointUriParameterKey];
 
     this.title = this.configuredEntryPoint?.title ?? "Hypermedia UI";
     let logoutResult: Result<Unit, string> = Failure("No entrypoint");

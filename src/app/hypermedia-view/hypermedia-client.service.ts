@@ -24,6 +24,7 @@ import {AppConfig} from 'src/app.config.service';
 import {selectEffectiveGeneralSettings} from '../store/selectors';
 import {CurrentEntryPoint} from '../store/entrypoint.reducer';
 import { Unit } from '../utils/unit';
+import {AuthRedirectComponent} from "../auth-redirect/auth-redirect.component";
 
 export interface IHypermediaClientService {
   isBusy$: BehaviorSubject<boolean>;
@@ -189,7 +190,7 @@ export class HypermediaClientService implements IHypermediaClientService {
     // https://learn.microsoft.com/en-us/entra/msal/dotnet/advanced/extract-authentication-parameters
     let queryParams = this.buildApiPathSearchParams(this.apiPath.fullPath, 'apiPath');
     if (this.path) {
-      queryParams.append('path', this.path);
+      queryParams.append(AuthRedirectComponent.pathUriParameterKey, this.path);
     }
     let redirectUri = window.location.origin + "/auth-redirect?" + queryParams.toString();
     const result = await resultPipe(

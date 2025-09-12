@@ -13,6 +13,7 @@ import {
   updateHeader
 } from "../store/appsettings.actions";
 import {CurrentEntryPoint} from "../store/entrypoint.reducer";
+import {LogoutRedirectComponent} from "../logout-redirect/logout-redirect.component";
 
 @Injectable()
 export class AuthService {
@@ -160,9 +161,9 @@ export class AuthService {
 
     const authConfig = siteSettings.authConfig;
 
-    let redirectUri = window.location.origin + '/logout-redirect?entrypoint_uri=' + entryPoint;
+    let redirectUri = window.location.origin + '/logout-redirect?' + LogoutRedirectComponent.entrypointUriParameterKey + '=' + entryPoint;
     if(this.currentEntryPoint.path !== undefined && this.currentEntryPoint.path !== 'hui') {
-      redirectUri += '&path=' + this.currentEntryPoint.path;
+      redirectUri += '&' + LogoutRedirectComponent.pathUriParameterKey + '=' + this.currentEntryPoint.path;
     }
 
     const userManager = new UserManager({
