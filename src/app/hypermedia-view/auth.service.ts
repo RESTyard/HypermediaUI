@@ -18,12 +18,14 @@ import {LogoutRedirectComponent} from "../logout-redirect/logout-redirect.compon
 @Injectable()
 export class AuthService {
   private tokenRecentlyAcquired: Set<string>;
+  private recentlyLoggedOut: Set<string>;
 
   private siteSpecificSettings: ImmutableMap<string, SiteSetting> = ImmutableMap();
   private currentEntryPoint: CurrentEntryPoint = {};
 
   constructor(private settingsService: SettingsService, private store: Store<{ appSettings: AppSettings, currentEntryPoint: CurrentEntryPoint }>) {
     this.tokenRecentlyAcquired = new Set();
+    this.recentlyLoggedOut = new Set();
 
     this.store
       .select(s => s.appSettings.siteSettings.siteSpecificSettings)
@@ -65,7 +67,9 @@ export class AuthService {
     this.settingsService.SaveCurrentSettings();
 
     try {
-      await userManager.signinRedirect();
+      const prompt = this.recentlyLoggedOut.has(siteUrl) ? 'select_account' : undefined;
+      console.log(prompt);
+      await userManager.signinRedirect({prompt: prompt});
       return Success(Unit.NoThing);
     } catch {
       return Failure("Error during authentication");
@@ -141,6 +145,7 @@ export class AuthService {
       }));
     }
     this.tokenRecentlyAcquired.add(entryPoint);
+    this.recentlyLoggedOut.delete(siteUrl);
     this.store.dispatch(setAuthenticationInProgress({siteUrl: siteUrl, authenticationInProgress: false}))
     this.settingsService.SaveCurrentSettings();
     return Success(Unit.NoThing);
@@ -206,6 +211,7 @@ export class AuthService {
 
     try {
       await userManager.signoutCallback();
+      this.recentlyLoggedOut.add(siteUrl)
       this.store.dispatch(setAuthConfig({siteUrl: siteUrl, authConfig: undefined}))
       return Success(Unit.NoThing);
     } catch(err) {
