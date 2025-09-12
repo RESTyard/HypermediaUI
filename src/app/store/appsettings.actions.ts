@@ -1,5 +1,6 @@
 import { createAction, props } from "@ngrx/store";
 import {AppSettings, AuthenticationConfiguration, GeneralSettings, SiteSettings} from "../settings/app-settings";
+import {User} from "oidc-client-ts";
 
 export const updateAppSettings = createAction(
     '[AppSettings] Update',
@@ -40,4 +41,9 @@ export const removeSite = createAction(
 export const setAuthConfig = createAction(
   '[AppSettings]->[SiteSettings] SetAuthConfig',
   props<{ siteUrl: string, authConfig: AuthenticationConfiguration | undefined}>()
+)
+
+export const setAuthenticationInProgress = createAction(
+  '[AppSettings]->[SiteSettings] SetLoginInProgress',
+  props<{ siteUrl: string, authenticationInProgress: boolean}>()
 )

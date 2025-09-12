@@ -14,11 +14,13 @@
   @if (showSettingsIcon) {
     <app-settings-menu></app-settings-menu>
   }
-  @if (showExitIcon) {
-    <button mat-icon-button matTooltip="Exit API" (click)="navigateMainPage()">
-      <mat-icon class="icon">exit_to_app</mat-icon>
-    </button>
+  @if (userName) {
+    <span>{{userName}}</span>
   }
+
+  <button mat-icon-button matTooltip="Exit API" (click)="exitApi()">
+    <mat-icon class="icon">exit_to_app</mat-icon>
+  </button>
 </mat-toolbar>
 
 @if (isBusy) {

@@ -11,8 +11,6 @@ import {SirenClientObject} from './siren-parser/siren-client-object';
 import {ActionType, HypermediaAction} from './siren-parser/hypermedia-action';
 import {ApiPath} from './api-path';
 
-import {SettingsService} from '../settings/services/settings.service';
-
 import {ProblemDetailsError} from '../error-dialog/problem-details-error';
 import {MediaTypes} from "./MediaTypes";
 import {AuthService} from './auth.service';
@@ -26,6 +24,7 @@ import {AppConfig} from 'src/app.config.service';
 import {selectEffectiveGeneralSettings} from '../store/selectors';
 import {CurrentEntryPoint} from '../store/entrypoint.reducer';
 import { Unit } from '../utils/unit';
+import {AuthRedirectComponent} from "../auth-redirect/auth-redirect.component";
 
 export interface IHypermediaClientService {
   isBusy$: BehaviorSubject<boolean>;
@@ -121,9 +120,9 @@ export class HypermediaClientService implements IHypermediaClientService {
   navigateToEntryPoint() {
     if (!this.apiPath || !this.apiPath.hasPath) {
       this.router.navigate(['']);
+    } else {
+      this.Navigate(this.apiPath.firstSegment);
     }
-
-    this.Navigate(this.apiPath.firstSegment);
   }
 
   NavigateToApiPath(apiPath: ApiPath, options?: { inplace: boolean }) {
@@ -163,7 +162,7 @@ export class HypermediaClientService implements IHypermediaClientService {
       await this.handleNavigateError(url, err);
       return;
     }
-    
+
     this.authService.requestSuccessfulFor(url);
     this.router.navigate(
       ['hui'],
@@ -191,7 +190,7 @@ export class HypermediaClientService implements IHypermediaClientService {
     // https://learn.microsoft.com/en-us/entra/msal/dotnet/advanced/extract-authentication-parameters
     let queryParams = this.buildApiPathSearchParams(this.apiPath.fullPath, 'apiPath');
     if (this.path) {
-      queryParams.append('path', this.path);
+      queryParams.append(AuthRedirectComponent.pathUriParameterKey, this.path);
     }
     let redirectUri = window.location.origin + "/auth-redirect?" + queryParams.toString();
     const result = await resultPipe(

@@ -35,6 +35,7 @@ import { AppConfigService } from 'src/app.config.service';
 import { Observable } from 'rxjs';
 import { importStore } from './store/store-module';
 import { AliasPageComponent } from './alias-page/alias-page.component';
+import {LogoutRedirectComponent} from "./logout-redirect/logout-redirect.component";
 
 const appRoutes: Routes = [
   {
@@ -44,6 +45,10 @@ const appRoutes: Routes = [
   {
     path: 'auth-redirect',
     component: AuthRedirectComponent
+  },
+  {
+    path: 'logout-redirect',
+    component: LogoutRedirectComponent
   },
   {
     path: '',

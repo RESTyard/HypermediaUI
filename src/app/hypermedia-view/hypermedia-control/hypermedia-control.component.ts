@@ -1,21 +1,22 @@
-import { Component, OnInit } from '@angular/core';
-import { HypermediaClientService } from '../hypermedia-client.service';
-import { SirenClientObject } from '../siren-parser/siren-client-object';
-import { ActivatedRoute, Router } from '@angular/router';
-import { PlatformLocation } from '@angular/common';
-import { ApiPath } from '../api-path';
-import { AppSettings, GeneralSettings } from 'src/app/settings/app-settings';
-import { Store } from '@ngrx/store';
-import { AppConfig } from 'src/app.config.service';
-import { selectEffectiveGeneralSettings } from 'src/app/store/selectors';
-import { combineLatest, merge } from 'rxjs';
-import { CurrentEntryPoint } from 'src/app/store/entrypoint.reducer';
+import {Component, OnInit} from '@angular/core';
+import {HypermediaClientService} from '../hypermedia-client.service';
+import {SirenClientObject} from '../siren-parser/siren-client-object';
+import {ActivatedRoute, Router} from '@angular/router';
+import {PlatformLocation} from '@angular/common';
+import {ApiPath} from '../api-path';
+import {AppSettings, GeneralSettings} from 'src/app/settings/app-settings';
+import {Store} from '@ngrx/store';
+import {AppConfig} from 'src/app.config.service';
+import {selectEffectiveGeneralSettings, selectUserNameForCurrentSite} from 'src/app/store/selectors';
+import {combineLatest} from 'rxjs';
+import {CurrentEntryPoint} from 'src/app/store/entrypoint.reducer';
+import {AuthService} from "../auth.service";
 
 @Component({
-    selector: 'app-hypermedia-control',
-    templateUrl: './hypermedia-control.component.html',
-    styleUrls: ['./hypermedia-control.component.scss'],
-    standalone: false
+  selector: 'app-hypermedia-control',
+  templateUrl: './hypermedia-control.component.html',
+  styleUrls: ['./hypermedia-control.component.scss'],
+  standalone: false
 })
 export class HypermediaControlComponent implements OnInit {
   public rawResponse: object | null = null;
@@ -26,7 +27,8 @@ export class HypermediaControlComponent implements OnInit {
   public CurrentEntryPoint: string = "";
   GeneralSettings: GeneralSettings = new GeneralSettings();
   showSettingsIcon: boolean = true;
-  showExitIcon: boolean = true;
+  userName: string | undefined = "";
+  allowOnlyConfiguredEntryPoints: boolean = true
   IsInsecureConnection: boolean = false;
   title: string = "";
 
@@ -34,41 +36,51 @@ export class HypermediaControlComponent implements OnInit {
     private hypermediaClient: HypermediaClientService,
     private route: ActivatedRoute,
     private router: Router,
+    private authService: AuthService,
     location: PlatformLocation,
     private store: Store<{ appSettings: AppSettings, appConfig: AppConfig, currentEntryPoint: CurrentEntryPoint }>) {
-      store
-        .select(selectEffectiveGeneralSettings)
-        .subscribe({
-          next: generalSettings => this.GeneralSettings = generalSettings,
-        });
-      store
-        .select(state => state.appConfig)
-        .subscribe({
-          next: appConfig => {
-            this.showSettingsIcon = !appConfig.disableDeveloperControls;
-            this.showExitIcon = !appConfig.onlyAllowConfiguredEntryPoints;
+    store
+      .select(selectEffectiveGeneralSettings)
+      .subscribe({
+        next: generalSettings => this.GeneralSettings = generalSettings,
+      });
+    store
+      .select(state => state.appConfig)
+      .subscribe({
+        next: appConfig => {
+          this.showSettingsIcon = !appConfig.disableDeveloperControls;
+          this.allowOnlyConfiguredEntryPoints = !appConfig.onlyAllowConfiguredEntryPoints;
+        }
+      });
+    store
+      .select(state => state.currentEntryPoint)
+      .subscribe({
+        next: entryPoint => {
+          this.title = entryPoint.title ?? "Hypermedia UI";
+        }
+      });
+
+    store
+      .select(selectUserNameForCurrentSite)
+      .subscribe({
+        next: user => {
+          this.userName = user;
+        }
+      })
+
+    combineLatest(
+      [
+        store.select(state => state.appConfig),
+        store.select(state => state.currentEntryPoint),
+      ])
+      .subscribe({
+        next: tuple => {
+          const [appConfig, currentEntryPoint] = tuple;
+          if (appConfig.onlyAllowConfiguredEntryPoints && (currentEntryPoint.path === undefined || currentEntryPoint.path === 'hui')) {
+            router.navigate(['']);
           }
-        });
-      store
-        .select(state => state.currentEntryPoint)
-        .subscribe({
-          next: entryPoint => {
-            this.title = entryPoint.title ?? "Hypermedia UI";
-          }
-        });
-      combineLatest(
-        [
-          store.select(state => state.appConfig),
-          store.select(state => state.currentEntryPoint),
-        ])
-        .subscribe({
-          next: tuple => {
-            const [appConfig, currentEntryPoint] = tuple;
-            if (appConfig.onlyAllowConfiguredEntryPoints && (currentEntryPoint.path === undefined || currentEntryPoint.path === 'hui')) {
-              router.navigate(['']);
-            }
-          }
-        })
+        }
+      })
   }
 
   ngOnInit() {
@@ -140,7 +152,15 @@ export class HypermediaControlComponent implements OnInit {
     this.hypermediaClient.Navigate(url);
   }
 
-  public navigateMainPage() {
+  public async exitApi() {
+    if (this.userName) {
+      await this.authService.handleLogout();
+    }
+
+    if (this.allowOnlyConfiguredEntryPoints) {
+      this.hypermediaClient.navigateToEntryPoint()
+    }
+
     this.hypermediaClient.navigateToMainPage();
   }
 }

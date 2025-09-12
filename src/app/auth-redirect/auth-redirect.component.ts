@@ -19,6 +19,7 @@ import { Success, Failure, bindAsync, map as resultMap, isSuccess } from 'fnxt/r
   standalone: false
 })
 export class AuthRedirectComponent implements OnInit {
+  public static readonly pathUriParameterKey: string = 'path';
   constructor(
     private authService: AuthService,
     private activatedRoute: ActivatedRoute,
@@ -41,7 +42,7 @@ export class AuthRedirectComponent implements OnInit {
             const [configuredEntryPoints, queryParams] = tuple;
             const apiPath = new ApiPath();
             apiPath.initFromRouterParams(queryParams);
-            const path = queryParams['path'];
+            const path = queryParams[AuthRedirectComponent.pathUriParameterKey];
 
             if (apiPath.pathLength < 1) {
               return Failure('invalid redirect uri');
@@ -57,7 +58,7 @@ export class AuthRedirectComponent implements OnInit {
             });
           }),
         ));
-      
+
       const doCallback = bindAsync(async (parameters: {apiPath: ApiPath, path: string, targetEntryPoint: string, configuredEntryPoint: ConfiguredEntryPoint | undefined }) => resultMap(_ => parameters)(await this.authService.handleCallback(parameters.targetEntryPoint)));
       const result = await doCallback(parametersResult);
       if (isSuccess(result)) {
