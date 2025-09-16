@@ -1,12 +1,15 @@
 # HypermediaUI
 
-This is a Web UI to generically process Siren speaking http servers.
-Note that it is developed to access APIs which use the [Siren Hypermedia Format](https://github.com/kevinswiber/siren).
+This is a Web UI to generically process [Siren Hypermedia Format](https://github.com/kevinswiber/siren) speaking http servers. 
+Links, embedded entities and actions (including parameter forms) are generically rendered purely from the API response.
 
-This Client is designed to work with the [RESTyard project](https://github.com/RESTyard/RESTyard).
+There are minor deviations from the Siren hypermedia format, mainly on how action parameters are specified and a specification for file uploades.
+For more details see the [RESTyard documentation](https://restyard.github.io/RESTyard-Docs/content/12-Notes-on-Siren.html)
+
+[Live demo](https://restyard.github.io/HypermediaUI/) 
+
+This Client is designed to work with APIs implemented using the [RESTyard project](https://github.com/RESTyard/RESTyard).
 Use the demo server "CarShack" from this project to have a quick compliant backend.
-
-There are some minor deviations from the Siren hypermedia format. [See the RESTyard documentation](https://restyard.github.io/RESTyard-Docs/content/12-Notes-on-Siren.html)
 
 **NOTE**
 The code was originally developed [here](https://github.com/MathiasReichardt/HypermediaUi) but was now moved to the RESTyard organization.
