@@ -1,4 +1,5 @@
 
+@if (propertyContainer && propertyContainer.length > 0) {
   <div class="tree-header-toolbar">
     <div class="controls-container">
       @if (hasExpandableItems) {
@@ -27,6 +28,7 @@
       </div>
     </div>
   </div>
+}
 
 <mat-tree [dataSource]="dataSource" [treeControl]="treeControl">
 
