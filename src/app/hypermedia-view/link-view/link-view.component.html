@@ -27,8 +27,8 @@
           </button>
           <span class="url-text">{{link.url}}</span>
         </div>
-        <mat-divider></mat-divider>
         @if (link.type !== MediaTypes.Siren && link.type != undefined) {
+          <mat-divider></mat-divider>
           <button  mat-menu-item
             (click)="download(link)">
             <mat-icon color="primary">download</mat-icon>
