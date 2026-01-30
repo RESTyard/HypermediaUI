@@ -3,7 +3,11 @@
     <span>
       <mat-button-toggle-group class="buttonContainer">
         <mat-button-toggle (click)="navigateLink(link)" matTooltip="{{link.url}}">
-          <mat-icon >play_arrow</mat-icon>
+          @if (getRelationIcon(link.relations)) {
+            <mat-icon>{{getRelationIcon(link.relations)}}</mat-icon>
+          } @else {
+            <mat-icon>play_arrow</mat-icon>
+          }
           <span>
             {{link.relations.join(',')}}
           </span>

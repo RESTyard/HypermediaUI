@@ -1,6 +1,7 @@
 import { HypermediaClientService } from '../hypermedia-client.service';
 import { Component, OnInit, Input } from '@angular/core';
 import { HypermediaLink } from '../siren-parser/hypermedia-link';
+import { getIconForRelation } from '../relation-icon-mapping';
 import { ClipboardService } from 'ngx-clipboard';
 import {MediaTypes} from "../MediaTypes";
 
@@ -23,6 +24,15 @@ export class LinkViewComponent implements OnInit {
 
   navigateLink(hypermediaLink: HypermediaLink) {
     this.hypermediaClient.Navigate(hypermediaLink.url);
+  }
+
+  getRelationIcon(rels: string[]): string | undefined {
+    if (!rels) return undefined;
+    for (const rel of rels) {
+      const icon = getIconForRelation(rel);
+      if (icon) return icon;
+    }
+    return undefined;
   }
 
   copyToClipBoard(hypermediaLink: HypermediaLink) {

@@ -14,7 +14,12 @@
           }
           <mat-chip-set class="relation-chips">
             @for (rel of embeddedEntity.relations; track rel) {
-              <mat-chip>{{rel}}</mat-chip>
+              <mat-chip>
+                @if (getRelationIcon(rel)) {
+                  <mat-icon matChipAvatar>{{getRelationIcon(rel)}}</mat-icon>
+                }
+                {{rel}}
+              </mat-chip>
             }
           </mat-chip-set>
         </mat-panel-title>
@@ -39,7 +44,12 @@
         }
         <mat-chip-set class="relation-chips">
           @for (rel of embeddedLinkEntity.relations; track rel) {
-            <mat-chip>{{rel}}</mat-chip>
+            <mat-chip>
+              @if (getRelationIcon(rel)) {
+                <mat-icon matChipAvatar>{{getRelationIcon(rel)}}</mat-icon>
+              }
+              {{rel}}
+            </mat-chip>
           }
         </mat-chip-set>
       </div>
