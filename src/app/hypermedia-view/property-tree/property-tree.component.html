@@ -1,0 +1,75 @@
+
+  <div class="tree-header-toolbar">
+    <div class="controls-container">
+      @if (hasExpandableItems) {
+        <button mat-button (click)="expandAll()">
+          <mat-icon>unfold_more</mat-icon> EXPAND
+        </button>
+        <button mat-button (click)="collapseAll()">
+          <mat-icon>unfold_less</mat-icon> COLLAPSE
+        </button>
+      }
+
+      <div class="search-box">
+        <mat-icon class="search-icon">search</mat-icon>
+        <input type="text"
+               [value]="searchQuery"
+               (input)="applyFilter($event)"
+               (keydown.enter)="handleSearchEnter($event)"
+               placeholder="Search ...">
+
+        @if (searchQuery) {
+          <span class="match-counter" [class.no-matches]="matchCount === 0">
+            {{ matchCount > 0 ? (currentMatchIndex + 1) + '/' + matchCount : '0' }}
+          </span>
+          <mat-icon class="clear-icon" (click)="clearSearch()">close</mat-icon>
+        }
+      </div>
+    </div>
+  </div>
+
+<mat-tree [dataSource]="dataSource" [treeControl]="treeControl">
+
+  <mat-tree-node *matTreeNodeDef="let node"
+                 class="property-row"
+                 [class.is-direct-match]="directMatches.has(node)"
+                 [class.is-ancestor-match]="ancestorMatches.has(node)">
+
+    <div class="label-cell" [style.padding-left.px]="node.level * 24">
+      <span class="spacer"></span>
+      <span class="prop-name">{{node.name}}:</span>
+    </div>
+
+    <div class="value-cell" [class.align-right]="node.type === propertyTypes.number">
+      @switch (node.type) {
+        @case (propertyTypes.string) { <span class="v-str">{{node.value}}</span> }
+        @case (propertyTypes.number) { <span class="v-num">{{node.value}}</span> }
+        @case (propertyTypes.boolean) { <mat-checkbox [checked]="node.value" disabled></mat-checkbox> }
+        @case (propertyTypes.nullvalue) { <span class="v-null">null</span> }
+      }
+    </div>
+  </mat-tree-node>
+
+  <mat-tree-node *matTreeNodeDef="let node; when: hasChild"
+                 class="property-row"
+                 [class.is-direct-match]="directMatches.has(node)"
+                 [class.is-ancestor-match]="ancestorMatches.has(node)">
+
+    <div class="label-cell" [style.padding-left.px]="node.level * 24" (click)="treeControl.toggle(node)">
+      <button mat-icon-button matTreeNodeToggle (click)="$event.stopPropagation()">
+        <mat-icon>
+          {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
+        </mat-icon>
+      </button>
+      <span class="prop-name">{{node.name}}:</span>
+    </div>
+
+    <div class="value-cell">
+      @if (!treeControl.isExpanded(node)) {
+        <span class="v-meta">
+          {{ node.type === propertyTypes.array ? 'Array(' + node.value.length + ')' : '{...}' }}
+        </span>
+      }
+    </div>
+  </mat-tree-node>
+</mat-tree>

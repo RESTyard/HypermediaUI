@@ -55,12 +55,15 @@ import {BooleanTypeComponent} from './actions-view/parameter-action/formly-types
 import {AuthService} from './auth.service';
 import {MatNativeDateModule} from '@angular/material/core';
 import {allowEmptyArrayExtension} from "./formly-extensions";
+import {PropertyTreeComponent} from "./property-tree/property-tree.component";
+import {MatTree, MatTreeNode, MatTreeNodeDef, MatTreeNodePadding, MatTreeNodeToggle} from "@angular/material/tree";
 
 @NgModule({
   exports: [HypermediaControlComponent],
   declarations: [
     HypermediaControlComponent,
     PropertyGridComponent,
+    PropertyTreeComponent,
     LinkViewComponent,
     EmbeddedEntityViewComponent,
     EntityViewComponent,
@@ -99,53 +102,53 @@ import {allowEmptyArrayExtension} from "./formly-extensions";
     NgxJsonViewerModule,
     ReactiveFormsModule,
     FormlyModule.forRoot({
-        extensions: [
-          { name: 'fix-allow-empty-arrays', extension: allowEmptyArrayExtension }
-        ],
-        validationMessages: [
-            { name: 'required', message: 'This field is required' },
-            { name: 'type', message: typeValidationMessage },
-            { name: 'minLength', message: minLengthValidationMessage },
-            { name: 'maxLength', message: maxLengthValidationMessage },
-            { name: 'min', message: minValidationMessage },
-            { name: 'max', message: maxValidationMessage },
-            { name: 'multipleOf', message: multipleOfValidationMessage },
-            {
-                name: 'exclusiveMinimum',
-                message: exclusiveMinimumValidationMessage,
-            },
-            {
-                name: 'exclusiveMaximum',
-                message: exclusiveMaximumValidationMessage,
-            },
-            { name: 'minItems', message: minItemsValidationMessage },
-            { name: 'maxItems', message: maxItemsValidationMessage },
-            { name: 'uniqueItems', message: 'should NOT have duplicate items' },
-            { name: 'const', message: constValidationMessage },
-        ],
-        types: [
-            {
-                name: 'null',
-                component: NullTypeComponent,
-                wrappers: ['form-field'],
-            },
-            {
-                name: 'array',
-                component: ArrayTypeComponent
-            },
-            { name: 'object', component: ObjectTypeComponent },
-            { name: 'multischema', component: MultiSchemaTypeComponent },
-            {
-                name: 'boolean',
-                component: BooleanTypeComponent,
-                wrappers: ['form-field'],
-            },
-            {
-              name: 'date',
-              component: FormlyFieldDatepicker,
-              wrappers: ['form-field'],
-            }
-        ],
+      extensions: [
+        {name: 'fix-allow-empty-arrays', extension: allowEmptyArrayExtension}
+      ],
+      validationMessages: [
+        {name: 'required', message: 'This field is required'},
+        {name: 'type', message: typeValidationMessage},
+        {name: 'minLength', message: minLengthValidationMessage},
+        {name: 'maxLength', message: maxLengthValidationMessage},
+        {name: 'min', message: minValidationMessage},
+        {name: 'max', message: maxValidationMessage},
+        {name: 'multipleOf', message: multipleOfValidationMessage},
+        {
+          name: 'exclusiveMinimum',
+          message: exclusiveMinimumValidationMessage,
+        },
+        {
+          name: 'exclusiveMaximum',
+          message: exclusiveMaximumValidationMessage,
+        },
+        {name: 'minItems', message: minItemsValidationMessage},
+        {name: 'maxItems', message: maxItemsValidationMessage},
+        {name: 'uniqueItems', message: 'should NOT have duplicate items'},
+        {name: 'const', message: constValidationMessage},
+      ],
+      types: [
+        {
+          name: 'null',
+          component: NullTypeComponent,
+          wrappers: ['form-field'],
+        },
+        {
+          name: 'array',
+          component: ArrayTypeComponent
+        },
+        {name: 'object', component: ObjectTypeComponent},
+        {name: 'multischema', component: MultiSchemaTypeComponent},
+        {
+          name: 'boolean',
+          component: BooleanTypeComponent,
+          wrappers: ['form-field'],
+        },
+        {
+          name: 'date',
+          component: FormlyFieldDatepicker,
+          wrappers: ['form-field'],
+        }
+      ],
     }),
     FormlyMaterialModule,
     ClipboardModule,
@@ -153,7 +156,13 @@ import {allowEmptyArrayExtension} from "./formly-extensions";
     SettingsModule,
     NgxDropzoneModule,
     MatStepperModule,
-    MatButtonToggleModule],
+    MatButtonToggleModule,
+    MatTree,
+    MatTreeNode,
+    MatTreeNodePadding,
+    MatTreeNodeDef,
+    MatTreeNodeToggle
+  ],
   providers: [
     HypermediaClientService,
     AuthService,
