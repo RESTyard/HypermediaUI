@@ -57,7 +57,7 @@ import {MatNativeDateModule} from '@angular/material/core';
 import {allowEmptyArrayExtension} from "./formly-extensions";
 import {PropertyTreeComponent} from "./property-tree/property-tree.component";
 import {MatTree, MatTreeNode, MatTreeNodeDef, MatTreeNodePadding, MatTreeNodeToggle} from "@angular/material/tree";
-import {MatChip, MatChipSet} from "@angular/material/chips";
+import {MatChipsModule} from '@angular/material/chips';
 
 @NgModule({
   exports: [HypermediaControlComponent],
@@ -163,8 +163,7 @@ import {MatChip, MatChipSet} from "@angular/material/chips";
     MatTreeNodePadding,
     MatTreeNodeDef,
     MatTreeNodeToggle,
-    MatChipSet,
-    MatChip
+    MatChipsModule
   ],
   providers: [
     HypermediaClientService,
