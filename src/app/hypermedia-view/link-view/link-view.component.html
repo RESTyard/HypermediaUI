@@ -3,8 +3,7 @@
     <span class="link-group">
       <a mat-flat-button class="main-link-button"
          [href]="getBrowserUrl(link)"
-         (click)="$event.preventDefault(); navigateLink(link)"
-         matTooltip="{{link.url}}">
+         (click)="$event.preventDefault(); navigateLink(link)">
         @if (getRelationIcon(link.relations)) {
           <mat-icon>{{getRelationIcon(link.relations)}}</mat-icon>
         } @else {
@@ -19,11 +18,16 @@
       </button>
 
       <mat-menu #dropdownMenuOne="matMenu">
-        <button  mat-menu-item
-          (click)="copyToClipBoard(link)">
-          <mat-icon color="primary">assignment</mat-icon>
-          Copy URL to clipboard
-        </button>
+        <div class="menu-url-container" (click)="$event.stopPropagation()">
+          <button mat-icon-button
+                  (click)="copyToClipBoard(link)"
+                  matTooltip="copy to clipboard"
+                  color="primary">
+            <mat-icon>assignment</mat-icon>
+          </button>
+          <span class="url-text">{{link.url}}</span>
+        </div>
+        <mat-divider></mat-divider>
         @if (link.type !== MediaTypes.Siren && link.type != undefined) {
           <button  mat-menu-item
             (click)="download(link)">

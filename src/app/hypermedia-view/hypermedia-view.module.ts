@@ -38,6 +38,7 @@ import {MatProgressBarModule} from '@angular/material/progress-bar';
 
 import {NgxJsonViewerModule} from 'ngx-json-viewer';
 import {MatMenuModule} from '@angular/material/menu';
+import {MatDividerModule} from '@angular/material/divider';
 import {ErrorDialogModule} from '../error-dialog/error-dialog.module';
 import {FileUploadActionComponent} from './actions-view/file-upload-action/file-upload-action.component';
 import {NgxDropzoneModule} from 'ngx-dropzone';
@@ -95,6 +96,7 @@ import {MatChipsModule} from '@angular/material/chips';
     MatDatepickerModule,
     MatNativeDateModule,
     MatMenuModule,
+    MatDividerModule,
     ErrorDialogModule,
     MatProgressSpinnerModule,
     MatProgressBarModule,

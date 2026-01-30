@@ -36,4 +36,17 @@
   filter: brightness(1.1);
 }
 
-/* Original styles below if needed, but the above replaces the toggle styles */
+.menu-url-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 0 8px;
+  max-width: 500px;
+}
+
+.url-text {
+  font-size: 0.85rem;
+  color: rgba(0, 0, 0, 0.6);
+  word-break: break-all;
+  margin-left: 4px;
+}
