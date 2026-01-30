@@ -34,9 +34,9 @@
 <mat-toolbar class="apiToolbar">
 
   @for (link of navPaths; track link; let i = $index) {
-    <button mat-raised-button matTooltip="{{link}}" (click)="navigateLink(link)" color="primary">
+    <a mat-raised-button matTooltip="{{link}}" [href]="getBrowserUrl(link)" (click)="$event.preventDefault(); navigateLink(link)" color="primary">
       {{getUrlShortName(link)}}
-    </button>
+    </a>
     @if (i < navPaths.length-1) {
       <mat-icon>play_arrow</mat-icon>
     }
