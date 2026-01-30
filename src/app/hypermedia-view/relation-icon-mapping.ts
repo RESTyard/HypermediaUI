@@ -1,5 +1,5 @@
 export const relationIconMapping: { [key: string]: string } = {
-  'self': 'refresh',
+  'self': 'subdirectory_arrow_right',
   'next': 'chevron_right',
   'previous': 'chevron_left',
   'prev': 'chevron_left',
