@@ -8,7 +8,7 @@
     <mat-expansion-panel  class="entityExpander" >
       <mat-expansion-panel-header>
         <mat-panel-title>
-          {{idx + 1}}: {{embeddedEntity.relations.join(",")}}
+          {{idx + 1}}: {{embeddedEntity.relations.join(",")}} @if(embeddedEntity.title){ - {{embeddedEntity.title}}}
         </mat-panel-title>
         @if (generalSettings.showClasses) {
           <mat-panel-description>
@@ -26,7 +26,7 @@
     <ng-template matExpansionPanelContent>
       <mat-card  appearance="outlined"  class="embeddedLinkEntityCard" >
         <span>
-          {{idx + 1 + embeddedEntities?.length}}: {{embeddedLinkEntity.relations.join(",")}}
+          {{idx + 1 + embeddedEntities?.length}}: {{embeddedLinkEntity.relations.join(",")}} @if(embeddedLinkEntity.title){ - {{embeddedLinkEntity.title}}}
         </span>
         @if (generalSettings.showClasses) {
           <span>
