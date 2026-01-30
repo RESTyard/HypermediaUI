@@ -3,8 +3,10 @@
     <span class="link-group">
       <a mat-flat-button class="main-link-button"
          [href]="getBrowserUrl(link)"
-         (click)="$event.preventDefault(); navigateLink(link)">
-        @if (getRelationIcon(link.relations)) {
+         (click)="$event.preventDefault(); (link.type !== MediaTypes.Siren && link.type != undefined) ? download(link) : navigateLink(link)">
+        @if (link.type !== MediaTypes.Siren && link.type != undefined) {
+          <mat-icon>download</mat-icon>
+        } @else if (getRelationIcon(link.relations)) {
           <mat-icon>{{getRelationIcon(link.relations)}}</mat-icon>
         } @else {
           <mat-icon>link</mat-icon>
