@@ -1,21 +1,23 @@
 <div class="container">
   @for (link of links; track link) {
-    <span>
-      <mat-button-toggle-group class="buttonContainer">
-        <mat-button-toggle (click)="navigateLink(link)" matTooltip="{{link.url}}">
-          @if (getRelationIcon(link.relations)) {
-            <mat-icon>{{getRelationIcon(link.relations)}}</mat-icon>
-          } @else {
-            <mat-icon>link</mat-icon>
-          }
-          <span>
-            {{link.relations.join(',')}}
-          </span>
-        </mat-button-toggle>
-        <mat-button-toggle [matMenuTriggerFor]="dropdownMenuOne">
-          <mat-icon>arrow_drop_down</mat-icon>
-        </mat-button-toggle>
-      </mat-button-toggle-group>
+    <span class="link-group">
+      <a mat-flat-button class="main-link-button"
+         [href]="getBrowserUrl(link)"
+         (click)="$event.preventDefault(); navigateLink(link)"
+         matTooltip="{{link.url}}">
+        @if (getRelationIcon(link.relations)) {
+          <mat-icon>{{getRelationIcon(link.relations)}}</mat-icon>
+        } @else {
+          <mat-icon>link</mat-icon>
+        }
+        <span>
+          {{link.relations.join(',')}}
+        </span>
+      </a>
+      <button mat-flat-button class="dropdown-button" [matMenuTriggerFor]="dropdownMenuOne">
+        <mat-icon>arrow_drop_down</mat-icon>
+      </button>
+
       <mat-menu #dropdownMenuOne="matMenu">
         <button  mat-menu-item
           (click)="copyToClipBoard(link)">

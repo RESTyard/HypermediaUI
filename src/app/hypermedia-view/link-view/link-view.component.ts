@@ -4,6 +4,7 @@ import { HypermediaLink } from '../siren-parser/hypermedia-link';
 import { getIconForRelation } from '../relation-icon-mapping';
 import { ClipboardService } from 'ngx-clipboard';
 import {MediaTypes} from "../MediaTypes";
+import { ApiPath } from '../api-path';
 
 @Component({
     selector: 'app-link-view',
@@ -17,9 +18,20 @@ export class LinkViewComponent implements OnInit {
 
   protected readonly MediaTypes = MediaTypes;
 
-  constructor(private hypermediaClient: HypermediaClientService, private clipboardService: ClipboardService) { }
+  constructor(
+    private hypermediaClient: HypermediaClientService,
+    private clipboardService: ClipboardService) { }
 
   ngOnInit() {
+  }
+
+  getBrowserUrl(hypermediaLink: HypermediaLink) {
+    const apiPath = this.hypermediaClient.currentApiPath;
+    // We need to simulate the navigation for the URL generation
+    // Create a temporary ApiPath to not affect the current state
+    const tempPath = new ApiPath(apiPath.fullPath);
+    tempPath.setCurrentStep(hypermediaLink.url);
+    return this.hypermediaClient.buildBrowserUrl(undefined, tempPath);
   }
 
   navigateLink(hypermediaLink: HypermediaLink) {

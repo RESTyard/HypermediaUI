@@ -7,28 +7,33 @@
   align-items: center;
 }
 
-.buttonContainer:hover .CopyToClipboardButton{
-  opacity: 1;
-}
-
-.buttonContainer:hover .CopyToClipboardButton:hover{
-  opacity: 0.8;
-}
-
-.CopyToClipboardButton  {
-  opacity: 0;
-  background-color: transparent;
-}
-
-.buttonContainer {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
+.link-group {
+  display: inline-flex;
   margin-right: defaults.$spacing;
-}
-
-.mat-button-toggle {
-  background-color: #4456b2;
-  color: white;
+  border-radius: 4px;
+  overflow: hidden; /* Ensures the rounded corners apply to children */
   height: 48px;
 }
+
+.main-link-button {
+  background-color: #4456b2 !important;
+  color: white !important;
+  border-radius: 4px 0 0 4px !important;
+  height: 100% !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+.dropdown-button {
+  background-color: #4456b2 !important;
+  color: white !important;
+  border-radius: 0 4px 4px 0 !important;
+  height: 100% !important;
+  min-width: 36px !important;
+  padding: 0 4px !important;
+}
+
+.main-link-button:hover, .dropdown-button:hover {
+  filter: brightness(1.1);
+}
+
+/* Original styles below if needed, but the above replaces the toggle styles */
