@@ -21,21 +21,66 @@
 
 .entityExpander {
   margin: defaults.$spacing 0;
+
+  .mat-expansion-panel-header {
+    height: auto;
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+}
+
+.entity-index {
+  margin-right: 8px;
+  color: grey;
+}
+
+.entity-title {
+  font-weight: bold;
+  font-size: 1.1em;
+  margin-right: 12px;
+}
+
+.relation-chips {
+  display: inline-block;
+  vertical-align: middle;
 }
 
 .embeddedLinkEntityCard {
   margin: defaults.$spacing 0;
   padding: defaults.$spacing;
-  display: grid;
-  grid-template-columns: 1fr 1fr auto auto;
+  display: flex;
+  flex-direction: row;
   align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.link-entity-header {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  flex: 1 1 auto;
+}
+
+.link-entity-classes {
+  flex: 0 1 auto;
+  color: grey;
+  font-size: 0.9em;
+}
+
+.link-entity-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .entityLinkButton {
-  justify-self: end;
+  // no extra rules needed
 }
 .CopyToClipboardButton{
-  justify-self: end;
+  // no extra rules needed
 }
 
 ::ng-deep div.mat-expansion-panel-body {
