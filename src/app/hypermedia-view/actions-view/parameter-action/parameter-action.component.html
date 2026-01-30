@@ -3,7 +3,11 @@
     <mat-panel-title>
       <button class="executeButton containerElement" mat-raised-button color="primary"
         matTooltip="{{action.title}}">
-        <mat-icon class="icon" color="secondary">play_circle_outline</mat-icon>
+        @if (getIconForMethod(action.method)) {
+          <mat-icon class="icon" color="secondary">{{getIconForMethod(action.method)}}</mat-icon>
+        } @else {
+          <mat-icon class="icon" color="secondary">play_circle_outline</mat-icon>
+        }
         {{action.name}}
       </button>
       <mat-icon class="icon" color="primary" style="margin-left: 4px;">expand_more</mat-icon>

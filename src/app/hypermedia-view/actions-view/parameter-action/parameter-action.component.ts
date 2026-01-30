@@ -8,6 +8,7 @@ import { HypermediaAction } from '../../siren-parser/hypermedia-action';
 import { FormlyFieldConfig } from '@ngx-formly/core';
 import { AbstractControl, FormGroup } from '@angular/forms';
 import { FormlyJsonschema } from '@ngx-formly/core/json-schema';
+import { getIconForRelation } from '../../relation-icon-mapping';
 
 @Component({
     selector: 'app-parameter-action',
@@ -50,7 +51,7 @@ export class ParameterActionComponent implements OnInit {
               mappedField.parsers = [
                 v => (v instanceof Date ? this.formatDate(v) : v),
               ];
-              mappedField.validators = { 
+              mappedField.validators = {
                 required: (control: AbstractControl) => (types.includes('null') || (control.value !== null && control.value !== undefined)),
               };
             }
@@ -104,5 +105,9 @@ export class ParameterActionComponent implements OnInit {
 
   navigateLocation(location: string) {
     this.hypermediaClientService.Navigate(location);
+  }
+
+  getIconForMethod(method: string): string | undefined {
+    return getIconForRelation(method);
   }
 }

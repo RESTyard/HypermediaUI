@@ -2,6 +2,7 @@ import { HypermediaClientService, ActionResults } from '../../hypermedia-client.
 import { Component, OnInit, Input } from '@angular/core';
 import { HypermediaAction } from '../../siren-parser/hypermedia-action';
 import { ProblemDetailsError } from 'src/app/error-dialog/problem-details-error';
+import { getIconForRelation } from '../../relation-icon-mapping';
 
 @Component({
     selector: 'app-parameterless-action-view',
@@ -34,10 +35,10 @@ export class ParameterlessActionViewComponent implements OnInit {
         resultLocation: string | null,
         content: any,
         problemDetailsError: ProblemDetailsError | null) => {
-          
+
         this.problemDetailsError = problemDetailsError;
         this.actionResult = actionResults;
-        
+
         if (problemDetailsError) {
           this.actionMessage = problemDetailsError.title;
         } else {
@@ -50,6 +51,10 @@ export class ParameterlessActionViewComponent implements OnInit {
 
   navigateLocation(location: string) {
     this.hypermediaClientService.Navigate(location);
+  }
+
+  getIconForMethod(method: string): string | undefined {
+    return getIconForRelation(method);
   }
 
 }

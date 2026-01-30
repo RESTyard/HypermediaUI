@@ -30,6 +30,10 @@ export const relationIconMapping: { [key: string]: string } = {
   'download': 'download',
   'parent': 'arrow_upward',
   'child': 'arrow_downward',
+  'get': 'download',
+  'post': 'play_circle',
+  'put': 'amend',
+  'patch': 'amend',
 };
 
 export function getIconForRelation(relation: string): string | undefined {

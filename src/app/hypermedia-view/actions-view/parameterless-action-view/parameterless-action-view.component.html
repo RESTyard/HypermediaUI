@@ -4,7 +4,11 @@
   <div class="contentRow">
     <button class="executeButton containerElement" mat-raised-button color="primary" (click)="executeAction()"
       matTooltip="{{action.title}}">
-      <mat-icon class="icon" color="secondary">play_circle_outline</mat-icon>
+      @if (getIconForMethod(action.method)) {
+        <mat-icon class="icon" color="secondary">{{getIconForMethod(action.method)}}</mat-icon>
+      } @else {
+        <mat-icon class="icon" color="secondary">play_circle_outline</mat-icon>
+      }
       {{action.name}}
     </button>
   </div>
