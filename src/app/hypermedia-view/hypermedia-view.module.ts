@@ -13,7 +13,6 @@ import {EntityViewComponent} from './entity-view/entity-view.component';
 import {HypermediaClientService} from './hypermedia-client.service';
 import {HypermediaControlComponent} from './hypermedia-control/hypermedia-control.component';
 import {LinkViewComponent} from './link-view/link-view.component';
-import {PropertyGridComponent} from './property-grid/property-grid.component';
 import {RawViewComponent} from './raw-view/raw-view.component';
 import {SchemaSimplifier} from './siren-parser/schema-simplifier';
 import {SirenDeserializer} from './siren-parser/siren-deserializer';
@@ -63,7 +62,6 @@ import {MatChipsModule} from '@angular/material/chips';
   exports: [HypermediaControlComponent],
   declarations: [
     HypermediaControlComponent,
-    PropertyGridComponent,
     PropertyTreeComponent,
     LinkViewComponent,
     EmbeddedEntityViewComponent,
