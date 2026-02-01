@@ -52,11 +52,19 @@
 </mat-toolbar>
 
 @if (GeneralSettings.showRawTab) {
-  <mat-tab-group>
-    <mat-tab label="UI">
+  <mat-tab-group class="view-tabs" color="primary">
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon class="tab-icon">grid_view</mat-icon>
+        <span>UI</span>
+      </ng-template>
       <app-entity-view [entity]="hto"></app-entity-view>
     </mat-tab>
-    <mat-tab label="Raw">
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon class="tab-icon">code</mat-icon>
+        <span>Raw</span>
+      </ng-template>
       <app-raw-view class="rawContent" [rawObject]="rawResponse"></app-raw-view>
     </mat-tab>
   </mat-tab-group>
