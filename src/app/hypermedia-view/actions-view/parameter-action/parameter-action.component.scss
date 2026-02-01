@@ -34,6 +34,19 @@
 .action-header-content {
   display: flex;
   align-items: center;
+  gap: 8px;
+}
+
+.expand-icon {
+  color: #4456b2; // Primary color to match button
+  font-size: 28px;
+  width: 28px;
+  height: 28px;
+  transition: transform 0.3s ease;
+
+  &.expanded {
+    transform: rotate(180deg);
+  }
 }
 
 .execute-button {

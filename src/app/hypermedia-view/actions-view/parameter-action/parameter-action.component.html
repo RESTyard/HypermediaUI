@@ -1,5 +1,5 @@
-<mat-expansion-panel class="action-panel">
-  <mat-expansion-panel-header>
+<mat-expansion-panel class="action-panel" [hideToggle]="true">
+  <mat-expansion-panel-header #panelHeader>
     <mat-panel-title>
       <div class="action-header-content">
         <button class="execute-button" mat-flat-button color="primary">
@@ -10,6 +10,7 @@
           }
           <span class="action-name">{{action.title || action.name}}</span>
         </button>
+        <mat-icon class="expand-icon" [class.expanded]="panelHeader.panel.expanded">expand_more</mat-icon>
       </div>
     </mat-panel-title>
     <mat-panel-description>
