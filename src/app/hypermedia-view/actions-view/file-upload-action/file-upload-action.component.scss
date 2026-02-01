@@ -54,7 +54,7 @@
 }
 
 .dropzone-container {
-  margin: 16px 8px;
+  margin: 8px 8px 8px 8px;
 }
 
 .file-name {
@@ -77,8 +77,7 @@
   align-items: center;
   padding: 8px;
   gap: 16px;
-  border-top: 1px solid rgba(0, 0, 0, 0.05);
-  margin-top: 8px;
+  margin-top: 0;
 }
 
 .submit-button {
