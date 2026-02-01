@@ -1,7 +1,7 @@
 import { HypermediaClientService } from '../hypermedia-client.service';
 import { Component, OnInit, Input } from '@angular/core';
 import { HypermediaLink } from '../siren-parser/hypermedia-link';
-import { getIconForRelation } from '../relation-icon-mapping';
+import { getIconForRelation } from '../icon-mapping';
 import { ClipboardService } from 'ngx-clipboard';
 import {MediaTypes} from "../MediaTypes";
 import { ApiPath } from '../api-path';

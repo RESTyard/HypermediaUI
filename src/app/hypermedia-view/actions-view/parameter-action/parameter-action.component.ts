@@ -8,7 +8,7 @@ import { HypermediaAction } from '../../siren-parser/hypermedia-action';
 import { FormlyFieldConfig } from '@ngx-formly/core';
 import { AbstractControl, FormGroup } from '@angular/forms';
 import { FormlyJsonschema } from '@ngx-formly/core/json-schema';
-import { getIconForHttpMethod } from '../../relation-icon-mapping';
+import { getIconForHttpMethod } from '../../icon-mapping';
 
 @Component({
     selector: 'app-parameter-action',

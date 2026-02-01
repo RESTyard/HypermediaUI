@@ -1,7 +1,7 @@
 import { Component, OnInit, Input} from '@angular/core';
 import { EmbeddedLinkEntity } from '../siren-parser/embedded-link-entity';
 import { EmbeddedEntity } from '../siren-parser/embedded-entity';
-import { getIconForRelation } from '../relation-icon-mapping';
+import { getIconForRelation } from '../icon-mapping';
 import { HypermediaClientService } from '../hypermedia-client.service';
 import { ClipboardService } from 'ngx-clipboard';
 import { Store } from '@ngrx/store';
