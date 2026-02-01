@@ -19,6 +19,7 @@ interface PropertyFlatNode {
 })
 export class PropertyTreeComponent implements OnChanges {
   @Input() propertyContainer: PropertyInfo[] = [];
+  @Input() showHeader: boolean = true;
   public propertyTypes = PropertyTypes;
 
   // search and highlighting states

@@ -8,7 +8,7 @@
     <div>Classes: {{classes}}</div>
   }
 
-  <app-property-tree [propertyContainer]="properties" ></app-property-tree>
+  <app-property-tree [propertyContainer]="properties" [showHeader]="GeneralSettings.showPropertyTreeControls"></app-property-tree>
 
   @if (GeneralSettings.showEmptyLinks || links.length > 0) {
     <app-link-view [links]="links"></app-link-view>
