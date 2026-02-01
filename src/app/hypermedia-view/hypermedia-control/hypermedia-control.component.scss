@@ -42,3 +42,52 @@ rawContent{
   color: red;
   margin-right: 16px;
 }
+
+.apiToolbar {
+  background-color: transparent !important;
+  height: auto !important;
+  min-height: 48px;
+  padding: 8px 16px !important;
+}
+
+.breadcrumb-container {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.breadcrumb-link {
+  display: flex;
+  align-items: center;
+  padding: 0 8px !important;
+  min-width: 0 !important;
+  font-weight: 500;
+  color: #555 !important;
+
+  &:hover {
+    color: #000 !important;
+    background-color: rgba(0, 0, 0, 0.05) !important;
+  }
+}
+
+.breadcrumb-icon {
+  margin-right: 4px;
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+}
+
+.breadcrumb-text {
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.breadcrumb-separator {
+  color: #999;
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+  margin: 0 4px;
+}

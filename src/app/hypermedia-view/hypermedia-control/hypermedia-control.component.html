@@ -32,15 +32,23 @@
 
 
 <mat-toolbar class="apiToolbar">
-
-  @for (link of navPaths; track link; let i = $index) {
-    <a mat-raised-button matTooltip="{{link}}" [href]="getBrowserUrl(link)" (click)="$event.preventDefault(); navigateLink(link)" color="primary">
-      {{getUrlShortName(link)}}
-    </a>
-    @if (i < navPaths.length-1) {
-      <mat-icon>play_arrow</mat-icon>
+  <nav class="breadcrumb-container">
+    @for (link of navPaths; track link; let i = $index) {
+      <a mat-button
+         class="breadcrumb-link"
+         matTooltip="{{link}}"
+         [href]="getBrowserUrl(link)"
+         (click)="$event.preventDefault(); navigateLink(link)">
+        @if (i === 0) {
+          <mat-icon class="breadcrumb-icon">home</mat-icon>
+        }
+        <span class="breadcrumb-text">{{getUrlShortName(link)}}</span>
+      </a>
+      @if (i < navPaths.length - 1) {
+        <mat-icon class="breadcrumb-separator">chevron_right</mat-icon>
+      }
     }
-  }
+  </nav>
 </mat-toolbar>
 
 @if (GeneralSettings.showRawTab) {
