@@ -122,3 +122,23 @@ rawContent{
     }
   }
 }
+
+.property-toggle {
+  margin-right: 24px;
+  display: flex;
+  align-items: center;
+
+  mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    margin-left: 8px;
+    color: #666;
+  }
+
+  ::ng-deep .mdc-label {
+    display: flex;
+    align-items: center;
+    padding-left: 0;
+  }
+}

@@ -52,6 +52,17 @@
 
   <span class="spacer"></span>
 
+  @if (GeneralSettings.showRawTab && !showRaw) {
+    <mat-slide-toggle
+      class="property-toggle"
+      [ngModel]="showPropertyTreeControls"
+      (change)="togglePropertyTreeControls($event.checked)"
+      color="primary"
+      matTooltip="Show property tree controls">
+      <mat-icon>tune</mat-icon>
+    </mat-slide-toggle>
+  }
+
   @if (GeneralSettings.showRawTab) {
     <mat-button-toggle-group class="view-toggle" [(ngModel)]="showRaw" aria-label="View Mode">
       <mat-button-toggle [value]="false">

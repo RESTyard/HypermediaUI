@@ -11,6 +11,7 @@ import {selectEffectiveGeneralSettings, selectUserNameForCurrentSite} from 'src/
 import {combineLatest} from 'rxjs';
 import {CurrentEntryPoint} from 'src/app/store/entrypoint.reducer';
 import {AuthService} from "../auth.service";
+import {updateGeneralAppSettings} from 'src/app/store/appsettings.actions';
 
 @Component({
   selector: 'app-hypermedia-control',
@@ -32,6 +33,7 @@ export class HypermediaControlComponent implements OnInit {
   IsInsecureConnection: boolean = false;
   title: string = "";
   public showRaw: boolean = false;
+  public showPropertyTreeControls: boolean = true;
 
   constructor(
     private hypermediaClient: HypermediaClientService,
@@ -43,7 +45,10 @@ export class HypermediaControlComponent implements OnInit {
     store
       .select(selectEffectiveGeneralSettings)
       .subscribe({
-        next: generalSettings => this.GeneralSettings = generalSettings,
+        next: generalSettings => {
+          this.GeneralSettings = generalSettings;
+          this.showPropertyTreeControls = generalSettings.showPropertyTreeControls;
+        },
       });
     store
       .select(state => state.appConfig)
@@ -158,6 +163,12 @@ export class HypermediaControlComponent implements OnInit {
 
   public navigateLink(url: string) {
     this.hypermediaClient.Navigate(url);
+  }
+
+  public togglePropertyTreeControls(checked: boolean) {
+    this.store.dispatch(updateGeneralAppSettings({
+      newGeneralSettings: this.GeneralSettings.set("showPropertyTreeControls", checked)
+    }));
   }
 
   public async exitApi() {

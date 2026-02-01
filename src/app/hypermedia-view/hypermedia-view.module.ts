@@ -58,6 +58,7 @@ import {allowEmptyArrayExtension} from "./formly-extensions";
 import {PropertyTreeComponent} from "./property-tree/property-tree.component";
 import {MatTree, MatTreeNode, MatTreeNodeDef, MatTreeNodePadding, MatTreeNodeToggle} from "@angular/material/tree";
 import {MatChipsModule} from '@angular/material/chips';
+import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 
 @NgModule({
   exports: [HypermediaControlComponent],
@@ -98,6 +99,7 @@ import {MatChipsModule} from '@angular/material/chips';
     MatMenuModule,
     MatDividerModule,
     MatButtonToggleModule,
+    MatSlideToggleModule,
     ErrorDialogModule,
     MatProgressSpinnerModule,
     MatProgressBarModule,
