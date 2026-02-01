@@ -8,10 +8,7 @@
     <mat-expansion-panel  class="entityExpander" >
       <mat-expansion-panel-header>
         <mat-panel-title>
-          <span class="entity-index">{{idx + 1}}: </span>
-          @if(embeddedEntity.title){
-            <span class="entity-title">{{embeddedEntity.title}}</span>
-          }
+          <span class="entity-index-badge">{{idx + 1}}</span>
           <mat-chip-set class="relation-chips">
             @for (rel of embeddedEntity.relations; track rel) {
               <mat-chip>
@@ -22,6 +19,9 @@
               </mat-chip>
             }
           </mat-chip-set>
+          @if(embeddedEntity.title){
+            <span class="entity-title">{{embeddedEntity.title}}</span>
+          }
         </mat-panel-title>
         @if (generalSettings.showClasses) {
           <mat-panel-description>
@@ -38,10 +38,7 @@
   @for (embeddedLinkEntity of embeddedLinkEntities; track embeddedLinkEntity; let idx = $index) {
     <mat-card appearance="outlined" class="embeddedLinkEntityCard">
       <div class="link-entity-header">
-        <span class="entity-index">{{idx + 1 + embeddedEntities?.length}}: </span>
-        @if(embeddedLinkEntity.title){
-          <span class="entity-title">{{embeddedLinkEntity.title}}</span>
-        }
+        <span class="entity-index-badge">{{idx + 1 + embeddedEntities?.length}}</span>
         <mat-chip-set class="relation-chips">
           @for (rel of embeddedLinkEntity.relations; track rel) {
             <mat-chip>
@@ -52,6 +49,9 @@
             </mat-chip>
           }
         </mat-chip-set>
+        @if(embeddedLinkEntity.title){
+          <span class="entity-title">{{embeddedLinkEntity.title}}</span>
+        }
       </div>
 
       <div class="link-entity-classes">
