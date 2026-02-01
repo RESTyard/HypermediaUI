@@ -2,7 +2,7 @@ import { HypermediaClientService, ActionResults } from '../../hypermedia-client.
 import { Component, OnInit, Input } from '@angular/core';
 import { HypermediaAction } from '../../siren-parser/hypermedia-action';
 import { ProblemDetailsError } from 'src/app/error-dialog/problem-details-error';
-import { getIconForRelation } from '../../relation-icon-mapping';
+import { getIconForHttpMethod } from '../../relation-icon-mapping';
 
 @Component({
     selector: 'app-parameterless-action-view',
@@ -54,7 +54,7 @@ export class ParameterlessActionViewComponent implements OnInit {
   }
 
   getIconForMethod(method: string): string | undefined {
-    return getIconForRelation(method);
+    return getIconForHttpMethod(method);
   }
 
 }

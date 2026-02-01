@@ -2,13 +2,13 @@ export const relationIconMapping: { [key: string]: string } = {
   'self': 'subdirectory_arrow_right',
   'next': 'chevron_right',
   'previous': 'chevron_left',
-  'prev': 'chevron_left',
+  'prev': 'chevron_leftd',
   'first': 'first_page',
   'last': 'last_page',
   'search': 'search',
   'edit': 'edit',
   'create': 'add',
-  'delete': 'delete',
+  'delete': 'close',
   'author': 'person',
   'collection': 'view_list',
   'item': 'description',
@@ -30,12 +30,24 @@ export const relationIconMapping: { [key: string]: string } = {
   'download': 'download',
   'parent': 'arrow_upward',
   'child': 'arrow_downward',
-  'get': 'download',
-  'post': 'play_circle',
+  'get': 'visibility',
+  'post': 'send',
   'put': 'amend',
+  'patch': 'amend',
+};
+
+export const httpMethodIconMapping: { [key: string]: string } = {
+  'get': 'visibility',
+  'delete': 'close',
+  'post': 'send',
+  'put': 'edit',
   'patch': 'amend',
 };
 
 export function getIconForRelation(relation: string): string | undefined {
   return relationIconMapping[relation.toLowerCase()];
+}
+
+export function getIconForHttpMethod(relation: string): string | undefined {
+  return httpMethodIconMapping[relation.toLowerCase()];
 }
