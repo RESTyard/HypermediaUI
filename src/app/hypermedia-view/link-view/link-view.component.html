@@ -6,14 +6,14 @@
          [href]="getBrowserUrl(link)"
          (click)="$event.preventDefault(); (link.type !== MediaTypes.Siren && link.type != undefined) ? download(link) : navigateLink(link)">
         @if (link.type !== MediaTypes.Siren && link.type != undefined) {
-          <mat-icon>download</mat-icon>
+          <mat-icon class="link-icon">download</mat-icon>
         } @else if (getRelationIcon(link.relations)) {
-          <mat-icon>{{getRelationIcon(link.relations)}}</mat-icon>
+          <mat-icon class="link-icon">{{getRelationIcon(link.relations)}}</mat-icon>
         } @else {
-          <mat-icon>link</mat-icon>
+          <mat-icon class="link-icon">link</mat-icon>
         }
-        <span>
-          {{link.relations.join(',')}}
+        <span class="link-text">
+          {{link.relations.join(', ')}}
         </span>
         @if (link.type !== MediaTypes.Siren && link.type != undefined) {
           <span class="media-type-badge">{{link.type}}</span>

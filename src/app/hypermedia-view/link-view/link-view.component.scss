@@ -5,42 +5,83 @@
   display: flex;
   flex-direction: row;
   align-items: center;
+  flex-wrap: wrap;
 }
 
 .link-group {
   display: inline-flex;
   margin-right: defaults.$spacing;
+  margin-bottom: defaults.$spacing;
   border-radius: 4px;
-  overflow: hidden; /* Ensures the rounded corners apply to children */
-  height: 48px;
+  height: 40px;
 }
 
 .main-link-button {
-  background-color: #4456b2 !important;
-  color: white !important;
   border-radius: 4px 0 0 4px !important;
   height: 100% !important;
-  border-right: 1px solid rgba(255, 255, 255, 0.2) !important;
+  display: flex;
+  align-items: center;
+  padding: 0 16px !important;
+  color: white !important;
+  background-color: #4456b2 !important;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2) !important;
+
+  &:hover {
+    background-color: #354491 !important;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3) !important;
+  }
+
+  &:active {
+    background-color: #2a3674 !important;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.2) !important;
+  }
+
+  .link-icon {
+    margin-right: 8px;
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+  }
+
+  .link-text {
+    font-weight: 500;
+  }
 }
 
 .dropdown-button {
-  background-color: #4456b2 !important;
-  color: white !important;
   border-radius: 0 4px 4px 0 !important;
   height: 100% !important;
   min-width: 36px !important;
   padding: 0 4px !important;
+  color: white !important;
+  background-color: #4456b2 !important;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2) !important;
+  margin-left: 1px !important; // Small gap between buttons
+
+  &:hover {
+    background-color: #354491 !important;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3) !important;
+  }
+
+  &:active {
+    background-color: #2a3674 !important;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.2) !important;
+  }
 }
 
 .main-link-button, .dropdown-button {
   &.download-link {
-    background-color: #2e7d32 !important; /* Material Green 800 */
-    border-right-color: rgba(255, 255, 255, 0.4) !important;
-  }
-}
+    color: white !important;
+    background-color: #2e7d32 !important;
 
-.main-link-button:hover, .dropdown-button:hover {
-  filter: brightness(1.1);
+    &:hover {
+      background-color: #236026 !important;
+    }
+
+    &:active {
+      background-color: #1b4a1d !important;
+    }
+  }
 }
 
 .menu-url-container {
@@ -59,13 +100,13 @@
 }
 
 .media-type-badge {
-  background-color: #e0e0e0;
-  color: #666;
+  background-color: rgba(255, 255, 255, 0.25);
+  color: white;
   font-size: 10px;
   font-weight: bold;
   padding: 2px 6px;
   border-radius: 10px;
-  margin-left: 8px;
+  margin-left: 12px;
   text-transform: lowercase;
   vertical-align: middle;
 }
