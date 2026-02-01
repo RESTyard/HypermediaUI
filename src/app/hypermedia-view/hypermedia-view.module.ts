@@ -97,6 +97,7 @@ import {MatChipsModule} from '@angular/material/chips';
     MatNativeDateModule,
     MatMenuModule,
     MatDividerModule,
+    MatButtonToggleModule,
     ErrorDialogModule,
     MatProgressSpinnerModule,
     MatProgressBarModule,

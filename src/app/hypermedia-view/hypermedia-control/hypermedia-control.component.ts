@@ -31,6 +31,7 @@ export class HypermediaControlComponent implements OnInit {
   allowOnlyConfiguredEntryPoints: boolean = true
   IsInsecureConnection: boolean = false;
   title: string = "";
+  public showRaw: boolean = false;
 
   constructor(
     private hypermediaClient: HypermediaClientService,

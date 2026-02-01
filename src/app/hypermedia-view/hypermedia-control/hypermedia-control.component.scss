@@ -46,8 +46,8 @@ rawContent{
 .apiToolbar {
   background-color: transparent !important;
   height: auto !important;
-  min-height: 48px;
-  padding: 8px 16px !important;
+  min-height: 40px;
+  padding: 0 16px !important;
 }
 
 .breadcrumb-container {
@@ -93,10 +93,32 @@ rawContent{
   font-weight: bold;
 }
 
-.view-tabs {
-  margin-top: 8px;
+.view-toggle {
+  height: 32px;
+  align-items: center;
 
-  .tab-icon {
-    margin-right: 8px;
+  mat-button-toggle {
+    display: flex;
+    align-items: center;
+    background-color: transparent !important;
+
+    &.mat-button-toggle-checked {
+      background-color: rgba(0, 0, 0, 0.05) !important;
+    }
+
+    ::ng-deep .mat-button-toggle-label-content {
+      line-height: 32px;
+      padding: 0 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+    }
+
+    mat-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+    }
   }
 }
