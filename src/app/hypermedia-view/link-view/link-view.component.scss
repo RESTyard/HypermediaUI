@@ -32,6 +32,13 @@
   padding: 0 4px !important;
 }
 
+.main-link-button, .dropdown-button {
+  &.download-link {
+    background-color: #2e7d32 !important; /* Material Green 800 */
+    border-right-color: rgba(255, 255, 255, 0.4) !important;
+  }
+}
+
 .main-link-button:hover, .dropdown-button:hover {
   filter: brightness(1.1);
 }
@@ -50,3 +57,16 @@
   word-break: break-all;
   margin-left: 4px;
 }
+
+.media-type-badge {
+  background-color: #e0e0e0;
+  color: #666;
+  font-size: 10px;
+  font-weight: bold;
+  padding: 2px 6px;
+  border-radius: 10px;
+  margin-left: 8px;
+  text-transform: lowercase;
+  vertical-align: middle;
+}
+
