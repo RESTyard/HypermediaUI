@@ -1,5 +1,7 @@
 {
     "disableDeveloperControls": false,
     "configuredEntryPoints": [],
-    "onlyAllowConfiguredEntryPoints": false
+    "onlyAllowConfiguredEntryPoints": false,
+    "relationIconMapping": {},
+    "httpMethodIconMapping": {}
 }

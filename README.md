@@ -35,11 +35,39 @@ The UI can be customized by deploying an artifact from [Releases](https://github
       "entryPointUri": "https://localhost:1234/api/some/EntryPoint"
     }
   ],
-  "onlyAllowConfiguredEntryPoints": true
+  "onlyAllowConfiguredEntryPoints": true,
+  "relationIconMapping": {
+    "self": "home",
+    "next": "forward"
+  },
+  "httpMethodIconMapping": {
+    "post": "add_box"
+  }
 }
 ```
 
 The configuration in details works like this:
+
+### ``relationIconMapping`` and ``httpMethodIconMapping``
+
+Allows to override the default icons used for relations and HTTP methods.
+The icons must be valid [Material Design Icon](https://fonts.google.com/icons) names.
+
+**Note:** If these properties are provided in `app.config.json`, the values will be merged into the default mappings, overriding any existing ones with the same key. If they are omitted or empty, the defaults are used.
+
+#### Example
+
+```json
+{
+  "relationIconMapping": {
+    "self": "home",
+    "next": "forward"
+  },
+  "httpMethodIconMapping": {
+    "post": "add_box"
+  }
+}
+```
 
 ### ``disableDeveloperControls``
 

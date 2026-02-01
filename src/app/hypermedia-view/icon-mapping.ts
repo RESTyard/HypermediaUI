@@ -51,3 +51,12 @@ export function getIconForRelation(relation: string): string | undefined {
 export function getIconForHttpMethod(relation: string): string | undefined {
   return httpMethodIconMapping[relation.toLowerCase()];
 }
+
+export function updateMappingsIconMappings(relationOverrides?: { [key: string]: string }, methodOverrides?: { [key: string]: string }) {
+  if (relationOverrides) {
+    Object.assign(relationIconMapping, relationOverrides);
+  }
+  if (methodOverrides) {
+    Object.assign(httpMethodIconMapping, methodOverrides);
+  }
+}
