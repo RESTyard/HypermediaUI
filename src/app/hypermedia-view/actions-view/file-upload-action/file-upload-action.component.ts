@@ -4,6 +4,7 @@ import {NgxDropzoneChangeEvent} from 'ngx-dropzone';
 import {ActionResults, HypermediaClientService} from '../../hypermedia-client.service';
 import {ProblemDetailsError} from '../../../error-dialog/problem-details-error';
 import {MatSnackBar} from '@angular/material/snack-bar';
+import { getIconForHttpMethod } from '../../icon-mapping';
 
 @Component({
     selector: 'app-file-upload-action',
@@ -99,5 +100,9 @@ export class FileUploadActionComponent implements OnInit {
 
   navigateLocation(location: string) {
     this.hypermediaClientService.Navigate(location);
+  }
+
+  getIconForMethod(method: string): string | undefined {
+    return getIconForHttpMethod(method);
   }
 }

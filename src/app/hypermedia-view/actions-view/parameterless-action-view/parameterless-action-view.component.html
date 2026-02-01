@@ -1,39 +1,58 @@
-<mat-card appearance="outlined" class="action-container">
+<mat-card appearance="outlined" class="action-card">
+  <div class="action-card-content">
+    <div class="action-main-row">
+      <button class="execute-button" mat-flat-button (click)="executeAction()" color="primary"
+        matTooltip="{{action.title}}">
+        @if (getIconForMethod(action.method)) {
+          <mat-icon class="action-icon">{{getIconForMethod(action.method)}}</mat-icon>
+        } @else {
+          <mat-icon class="action-icon">play_circle_outline</mat-icon>
+        }
+        <span class="action-name">{{action.name}}</span>
+      </button>
 
-  <!-- execute button -->
-  <div class="contentRow">
-    <button class="executeButton containerElement" mat-raised-button color="primary" (click)="executeAction()"
-      matTooltip="{{action.title}}">
-      @if (getIconForMethod(action.method)) {
-        <mat-icon class="icon" color="secondary">{{getIconForMethod(action.method)}}</mat-icon>
-      } @else {
-        <mat-icon class="icon" color="secondary">play_circle_outline</mat-icon>
+      @if (action.title) {
+        <div class="action-description">
+          {{action.title}}
+        </div>
       }
-      {{action.name}}
-    </button>
-  </div>
 
-  @if (executed) {
-    <div class="resultIconContainer">
-      @switch (actionResult) {
-        @case (ActionResultsEnum.ok) {
-          <mat-icon color="primary"
-          matTooltip={{actionMessage}}>done</mat-icon>
-        }
-        @case (ActionResultsEnum.error) {
-          <mat-icon color="warn" class="hoverButton" [matMenuTriggerFor]="errorPopup"
-          matTooltip={{actionMessage}}>error</mat-icon>
-        }
-        @case (ActionResultsEnum.pending) {
-          <mat-progress-spinner [diameter]="24" mode="indeterminate" color="accent"></mat-progress-spinner>
-        }
-        @case (ActionResultsEnum.undefined) {
-          <mat-icon color="primary"
-          matTooltip={{actionMessage}}>question_mark</mat-icon>
-        }
+      @if (executed) {
+        <div class="result-status-container">
+          @switch (actionResult) {
+            @case (ActionResultsEnum.ok) {
+              <mat-icon class="result-icon success"
+              matTooltip={{actionMessage}}>check_circle</mat-icon>
+            }
+            @case (ActionResultsEnum.error) {
+              <mat-icon class="result-icon error hover-button" [matMenuTriggerFor]="errorPopup"
+              matTooltip={{actionMessage}}>error</mat-icon>
+            }
+            @case (ActionResultsEnum.pending) {
+              <mat-progress-spinner [diameter]="24" mode="indeterminate"></mat-progress-spinner>
+            }
+            @case (ActionResultsEnum.undefined) {
+              <mat-icon class="result-icon undefined"
+              matTooltip={{actionMessage}}>help_outline</mat-icon>
+            }
+          }
+        </div>
+      }
+
+      @if (actionResultLocation !== null) {
+        <button
+          class="result-link-button"
+          mat-stroked-button
+          (click)="navigateLocation(actionResultLocation)"
+          color="primary"
+          matTooltip="Go to result: {{actionResultLocation}}">
+          <mat-icon>arrow_forward</mat-icon>
+          View Result
+        </button>
       }
     </div>
-  }
+  </div>
+
   <mat-menu #errorPopup="matMenu">
     <div (click)="$event.stopPropagation()">
       @if (problemDetailsError) {
@@ -41,23 +60,4 @@
       }
     </div>
   </mat-menu>
-
-  <!-- result button -->
-  @if (actionResultLocation !== null) {
-    <button
-      class="containerElement resultLocationButton"
-      mat-raised-button
-      (click)="navigateLocation(actionResultLocation)"
-      color="accent"
-      matTooltip="Go to result: {{actionResultLocation}}">
-      <mat-icon class="icon" color="primary">start</mat-icon>
-      Result
-    </button>
-  }
-
-  <!-- description -->
-  <mat-panel-description>
-    <span>{{action.title}}</span>
-  </mat-panel-description>
-
 </mat-card>

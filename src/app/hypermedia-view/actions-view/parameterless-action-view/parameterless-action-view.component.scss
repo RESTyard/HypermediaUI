@@ -1,33 +1,85 @@
 @use '../../../../styles/defaults';
 
-.action-container {
+.action-card {
+  margin: 8px 0 !important;
+  padding: 8px 16px !important;
+  border-radius: 8px !important;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+}
+
+.action-card-content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.action-main-row {
   display: flex;
   flex-direction: row;
-  height: defaults.$rowHeight;
-  margin: 0;
-  padding: 0;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
 }
 
-.executeButton {
-  height: inherit;
+.execute-button {
+  height: 40px;
+  border-radius: 20px !important;
+  padding: 0 20px !important;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2) !important;
+
+  &:hover {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3) !important;
+  }
+
+  .action-icon {
+    margin-right: 8px;
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+  }
 }
 
-.containerElement {
-  margin-right: defaults.$spacing;
-}
-
-.resultIconContainer {
+.result-status-container {
   display: flex;
   align-items: center;
-  margin-right: 2*defaults.$spacing;
-  margin-left:  defaults.$spacing;
 }
 
-.resultLocationButton {
-  align-self: center;
+.result-icon {
+  font-size: 28px;
+  width: 28px;
+  height: 28px;
+
+  &.success {
+    color: #2e7d32;
+  }
+
+  &.error {
+    color: #d32f2f;
+  }
+
+  &.undefined {
+    color: #757575;
+  }
 }
 
-.contentRow {
-  display: flex;
-  flex-direction: row;
+.hover-button:hover {
+  cursor: pointer;
+  opacity: 0.8;
+}
+
+.result-link-button {
+  border-radius: 4px !important;
+
+  mat-icon {
+    margin-right: 4px;
+  }
+}
+
+.action-description {
+  font-size: 13px;
+  color: #666;
+  margin-left: 4px;
+  flex: 1;
 }

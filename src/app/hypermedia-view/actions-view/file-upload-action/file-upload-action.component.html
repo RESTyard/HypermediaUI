@@ -1,15 +1,13 @@
-<mat-expansion-panel>
+<mat-expansion-panel class="action-panel">
   <mat-expansion-panel-header>
     <mat-panel-title>
-      <!-- <mat-icon class="icon" color="primary">cloud_upload</mat-icon>&nbsp;
-      <div>{{action.name}}</div> -->
-      <button class="executeButton"
-        mat-raised-button color="primary"
-        matTooltip="{{action.title}}">
-        <mat-icon class="icon" >cloud_upload</mat-icon>
-        {{action.name}}
-      </button>
-      <mat-icon class="icon" color="primary" style="margin-left: 4px;">expand_more</mat-icon>
+      <div class="action-header-content">
+        <button class="execute-button" mat-flat-button color="primary"
+          matTooltip="{{action.title}}">
+          <mat-icon class="action-icon">upload_file</mat-icon>
+          <span class="action-name">{{action.name}}</span>
+        </button>
+      </div>
     </mat-panel-title>
     <mat-panel-description>
       {{action.title}}
@@ -25,69 +23,66 @@
       [expandable]=true
       (change)="onSelect($event)">
       @if (action.FileUploadConfiguration.AllowMultiple === false) {
-        <ngx-dropzone-label>Drop a file here or click to
-          select
-        </ngx-dropzone-label>
+        <ngx-dropzone-label>Drop a file here or click to select</ngx-dropzone-label>
       }
       @if (action.FileUploadConfiguration.AllowMultiple === true) {
-        <ngx-dropzone-label>Drop a files or folder here or
-          click to select
-        </ngx-dropzone-label>
+        <ngx-dropzone-label>Drop files or folder here or click to select</ngx-dropzone-label>
       }
       @for (file of files; track file) {
         <ngx-dropzone-preview [removable]="true" (removed)="onRemove(file)">
           <ngx-dropzone-label>
             <mat-icon class="fileIcon">description</mat-icon>
-            <mat-vertical-stepper></mat-vertical-stepper>
             <span class="file-name" [matTooltip]="file.name">{{ file.name }}</span>
-            <mat-vertical-stepper></mat-vertical-stepper>
             <span class="size">{{convertBytesToMBReadable(file.size)}}</span>
           </ngx-dropzone-label>
         </ngx-dropzone-preview>
       }
     </ngx-dropzone>
 
-    <div class="buttonRow">
+    <div class="button-row">
       <!--place tooltip in parent because it does not work when button is disabled-->
       <span matTooltip="Please select a file." [matTooltipDisabled]="this.hasFiles()">
         <button (click)="onSubmit()"
           [disabled]="!this.hasFiles()"
-        mat-raised-button>Upload</button>
+          mat-flat-button
+          class="submit-button"
+          color="primary">
+          <mat-icon>cloud_upload</mat-icon>
+          Upload
+        </button>
       </span>
 
-      <div class="resultContainer">
-        <!-- result icon -->
+      <div class="result-container">
         @if (executed) {
-          <div class="resultIconContainer">
+          <div class="result-icon-container">
             @switch (actionResult) {
               @case (ActionResultsEnum.ok) {
-                <mat-icon class="containerElement" color="primary"
-                matTooltip={{actionMessage}}>done</mat-icon>
+                <mat-icon class="result-icon success" color="primary"
+                matTooltip={{actionMessage}}>check_circle</mat-icon>
               }
               @case (ActionResultsEnum.error) {
-                <mat-icon class="containerElement hoverButton" color="warn" [matMenuTriggerFor]="errorPopup"
+                <mat-icon class="result-icon error hover-button" color="warn" [matMenuTriggerFor]="errorPopup"
                 matTooltip={{actionMessage}}>error</mat-icon>
               }
               @case (ActionResultsEnum.pending) {
-                <mat-progress-spinner [diameter]="26" mode="indeterminate" color="accent"></mat-progress-spinner>
+                <mat-progress-spinner [diameter]="24" mode="indeterminate" color="primary"></mat-progress-spinner>
               }
               @case (ActionResultsEnum.undefined) {
-                <mat-icon class="containerElement" color="primary"
-                matTooltip={{actionMessage}}>question_mark</mat-icon>
+                <mat-icon class="result-icon undefined"
+                matTooltip={{actionMessage}}>help_outline</mat-icon>
               }
             }
           </div>
         }
-        <!-- result button -->
         @if (actionResultLocation !== null) {
-          <button
-            class="containerElement"
-            mat-raised-button
+          <button type="button"
+            class="result-link-button"
+            mat-stroked-button
             (click)="navigateLocation(actionResultLocation)"
-            color="accent"
+            color="primary"
             matTooltip="Go to result: {{actionResultLocation}}">
-            <mat-icon class="icon" color="primary">start</mat-icon>
-            Result
+            <mat-icon>arrow_forward</mat-icon>
+            View Result
           </button>
         }
       </div>
@@ -96,9 +91,7 @@
     <mat-menu #errorPopup="matMenu">
       <div (click)="$event.stopPropagation()">
         @if (problemDetailsError) {
-          <app-problem-details-view
-            [problemDetailsError]="problemDetailsError">
-          </app-problem-details-view>
+          <app-problem-details-view [problemDetailsError]="problemDetailsError"></app-problem-details-view>
         }
       </div>
     </mat-menu>
