@@ -10,6 +10,11 @@
     margin-bottom: defaults.$spacing;
 }
 
+app-property-tree {
+    display: block;
+    margin-bottom: defaults.$spacing;
+}
+
 @mixin entity-view-theme($theme) {
     $background: map.get($theme, background);
 
