@@ -59,10 +59,6 @@ export class PropertyTreeComponent implements OnChanges {
     if (changes['propertyContainer'] && this.propertyContainer) {
       this.dataSource.data = this.propertyContainer;
       this.hasExpandableItems = this.checkForExpandable(this.propertyContainer);
-
-      if (this.hasExpandableItems) {
-        setTimeout(() => this.treeControl.expandAll());
-      }
     }
   }
 
