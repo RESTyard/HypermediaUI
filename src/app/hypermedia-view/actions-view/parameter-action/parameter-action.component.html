@@ -75,7 +75,7 @@
 
 
 
-<mat-menu #errorPopup="matMenu">
+<mat-menu #errorPopup="matMenu" class="error-menu-panel">
   <div (click)="$event.stopPropagation()">
     @if (problemDetailsError) {
       <app-problem-details-view [problemDetailsError]="problemDetailsError"></app-problem-details-view>
