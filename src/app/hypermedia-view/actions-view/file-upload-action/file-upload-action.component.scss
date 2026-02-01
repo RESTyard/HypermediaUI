@@ -26,6 +26,15 @@
     flex-grow: 0;
     margin-right: 16px;
   }
+
+  .mat-expansion-panel-header-description {
+    align-items: center;
+    color: #666;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 }
 
 .action-header-content {
@@ -50,6 +59,10 @@
     font-size: 20px;
     width: 20px;
     height: 20px;
+  }
+
+  .action-name {
+    white-space: nowrap;
   }
 }
 

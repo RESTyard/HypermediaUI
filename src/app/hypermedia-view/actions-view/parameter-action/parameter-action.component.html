@@ -2,19 +2,18 @@
   <mat-expansion-panel-header>
     <mat-panel-title>
       <div class="action-header-content">
-        <button class="execute-button" mat-flat-button color="primary"
-          matTooltip="{{action.title}}">
+        <button class="execute-button" mat-flat-button color="primary">
           @if (getIconForMethod(action.method)) {
             <mat-icon class="action-icon">{{getIconForMethod(action.method)}}</mat-icon>
           } @else {
             <mat-icon class="action-icon">play_circle_outline</mat-icon>
           }
-          <span class="action-name">{{action.name}}</span>
+          <span class="action-name">{{action.title || action.name}}</span>
         </button>
       </div>
     </mat-panel-title>
     <mat-panel-description>
-      {{action.title}}
+      {{action.name}}
     </mat-panel-description>
   </mat-expansion-panel-header>
 

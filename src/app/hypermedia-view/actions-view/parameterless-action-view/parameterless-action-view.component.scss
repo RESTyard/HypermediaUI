@@ -39,6 +39,10 @@
     width: 20px;
     height: 20px;
   }
+
+  .action-name {
+    white-space: nowrap;
+  }
 }
 
 .result-status-container {
@@ -78,8 +82,11 @@
 }
 
 .action-description {
-  font-size: 13px;
   color: #666;
   margin-left: 4px;
   flex: 1;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
