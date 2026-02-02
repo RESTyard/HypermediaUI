@@ -94,7 +94,7 @@ $highlight-ancestor: #fffde7;
 // tree styles
 .mat-tree-node {
   min-height: 36px;
-  display: grid !important; // Grid erzwingen
+  display: grid !important;
   grid-template-columns: $gutter-width 1fr;
   border-bottom: 1px solid #f0f0f0;
   align-items: center;
@@ -187,7 +187,6 @@ button[mat-icon-button] {
     .prop-name { border-bottom: 1px dashed #ffd600; }
   }
 
-  // Animation wenn via Enter angesprungen
   &.pulse-highlight {
     animation: search-pulse 1s ease-out;
   }
