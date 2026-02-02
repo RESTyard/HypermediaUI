@@ -7,6 +7,7 @@ interface PropertyFlatNode {
   expandable: boolean;
   name: string;
   value: any;
+  preview?: string;
   type: PropertyTypes;
   level: number;
 }
@@ -37,10 +38,42 @@ export class PropertyTreeComponent implements OnChanges {
       expandable: node.type === PropertyTypes.object || node.type === PropertyTypes.array,
       name: node.name,
       value: node.value,
+      preview: this.getPreview(node),
       type: node.type,
       level: level,
     };
   };
+
+  private getPreview(node: PropertyInfo): string | undefined {
+    if (node.type !== PropertyTypes.array || !Array.isArray(node.value)) {
+      return undefined;
+    }
+
+    const arr = node.value as any[];
+    if (arr.length === 0) {
+      return undefined;
+    }
+
+    const isPrimitive = (val: any) =>
+      val === null ||
+      typeof val === 'string' ||
+      typeof val === 'number' ||
+      typeof val === 'boolean';
+
+    if (arr.every(isPrimitive)) {
+      const limit = 10;
+      const previewItems = arr.slice(0, limit);
+      let previewString = previewItems.map(v => v === null ? 'null' : JSON.stringify(v)).join(', ');
+
+      if (arr.length > limit) {
+        previewString += ', ...';
+      }
+
+      return `[${previewString}]`;
+    }
+
+    return undefined;
+  }
 
   treeControl = new FlatTreeControl<PropertyFlatNode>(
     node => node.level,

@@ -104,7 +104,7 @@ $highlight-ancestor: #fffde7;
     background: rgba(0, 0, 0, 0.02);
   }
 }
-$row-height: 32px; // Definiert eine feste Höhe für ALLE Zeilen
+$row-height: 32px;
 $gutter-width: 320px;
 
 button[mat-icon-button] {
@@ -150,18 +150,26 @@ button[mat-icon-button] {
   padding-left: 20px;
   padding-right: 12px;
   font-family: 'Roboto Mono', monospace;
-  font-size: 14px; // 16px war etwas groß im Vergleich zu den Labels
+  font-size: 14px;
   display: flex;
   width: 100%;
-
-
+  min-width: 0;
+  align-items: center;
 }
 
 /* Types */
 .v-str { color: #c41a16; }
 .v-num { color: #1c00cf; }
 .v-null { color: #808080; font-style: italic; }
-.v-meta { color: #666; background: #eee; padding: 2px 6px; border-radius: 4px; font-size: 11px; }
+.v-meta { color: #666; background: #eee; padding: 2px 6px; border-radius: 4px; font-size: 11px; flex-shrink: 0; }
+.v-preview {
+  color: #888;
+  margin-left: 8px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  font-size: 12px;
+}
 
 ::ng-deep .mat-mdc-checkbox {
   transform: scale(0.8);
