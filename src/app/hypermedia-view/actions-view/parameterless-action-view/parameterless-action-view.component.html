@@ -10,43 +10,45 @@
         <span class="action-name">{{action.title || action.name}}</span>
       </button>
 
-      <div class="action-description">
-        {{action.name}}
-      </div>
-
-      @if (executed) {
+      @if (executed || actionResultLocation !== null) {
         <div class="result-status-container">
-          @switch (actionResult) {
-            @case (ActionResultsEnum.ok) {
-              <mat-icon class="result-icon success"
-              matTooltip={{actionMessage}}>check_circle</mat-icon>
+          @if (executed) {
+            @switch (actionResult) {
+              @case (ActionResultsEnum.ok) {
+                <mat-icon class="result-icon success"
+                          matTooltip={{actionMessage}}>check_circle</mat-icon>
+              }
+              @case (ActionResultsEnum.error) {
+                <mat-icon class="result-icon error hover-button" [matMenuTriggerFor]="errorPopup"
+                          matTooltip={{actionMessage}}>error</mat-icon>
+              }
+              @case (ActionResultsEnum.pending) {
+                <mat-progress-spinner [diameter]="24" mode="indeterminate"></mat-progress-spinner>
+              }
+              @case (ActionResultsEnum.undefined) {
+                <mat-icon class="result-icon undefined"
+                          matTooltip={{actionMessage}}>help_outline</mat-icon>
+              }
             }
-            @case (ActionResultsEnum.error) {
-              <mat-icon class="result-icon error hover-button" [matMenuTriggerFor]="errorPopup"
-              matTooltip={{actionMessage}}>error</mat-icon>
-            }
-            @case (ActionResultsEnum.pending) {
-              <mat-progress-spinner [diameter]="24" mode="indeterminate"></mat-progress-spinner>
-            }
-            @case (ActionResultsEnum.undefined) {
-              <mat-icon class="result-icon undefined"
-              matTooltip={{actionMessage}}>help_outline</mat-icon>
-            }
+          }
+
+          @if (actionResultLocation !== null) {
+            <button
+              class="result-link-button"
+              mat-stroked-button
+              (click)="navigateLocation(actionResultLocation)"
+              color="primary"
+              matTooltip="Go to result: {{actionResultLocation}}">
+              <mat-icon>arrow_forward</mat-icon>
+              View Result
+            </button>
           }
         </div>
       }
 
-      @if (actionResultLocation !== null) {
-        <button
-          class="result-link-button"
-          mat-stroked-button
-          (click)="navigateLocation(actionResultLocation)"
-          color="primary"
-          matTooltip="Go to result: {{actionResultLocation}}">
-          <mat-icon>arrow_forward</mat-icon>
-          View Result
-        </button>
-      }
+      <div class="action-description">
+        {{action.name}}
+      </div>
     </div>
   </div>
 
