@@ -99,6 +99,7 @@ $highlight-ancestor: #fffde7;
   border-bottom: 1px solid #f0f0f0;
   align-items: center;
   transition: background-color 0.2s ease;
+  overflow: hidden;
 
   &:hover {
     background: rgba(0, 0, 0, 0.02);
@@ -169,6 +170,8 @@ button[mat-icon-button] {
   overflow: hidden;
   white-space: nowrap;
   font-size: 12px;
+  min-width: 0;
+  flex: 1;
 }
 
 ::ng-deep .mat-mdc-checkbox {
