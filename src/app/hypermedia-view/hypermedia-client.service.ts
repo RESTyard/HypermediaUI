@@ -202,6 +202,21 @@ export class HypermediaClientService implements IHypermediaClientService {
       throw err;
     }
 
+    switch (err.status) {
+      case 401:
+        if (!this.authService.isTokenRecentlyAcquired(url)) {
+          await this.handleAuthenticationChallenge(url, err);
+          break;
+        }
+        // fallthrough if token was recently acquired, treat as normal error
+      default:
+        const problemDetailsError = this.MapHttpErrorResponseToProblemDetails(err);
+        this.problemDetailsErrorService.showProblemDetailsDialog(problemDetailsError);
+        break;
+    }
+  }
+
+  private async handleAuthenticationChallenge(url: string, err: HttpErrorResponse) {
     // https://learn.microsoft.com/en-us/entra/msal/dotnet/advanced/extract-authentication-parameters
     let queryParams = this.buildApiPathSearchParams(this.apiPath.fullPath, 'apiPath');
     if (this.path) {
@@ -209,33 +224,28 @@ export class HypermediaClientService implements IHypermediaClientService {
     }
     let redirectUri = window.location.origin + "/auth-redirect?" + queryParams.toString();
     const result = await resultPipe(
-      () => this.assertAuthenticationError(err, url),
-      bind(_ => {
+      () => {
         const header = err.headers.get('www-authenticate');
         return header ? Success(header) : Failure('No authorization challenges provided from the backend.');
-      }),
+      },
       bind((header: string) => this.parseWWWAuthenticateHeaderSchemeParams(header, "Bearer")),
       bind((authSchemaParameter: Map<string, string>) => this.assertOIDCChallengeHeadersArePresent(authSchemaParameter)),
       bindAsync((tuple: { authUri: string, clientId: string }) => this.authService.login({
         entryPoint: url,
-              authority: tuple.authUri,
-              client_id: tuple.clientId,
-              redirect_uri: redirectUri,
-              scope: 'openid profile email offline_access'
+        authority: tuple.authUri,
+        client_id: tuple.clientId,
+        redirect_uri: redirectUri,
+        scope: 'openid profile email offline_access'
       })),
     )(0);
+
     if (isFailure(result)) {
-        console.error(result.value);
-        this.problemDetailsErrorService.showErrorDialog(
-          "Authentication error",
-          result.value);
+      console.error(result.value);
+      this.problemDetailsErrorService.showErrorDialog(
+        "Authentication error",
+        result.value);
     }
   }
-
-  private assertAuthenticationError = (error: HttpErrorResponse, url: string): Result<Unit, string> =>
-    error.status === 401 && !this.authService.isTokenRecentlyAcquired(url)
-      ? Success(Unit.NoThing)
-      : Failure("");
 
   private parseWWWAuthenticateHeaderSchemeParams(header: string | null, authScheme: string): Result<Map<string, string>, string> {
     if (!header?.startsWith('Bearer')) {
