@@ -9,6 +9,9 @@
             <mat-icon class="action-icon">play_circle_outline</mat-icon>
           }
           <span class="action-name">{{action.title || action.name}}</span>
+          @if (action.isDestructive()) {
+            <mat-icon iconPositionEnd class="action-icon destructive-icon trailing-icon" matTooltip="Destructive action">warning</mat-icon>
+          }
         </button>
         <mat-icon class="expand-icon" [class.expanded]="panelHeader.panel.expanded">expand_more</mat-icon>
       </div>

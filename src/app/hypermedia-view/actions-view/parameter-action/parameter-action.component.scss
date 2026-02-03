@@ -56,20 +56,35 @@
   font-weight: 500;
   letter-spacing: 0.5px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.2) !important;
+  display: inline-flex !important;
+  align-items: center;
 
   &:hover {
     box-shadow: 0 4px 8px rgba(0,0,0,0.3) !important;
   }
 
   .action-icon {
-    margin-right: 8px;
     font-size: 20px;
     width: 20px;
     height: 20px;
+
+    &:not(.trailing-icon) {
+      margin-right: 8px;
+    }
+
+    &.destructive-icon {
+      color: #ffc107; // Amber/Warning color
+    }
+
+    &.trailing-icon {
+      margin-left: 8px;
+      order: 1;
+    }
   }
 
   .action-name {
     white-space: nowrap;
+    order: 0;
   }
 }
 
