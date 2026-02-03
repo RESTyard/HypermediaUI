@@ -75,15 +75,16 @@
           </div>
         }
         @if (actionResultLocation !== null) {
-          <button type="button"
+          <a
             class="result-link-button"
-            mat-stroked-button
-            (click)="navigateLocation(actionResultLocation)"
-            color="primary"
+            mat-flat-button
+            [href]="getBrowserUrl(actionResultLocation)"
+            (click)="$event.preventDefault(); navigateLocation(actionResultLocation)"
+            color="accent"
             matTooltip="Go to result: {{actionResultLocation}}">
             <mat-icon>arrow_forward</mat-icon>
             View Result
-          </button>
+          </a>
         }
       </div>
     </div>
