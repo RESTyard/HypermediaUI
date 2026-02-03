@@ -79,6 +79,12 @@ export class ApiPath {
       this.apiPath.splice(index, 0, stepUrl);
     }
 
+    removeLast() {
+      if (this.apiPath.length > 0) {
+        this.apiPath.pop();
+      }
+    }
+
     private getStepIndex(stepUrl: string): number {
       for (let i = 0; i < this.apiPath.length; i++) {
         if (this.apiPath[i] === stepUrl) {

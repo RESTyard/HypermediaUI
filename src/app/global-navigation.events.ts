@@ -6,6 +6,7 @@ import { Unit } from "./utils/unit";
 export class GlobalNavigationEvents {
     private gotoEntryPoint: Subject<Unit> = new Subject();
     private gotoMainPage: Subject<Unit> = new Subject();
+    private gotoPreviousStep: Subject<Unit> = new Subject();
 
     public emitGotoEntryPoint() {
         this.gotoEntryPoint.next(Unit.NoThing);
@@ -15,11 +16,19 @@ export class GlobalNavigationEvents {
         this.gotoMainPage.next(Unit.NoThing);
     }
 
+    public emitGotoPreviousStep() {
+        this.gotoPreviousStep.next(Unit.NoThing);
+    }
+
     public get onGotoEntryPoint() {
         return this.gotoEntryPoint.asObservable();
     }
 
     public get onGotoMainPage() {
         return this.gotoMainPage.asObservable();
+    }
+
+    public get onGotoPreviousStep() {
+        return this.gotoPreviousStep.asObservable();
     }
 }

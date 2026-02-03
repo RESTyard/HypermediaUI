@@ -103,6 +103,12 @@ export class HypermediaClientService implements IHypermediaClientService {
         this.navigateToMainPage();
       }
     });
+
+    globalNavigationEvents.onGotoPreviousStep.subscribe({
+      next: _ => {
+        this.navigateToPreviousStep();
+      }
+    });
   }
 
   getHypermediaObjectStream(): BehaviorSubject<SirenClientObject> {
@@ -122,6 +128,15 @@ export class HypermediaClientService implements IHypermediaClientService {
       this.router.navigate(['']);
     } else {
       this.Navigate(this.apiPath.firstSegment);
+    }
+  }
+
+  navigateToPreviousStep() {
+    if (!this.apiPath || this.apiPath.pathLength < 2) {
+      this.navigateToEntryPoint();
+    } else {
+      this.apiPath.removeLast();
+      this.Navigate(this.apiPath.newestSegment);
     }
   }
 
