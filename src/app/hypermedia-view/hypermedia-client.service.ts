@@ -203,6 +203,7 @@ export class HypermediaClientService implements IHypermediaClientService {
     }
 
     switch (err.status) {
+      // @ts-ignore
       case 401:
         if (!this.authService.isTokenRecentlyAcquired(url)) {
           await this.handleAuthenticationChallenge(url, err);
