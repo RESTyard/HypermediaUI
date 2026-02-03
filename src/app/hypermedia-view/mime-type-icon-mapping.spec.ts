@@ -31,12 +31,12 @@ describe('mime-type-icon-mapping', () => {
   });
 
   describe('getIconForMimeType', () => {
-    it('should return help for undefined', () => {
-      expect(getIconForMimeType(undefined)).toBe('help');
+    it('should return help_outline for undefined', () => {
+      expect(getIconForMimeType(undefined)).toBe('help_outline');
     });
 
-    it('should return help for unknown vendor mime type', () => {
-      expect(getIconForMimeType('application/vnd.something')).toBe('help');
+    it('should return help_outline for unknown vendor mime type', () => {
+      expect(getIconForMimeType('application/vnd.something')).toBe('help_outline');
     });
 
     it('should return image for image types', () => {
@@ -44,18 +44,18 @@ describe('mime-type-icon-mapping', () => {
       expect(getIconForMimeType('image/gif')).toBe('image');
     });
 
-    it('should return assignment for pdf', () => {
-      expect(getIconForMimeType('application/pdf')).toBe('assignment');
+    it('should return picture_as_pdf for pdf', () => {
+      expect(getIconForMimeType('application/pdf')).toBe('picture_as_pdf');
     });
 
-    it('should return code_blocks for json and xml', () => {
-      expect(getIconForMimeType('application/json')).toBe('code_blocks');
-      expect(getIconForMimeType('application/xml')).toBe('code_blocks');
-      expect(getIconForMimeType('text/xml')).toBe('code_blocks');
+    it('should return code for json and xml', () => {
+      expect(getIconForMimeType('application/json')).toBe('code');
+      expect(getIconForMimeType('application/xml')).toBe('code');
+      expect(getIconForMimeType('text/xml')).toBe('code');
     });
 
-    it('should return code_blocks for vendor specific siren+json', () => {
-      expect(getIconForMimeType('application/vnd.siren+json')).toBe('code_blocks');
+    it('should return code for vendor specific siren+json', () => {
+      expect(getIconForMimeType('application/vnd.siren+json')).toBe('code');
     });
 
     it('should return description for text/plain', () => {
@@ -66,16 +66,16 @@ describe('mime-type-icon-mapping', () => {
       expect(getIconForMimeType('text/unknown')).toBe('description');
     });
 
-    it('should return box for zip', () => {
-      expect(getIconForMimeType('application/zip')).toBe('box');
+    it('should return inventory_2 for zip', () => {
+      expect(getIconForMimeType('application/zip')).toBe('inventory_2');
     });
 
-    it('should return memory for application/octet-stream', () => {
-      expect(getIconForMimeType('application/octet-stream')).toBe('memory');
+    it('should return file_present for application/octet-stream', () => {
+      expect(getIconForMimeType('application/octet-stream')).toBe('file_present');
     });
 
-    it('should return file_present for unknown application types', () => {
-      expect(getIconForMimeType('application/unknown')).toBe('file_present');
+    it('should return help_outline for unknown application types', () => {
+      expect(getIconForMimeType('application/unknown')).toBe('help_outline');
     });
   });
 });

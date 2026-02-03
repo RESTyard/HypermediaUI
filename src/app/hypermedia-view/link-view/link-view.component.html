@@ -4,9 +4,10 @@
       <a mat-flat-button class="main-link-button"
          [class.download-link]="link.type !== MediaTypes.Siren && link.type != undefined"
          [href]="getBrowserUrl(link)"
+         [matTooltip]="(link.type !== MediaTypes.Siren && link.type != undefined) ? link.type : ''"
          (click)="$event.preventDefault(); (link.type !== MediaTypes.Siren && link.type != undefined) ? download(link) : navigateLink(link)">
         @if (link.type !== MediaTypes.Siren && link.type != undefined) {
-          <mat-icon class="link-icon">download</mat-icon>
+          <mat-icon class="link-icon">{{getIconForMimeType(link.type)}}</mat-icon>
         } @else if (getRelationIcon(link.relations)) {
           <mat-icon class="link-icon">{{getRelationIcon(link.relations)}}</mat-icon>
         } @else {
@@ -15,9 +16,6 @@
         <span class="link-text">
           {{link.relations.join(', ')}}
         </span>
-        @if (link.type !== MediaTypes.Siren && link.type != undefined) {
-          <span class="media-type-badge">{{link.type}}</span>
-        }
       </a>
       <button mat-flat-button class="dropdown-button"
               [class.download-link]="link.type !== MediaTypes.Siren && link.type != undefined"

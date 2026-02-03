@@ -1,20 +1,29 @@
 export const mimeTypeIconMapping: { [key: string]: string } = {
+  // Images
   'image/jpeg': 'image',
   'image/jpg': 'image',
-  'image/png': 'file_png',
+  'image/png': 'image',
   'image/svg+xml': 'image',
+
+  // Documents
   'application/pdf': 'assignment',
   'text/plain': 'description',
-  'application/json': 'code_blocks',
-  'application/xml': 'code_blocks',
-  'text/xml': 'code_blocks',
+  'text/csv': 'table_view',
+  'text/markdown': 'edit_note',
+
+  // Code & Web
+  'application/json': 'data_object',
+  'application/xml': 'code',
+  'text/xml': 'code',
+  'text/html': 'html',
   'text/toml': 'settings',
   'text/yaml': 'settings',
-  'text/csv': 'view_column',
-  'text/markdown': 'markdown',
-  'text/html': 'html',
-  'application/zip': 'box',
-  'application/x-zip-compressed': 'box',
+
+  // Archives
+  'application/zip': 'folder_zip',
+  'application/x-zip-compressed': 'folder_zip',
+
+  // Binary / Other
   'application/octet-stream': 'memory',
 };
 
@@ -57,13 +66,13 @@ export function getBaseMimeType(mimeType: string): string | undefined {
  */
 export function getIconForMimeType(mimeType: string | undefined): string {
   if (!mimeType) {
-    return 'help';
+    return 'insert_drive_file';
   }
 
   const baseMimeType = getBaseMimeType(mimeType);
 
   if (!baseMimeType) {
-    return 'help';
+    return 'insert_drive_file';
   }
 
   const normalizedBaseMimeType = baseMimeType.toLowerCase();
@@ -86,5 +95,5 @@ export function getIconForMimeType(mimeType: string | undefined): string {
     return 'description';
   }
 
-  return 'help';
+  return 'insert_drive_file';
 }

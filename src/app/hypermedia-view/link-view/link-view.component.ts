@@ -2,6 +2,7 @@ import { HypermediaClientService } from '../hypermedia-client.service';
 import { Component, OnInit, Input } from '@angular/core';
 import { HypermediaLink } from '../siren-parser/hypermedia-link';
 import { getIconForRelation } from '../icon-mapping';
+import { getIconForMimeType } from '../mime-type-icon-mapping';
 import { ClipboardService } from 'ngx-clipboard';
 import {MediaTypes} from "../MediaTypes";
 import { ApiPath } from '../api-path';
@@ -15,7 +16,7 @@ import { ApiPath } from '../api-path';
 export class LinkViewComponent implements OnInit {
 
   @Input() links: HypermediaLink[] = [];
-
+  protected readonly getIconForMimeType = getIconForMimeType;
   protected readonly MediaTypes = MediaTypes;
 
   constructor(
