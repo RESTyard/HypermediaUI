@@ -9,6 +9,8 @@ import { FormlyFieldConfig } from '@ngx-formly/core';
 import { AbstractControl, FormGroup } from '@angular/forms';
 import { FormlyJsonschema } from '@ngx-formly/core/json-schema';
 import { getIconForHttpMethod } from '../../icon-mapping';
+import { MatDialog } from '@angular/material/dialog';
+import { ConfirmationDialogComponent } from '../../../common/confirmation-dialog/confirmation-dialog.component';
 
 @Component({
     selector: 'app-parameter-action',
@@ -35,6 +37,7 @@ export class ParameterActionComponent implements OnInit {
   constructor(
     private hypermediaClientService: HypermediaClientService,
     private formlyJsonschema: FormlyJsonschema,
+    private dialog: MatDialog
   ) {}
 
   ngOnInit() {
@@ -76,6 +79,26 @@ export class ParameterActionComponent implements OnInit {
       console.log('not valid');
       return;
     }
+
+    if (this.action.isDestructive()) {
+      const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+        data: {
+          title: 'Confirm Destructive Action',
+          message: 'This action is destructive and cannot be undone. Are you sure you want to continue?'
+        }
+      });
+
+      dialogRef.afterClosed().subscribe(result => {
+        if (result) {
+          this.doActionSubmitted();
+        }
+      });
+    } else {
+      this.doActionSubmitted();
+    }
+  }
+
+  private doActionSubmitted() {
     this.action.parameters = this.form.value;
     this.actionResult = ActionResults.pending;
     this.executed = true;

@@ -36,6 +36,7 @@ import { Observable } from 'rxjs';
 import { importStore } from './store/store-module';
 import { AliasPageComponent } from './alias-page/alias-page.component';
 import {LogoutRedirectComponent} from "./logout-redirect/logout-redirect.component";
+import { ConfirmationDialogComponent } from './common/confirmation-dialog/confirmation-dialog.component';
 
 const appRoutes: Routes = [
   {
@@ -75,7 +76,8 @@ export const myCustomTooltipDefaults: MatTooltipDefaultOptions = {
   declarations: [
     AppComponent,
     MainPageComponent,
-    AuthRedirectComponent
+    AuthRedirectComponent,
+    ConfirmationDialogComponent
   ],
   imports: [
     RouterModule.forRoot(

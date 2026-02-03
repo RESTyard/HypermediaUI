@@ -5,6 +5,8 @@ import {ActionResults, HypermediaClientService} from '../../hypermedia-client.se
 import {ProblemDetailsError} from '../../../error-dialog/problem-details-error';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import { getIconForHttpMethod } from '../../icon-mapping';
+import { MatDialog } from '@angular/material/dialog';
+import { ConfirmationDialogComponent } from '../../../common/confirmation-dialog/confirmation-dialog.component';
 
 @Component({
     selector: 'app-file-upload-action',
@@ -25,7 +27,11 @@ export class FileUploadActionComponent implements OnInit {
   executed: boolean = false; // TODO show multiple executions as list
   problemDetailsError: ProblemDetailsError| null = null
 
-  constructor(private hypermediaClientService: HypermediaClientService, private snackBar: MatSnackBar) { }
+  constructor(
+    private hypermediaClientService: HypermediaClientService,
+    private snackBar: MatSnackBar,
+    private dialog: MatDialog
+  ) { }
 
   ngOnInit(): void {
   }
@@ -69,6 +75,25 @@ export class FileUploadActionComponent implements OnInit {
       return;
     }
 
+    if (this.action.isDestructive()) {
+      const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+        data: {
+          title: 'Confirm Destructive Action',
+          message: 'This action is destructive and cannot be undone. Are you sure you want to continue?'
+        }
+      });
+
+      dialogRef.afterClosed().subscribe(result => {
+        if (result) {
+          this.doSubmit();
+        }
+      });
+    } else {
+      this.doSubmit();
+    }
+  }
+
+  private doSubmit() {
     this.action.files = this.files;
     this.actionResult= ActionResults.pending;
     this.executed = true;
@@ -91,7 +116,6 @@ export class FileUploadActionComponent implements OnInit {
         // todo handle if it has content AND location
         this.actionResultLocation = resultLocation;
       });
-
   }
 
   convertBytesToMBReadable(bytes: any): string {

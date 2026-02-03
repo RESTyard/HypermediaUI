@@ -22,6 +22,10 @@ export class HypermediaAction {
   public FileUploadConfiguration: FileUploadConfiguration = new FileUploadConfiguration();
 
   constructor() { }
+
+  public isDestructive(): boolean {
+    return this.classes.includes('Destructive');
+  }
 }
 
 export enum HttpMethodTypes {

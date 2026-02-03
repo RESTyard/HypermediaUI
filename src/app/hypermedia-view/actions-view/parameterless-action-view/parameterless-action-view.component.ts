@@ -3,6 +3,8 @@ import { Component, OnInit, Input } from '@angular/core';
 import { HypermediaAction } from '../../siren-parser/hypermedia-action';
 import { ProblemDetailsError } from 'src/app/error-dialog/problem-details-error';
 import { getIconForHttpMethod } from '../../icon-mapping';
+import { MatDialog } from '@angular/material/dialog';
+import { ConfirmationDialogComponent } from '../../../common/confirmation-dialog/confirmation-dialog.component';
 
 @Component({
     selector: 'app-parameterless-action-view',
@@ -21,12 +23,34 @@ export class ParameterlessActionViewComponent implements OnInit {
   executed: boolean = false; // TODO show multiple executions as list
   problemDetailsError: ProblemDetailsError| null = null
 
-  constructor(private hypermediaClientService: HypermediaClientService) { }
+  constructor(
+    private hypermediaClientService: HypermediaClientService,
+    private dialog: MatDialog
+  ) { }
 
   ngOnInit() {
   }
 
   public executeAction() {
+    if (this.action.isDestructive()) {
+      const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+        data: {
+          title: 'Confirm Destructive Action',
+          message: 'This action is destructive and cannot be undone. Are you sure you want to continue?'
+        }
+      });
+
+      dialogRef.afterClosed().subscribe(result => {
+        if (result) {
+          this.doExecuteAction();
+        }
+      });
+    } else {
+      this.doExecuteAction();
+    }
+  }
+
+  private doExecuteAction() {
     this.actionResult= ActionResults.pending;
     this.executed = true;
     this.hypermediaClientService.executeAction(
