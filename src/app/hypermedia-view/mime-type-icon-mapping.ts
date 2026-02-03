@@ -1,0 +1,90 @@
+export const mimeTypeIconMapping: { [key: string]: string } = {
+  'image/jpeg': 'image',
+  'image/jpg': 'image',
+  'image/png': 'file_png',
+  'image/svg+xml': 'image',
+  'application/pdf': 'assignment',
+  'text/plain': 'description',
+  'application/json': 'code_blocks',
+  'application/xml': 'code_blocks',
+  'text/xml': 'code_blocks',
+  'text/toml': 'settings',
+  'text/yaml': 'settings',
+  'text/csv': 'view_column',
+  'text/markdown': 'markdown',
+  'text/html': 'html',
+  'application/zip': 'box',
+  'application/x-zip-compressed': 'box',
+  'application/octet-stream': 'memory',
+};
+
+/**
+ * Finds the base mime type for vendor-specific mime types.
+ * For example: application/vnd.siren+json -> application/json
+ * @param mimeType The mime type to check.
+ */
+export function getBaseMimeType(mimeType: string): string | undefined {
+  if (!mimeType) {
+    return undefined;
+  }
+
+  // Check if it's a vendor-specific type (e.g., application/vnd.something)
+  if (mimeType.startsWith('application/vnd.')) {
+    // Check for a suffix (e.g., +json, +xml)
+    const vendorMatch = mimeType.match(/^application\/vnd\..+\+(.+)$/);
+    if (vendorMatch && vendorMatch[1]) {
+      const suffix = vendorMatch[1];
+      if (suffix === 'json') {
+        return 'application/json';
+      }
+      if (suffix === 'xml') {
+        return 'application/xml';
+      }
+      // Fallback to application/suffix if it's a known format but not application/
+      return `application/${suffix}`;
+    }
+
+    // If it's application/vnd. but we can't determine the base type, return undefined
+    return undefined;
+  }
+
+  return mimeType;
+}
+
+/**
+ * Returns an icon name for a given mime type.
+ * @param mimeType The mime type to get an icon for.
+ */
+export function getIconForMimeType(mimeType: string | undefined): string {
+  if (!mimeType) {
+    return 'help';
+  }
+
+  const baseMimeType = getBaseMimeType(mimeType);
+
+  if (!baseMimeType) {
+    return 'help';
+  }
+
+  const normalizedBaseMimeType = baseMimeType.toLowerCase();
+
+  if (mimeTypeIconMapping[normalizedBaseMimeType]) {
+    return mimeTypeIconMapping[normalizedBaseMimeType];
+  }
+
+  // Generic fallbacks
+  if (normalizedBaseMimeType.startsWith('image/')) {
+    return 'image';
+  }
+  if (normalizedBaseMimeType.startsWith('audio/')) {
+    return 'audiotrack';
+  }
+  if (normalizedBaseMimeType.startsWith('video/')) {
+    return 'video_file';
+  }
+  if (normalizedBaseMimeType.startsWith('text/')) {
+    return 'description';
+  }
+
+  return 'help';
+}
