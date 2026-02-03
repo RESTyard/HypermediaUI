@@ -23,8 +23,16 @@ export class HypermediaAction {
 
   constructor() { }
 
-  public isDestructive(): boolean {
-    return this.classes.includes('Destructive');
+  public getConfigurations(actionPopupWarningConfigurations: HypermediaUI.IActionClassConfiguration[]): HypermediaUI.IActionClassConfiguration[] {
+    if (!actionPopupWarningConfigurations || !this.classes) {
+      return [];
+    }
+
+    const lowerCaseClasses = this.classes.map(c => c.toLowerCase());
+
+    return actionPopupWarningConfigurations.filter(config =>
+      lowerCaseClasses.includes(config.actionClass.toLowerCase())
+    );
   }
 }
 

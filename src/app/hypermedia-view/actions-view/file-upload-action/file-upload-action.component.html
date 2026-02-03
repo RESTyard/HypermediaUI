@@ -5,8 +5,8 @@
         <button class="execute-button" mat-flat-button color="primary">
           <mat-icon class="action-icon">upload_file</mat-icon>
           <span class="action-name">{{action.title || action.name}}</span>
-          @if (action.isDestructive()) {
-            <mat-icon iconPositionEnd class="action-icon destructive-icon trailing-icon" matTooltip="Destructive action">warning</mat-icon>
+          @for (config of getActionConfigs(); track config.actionClass) {
+            <mat-icon iconPositionEnd class="action-icon action-class-icon trailing-icon" [matTooltip]="config.title">{{config.icon}}</mat-icon>
           }
         </button>
         <mat-icon class="expand-icon" [class.expanded]="panelHeader.panel.expanded">expand_more</mat-icon>

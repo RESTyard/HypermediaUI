@@ -15,6 +15,7 @@ export class AppConfigService implements HypermediaUI.IAppConfig {
     public onlyAllowConfiguredEntryPoints: boolean = false;
     public relationIconMapping?: { [key: string]: string };
     public httpMethodIconMapping?: { [key: string]: string };
+    public actionPopupWarningConfigurations: HypermediaUI.IActionClassConfiguration[] = [];
 
     constructor(
         private http: HttpClient,
@@ -34,6 +35,7 @@ export class AppConfigService implements HypermediaUI.IAppConfig {
                         onlyAllowConfiguredEntryPoints: this.onlyAllowConfiguredEntryPoints,
                         relationIconMapping: this.relationIconMapping,
                         httpMethodIconMapping: this.httpMethodIconMapping,
+                        actionPopupWarningConfigurations: this.actionPopupWarningConfigurations,
                     }
                     const newConfig = new AppConfig(mapped);
                     this.store.dispatch(updateAppConfig({ newConfig: newConfig }))
@@ -47,6 +49,7 @@ export class AppConfig extends Record({
     onlyAllowConfiguredEntryPoints: false,
     relationIconMapping: <{ [key: string]: string } | undefined> undefined,
     httpMethodIconMapping: <{ [key: string]: string } | undefined> undefined,
+    actionPopupWarningConfigurations: <HypermediaUI.IActionClassConfiguration[] | undefined> undefined,
 }) {}
 
 export class ConfiguredEntryPoint extends Record({

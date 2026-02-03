@@ -11,6 +11,7 @@ import { FormlyJsonschema } from '@ngx-formly/core/json-schema';
 import { getIconForHttpMethod } from '../../icon-mapping';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmationDialogComponent } from '../../../common/confirmation-dialog/confirmation-dialog.component';
+import { AppConfigService } from 'src/app.config.service';
 
 @Component({
     selector: 'app-parameter-action',
@@ -37,7 +38,8 @@ export class ParameterActionComponent implements OnInit {
   constructor(
     private hypermediaClientService: HypermediaClientService,
     private formlyJsonschema: FormlyJsonschema,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private appConfigService: AppConfigService
   ) {}
 
   ngOnInit() {
@@ -80,22 +82,32 @@ export class ParameterActionComponent implements OnInit {
       return;
     }
 
-    if (this.action.isDestructive()) {
+    const configs = this.action.getConfigurations(this.appConfigService.actionPopupWarningConfigurations);
+    this.submitWithConfirmation(configs);
+  }
+
+  private submitWithConfirmation(configs: HypermediaUI.IActionClassConfiguration[]) {
+    if (configs.length > 0) {
+      const config = configs[0];
       const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
         data: {
-          title: 'Confirm Destructive Action',
-          message: 'This action is destructive and cannot be undone. Are you sure you want to continue?'
+          title: config.title,
+          message: config.message
         }
       });
 
       dialogRef.afterClosed().subscribe(result => {
         if (result) {
-          this.doActionSubmitted();
+          this.submitWithConfirmation(configs.slice(1));
         }
       });
     } else {
       this.doActionSubmitted();
     }
+  }
+
+  public getActionConfigs(): HypermediaUI.IActionClassConfiguration[] {
+    return this.action.getConfigurations(this.appConfigService.actionPopupWarningConfigurations);
   }
 
   private doActionSubmitted() {

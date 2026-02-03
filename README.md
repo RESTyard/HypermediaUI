@@ -42,11 +42,30 @@ The UI can be customized by deploying an artifact from [Releases](https://github
   },
   "httpMethodIconMapping": {
     "post": "add_box"
-  }
+  },
+  "actionPopupWarningConfigurations": [
+    {
+      "actionClass": "destructive",
+      "title": "Confirm Destructive Action",
+      "message": "This action is destructive and cannot be undone. Are you sure you want to continue?",
+      "icon": "warning"
+    }
+  ]
 }
 ```
 
 The configuration in details works like this:
+
+### ``actionPopupWarningConfigurations``
+
+Allows defining custom behaviors for actions based on their Siren classes. Matching is **case-insensitive**.
+
+- `actionClass`: The Siren class to match.
+- `title`: Title for the confirmation popup.
+- `message`: Message in the confirmation popup.
+- `icon`: Material icon name to be displayed next to the action name.
+
+If a match is found, the user is prompted with a confirmation dialog before the action is executed. If multiple classes match, multiple popups will be shown sequentially.
 
 ### ``relationIconMapping`` and ``httpMethodIconMapping``
 
