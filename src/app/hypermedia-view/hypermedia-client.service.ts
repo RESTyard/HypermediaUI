@@ -252,6 +252,12 @@ export class HypermediaClientService implements IHypermediaClientService {
     return usePath + '?' + queryParams.toString();
   }
 
+  getBrowserUrl(url: string) {
+    const tempPath = new ApiPath(this.currentApiPath.fullPath);
+    tempPath.setCurrentStep(url);
+    return this.buildBrowserUrl(undefined, tempPath);
+  }
+
   buildApiPathSearchParams(apiPath: string[], variableName: string) {
     const queryParams = new URLSearchParams(apiPath.map(pathSegment => [variableName, pathSegment]));
     return queryParams;

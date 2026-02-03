@@ -155,10 +155,7 @@ export class HypermediaControlComponent implements OnInit {
   }
 
   public getBrowserUrl(url: string) {
-    const apiPath = this.hypermediaClient.currentApiPath;
-    const tempPath = new ApiPath(apiPath.fullPath);
-    tempPath.setCurrentStep(url);
-    return this.hypermediaClient.buildBrowserUrl(undefined, tempPath);
+    return this.hypermediaClient.getBrowserUrl(url);
   }
 
   public navigateLink(url: string) {

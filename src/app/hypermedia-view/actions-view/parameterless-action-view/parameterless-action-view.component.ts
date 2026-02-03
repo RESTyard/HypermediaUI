@@ -3,7 +3,6 @@ import { Component, OnInit, Input } from '@angular/core';
 import { HypermediaAction } from '../../siren-parser/hypermedia-action';
 import { ProblemDetailsError } from 'src/app/error-dialog/problem-details-error';
 import { getIconForHttpMethod } from '../../icon-mapping';
-import { ApiPath } from '../../api-path';
 
 @Component({
     selector: 'app-parameterless-action-view',
@@ -55,10 +54,7 @@ export class ParameterlessActionViewComponent implements OnInit {
   }
 
   getBrowserUrl(url: string) {
-    const apiPath = this.hypermediaClientService.currentApiPath;
-    const tempPath = new ApiPath(apiPath.fullPath);
-    tempPath.setCurrentStep(url);
-    return this.hypermediaClientService.buildBrowserUrl(undefined, tempPath);
+    return this.hypermediaClientService.getBrowserUrl(url);
   }
 
   getIconForMethod(method: string): string | undefined {

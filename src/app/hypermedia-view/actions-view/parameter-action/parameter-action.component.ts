@@ -9,7 +9,6 @@ import { FormlyFieldConfig } from '@ngx-formly/core';
 import { AbstractControl, FormGroup } from '@angular/forms';
 import { FormlyJsonschema } from '@ngx-formly/core/json-schema';
 import { getIconForHttpMethod } from '../../icon-mapping';
-import { ApiPath } from '../../api-path';
 
 @Component({
     selector: 'app-parameter-action',
@@ -109,10 +108,7 @@ export class ParameterActionComponent implements OnInit {
   }
 
   getBrowserUrl(url: string) {
-    const apiPath = this.hypermediaClientService.currentApiPath;
-    const tempPath = new ApiPath(apiPath.fullPath);
-    tempPath.setCurrentStep(url);
-    return this.hypermediaClientService.buildBrowserUrl(undefined, tempPath);
+    return this.hypermediaClientService.getBrowserUrl(url);
   }
 
   getIconForMethod(method: string): string | undefined {
