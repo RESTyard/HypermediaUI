@@ -53,7 +53,7 @@ The configuration in details works like this:
 Allows to override the default icons used for relations and HTTP methods.
 The icons must be valid [Material Design Icon](https://fonts.google.com/icons) names.
 
-**Note:** If these properties are provided in `app.config.json`, the values will be merged into the default mappings, overriding any existing ones with the same key. If they are omitted or empty, the defaults are used.
+**Note:** If these properties are provided in `app.config.json` and are not empty, they will replace the default mappings entirely. If they are omitted or empty, the defaults are used. This allows users to completely redefine the icon mapping or remove default ones by not including them in the provided configuration.
 
 #### Example
 

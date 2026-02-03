@@ -1,4 +1,4 @@
-export const relationIconMapping: { [key: string]: string } = {
+export let relationIconMapping: { [key: string]: string } = {
   'self': 'subdirectory_arrow_right',
   'next': 'chevron_right',
   'previous': 'chevron_left',
@@ -36,7 +36,7 @@ export const relationIconMapping: { [key: string]: string } = {
   'patch': 'amend',
 };
 
-export const httpMethodIconMapping: { [key: string]: string } = {
+export let httpMethodIconMapping: { [key: string]: string } = {
   'get': 'visibility',
   'delete': 'close',
   'post': 'send',
@@ -53,10 +53,10 @@ export function getIconForHttpMethod(relation: string): string | undefined {
 }
 
 export function updateMappingsIconMappings(relationOverrides?: { [key: string]: string }, methodOverrides?: { [key: string]: string }) {
-  if (relationOverrides) {
-    Object.assign(relationIconMapping, relationOverrides);
+  if (relationOverrides && Object.keys(relationOverrides).length > 0) {
+    relationIconMapping = relationOverrides;
   }
-  if (methodOverrides) {
-    Object.assign(httpMethodIconMapping, methodOverrides);
+  if (methodOverrides && Object.keys(methodOverrides).length > 0) {
+    httpMethodIconMapping = methodOverrides;
   }
 }
