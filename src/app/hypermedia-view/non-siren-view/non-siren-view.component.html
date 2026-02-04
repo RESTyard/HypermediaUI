@@ -1,13 +1,21 @@
 <div class="non-siren-container">
-  <div class="header">
-    <mat-icon class="mime-icon">{{getIcon()}}</mat-icon>
-    <span class="mime-type">{{getDisplayMimeType()}}</span>
+  <div class="info-and-actions">
+    <div class="header">
+      <mat-icon class="mime-icon">{{getIcon()}}</mat-icon>
+      <div class="file-details">
+        <span class="mime-type">{{getDisplayMimeType()}}</span>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button mat-raised-button color="primary" (click)="download()">
+        <mat-icon>download</mat-icon>
+        Download File
+      </button>
+    </div>
   </div>
 
-  <div class="actions">
-    <button mat-raised-button color="primary" (click)="download()">
-      <mat-icon>download</mat-icon>
-      Download File
-    </button>
-  </div>
+  @if (isImage()) {
+    <app-image-preview [blob]="rawContent" style="width: 100%"></app-image-preview>
+  }
 </div>

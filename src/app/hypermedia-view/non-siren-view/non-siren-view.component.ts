@@ -10,8 +10,15 @@ import { HypermediaClientService } from '../hypermedia-client.service';
 })
 export class NonSirenViewComponent {
   @Input() contentType: string | undefined;
+  @Input() rawContent: any;
 
-  constructor(private hypermediaClient: HypermediaClientService) { }
+  constructor(
+    private hypermediaClient: HypermediaClientService
+  ) { }
+
+  isImage(): boolean {
+    return !!this.contentType?.toLowerCase().startsWith('image/');
+  }
 
   getIcon(): string {
     return getIconForMimeType(this.contentType);

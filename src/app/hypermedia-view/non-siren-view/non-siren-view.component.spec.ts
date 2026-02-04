@@ -2,6 +2,16 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NonSirenViewComponent } from './non-siren-view.component';
 import { provideHypermediaClientServiceMock } from '../../test/HypermediaClientServiceMock';
 import { MatIconModule } from '@angular/material/icon';
+import { Component, Input } from '@angular/core';
+
+@Component({
+  selector: 'app-image-preview',
+  template: '',
+  standalone: false
+})
+class MockImagePreviewComponent {
+  @Input() blob: any;
+}
 
 describe('NonSirenViewComponent', () => {
   let component: NonSirenViewComponent;
@@ -9,7 +19,7 @@ describe('NonSirenViewComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [NonSirenViewComponent],
+      declarations: [NonSirenViewComponent, MockImagePreviewComponent],
       imports: [MatIconModule],
       providers: [
         provideHypermediaClientServiceMock()
@@ -42,5 +52,13 @@ describe('NonSirenViewComponent', () => {
 
     const compiled = fixture.nativeElement as HTMLElement;
     expect(compiled.querySelector('.mime-type')?.textContent).toContain('application/pdf');
+  });
+
+  it('should identify image mime types', () => {
+    component.contentType = 'image/png';
+    expect(component.isImage()).toBeTrue();
+
+    component.contentType = 'application/pdf';
+    expect(component.isImage()).toBeFalse();
   });
 });
