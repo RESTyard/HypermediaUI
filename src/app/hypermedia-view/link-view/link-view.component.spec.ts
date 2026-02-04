@@ -2,6 +2,7 @@ import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { LinkViewComponent } from './link-view.component';
 import { provideHypermediaClientServiceMock } from 'src/app/test/HypermediaClientServiceMock';
+import { HypermediaClientService } from '../hypermedia-client.service';
 
 describe('LinkViewComponent', () => {
   let component: LinkViewComponent;
@@ -24,7 +25,7 @@ describe('LinkViewComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(LinkViewComponent);
     component = fixture.componentInstance;
-    hypermediaClientService = TestBed.inject<any>("HypermediaClientService");
+    hypermediaClientService = TestBed.inject(HypermediaClientService);
     fixture.detectChanges();
   });
 

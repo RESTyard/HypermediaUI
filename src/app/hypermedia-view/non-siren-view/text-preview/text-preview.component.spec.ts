@@ -1,5 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { TextPreviewComponent } from './text-preview.component';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { FormsModule } from '@angular/forms';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('TextPreviewComponent', () => {
   let component: TextPreviewComponent;
@@ -7,7 +12,14 @@ describe('TextPreviewComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [TextPreviewComponent]
+      declarations: [TextPreviewComponent],
+      imports: [
+        MatMenuModule,
+        MatButtonModule,
+        MatIconModule,
+        FormsModule,
+        BrowserAnimationsModule
+      ]
     })
     .compileComponents();
 
@@ -24,6 +36,7 @@ describe('TextPreviewComponent', () => {
     const text = 'Hello world';
     const blob = new Blob([text], { type: 'text/plain' });
     component.blob = blob;
+    component.contentType = 'text/plain';
 
     // Trigger onChanges manually since we are setting input directly
     component.ngOnChanges({
@@ -32,11 +45,17 @@ describe('TextPreviewComponent', () => {
         previousValue: undefined,
         firstChange: true,
         isFirstChange: () => true
+      },
+      contentType: {
+        currentValue: 'text/plain',
+        previousValue: undefined,
+        firstChange: true,
+        isFirstChange: () => true
       }
     });
 
     // Wait for the async updateTextPreview
-    await fixture.whenStable();
+    await new Promise(resolve => setTimeout(resolve, 100));
     fixture.detectChanges();
 
     expect(component.textContent).toBe(text);
@@ -55,7 +74,8 @@ describe('TextPreviewComponent', () => {
       }
     });
 
-    await fixture.whenStable();
+    // Wait for the async updateTextPreview
+    await new Promise(resolve => setTimeout(resolve, 100));
     fixture.detectChanges();
 
     expect(component.textContent).toBeUndefined();

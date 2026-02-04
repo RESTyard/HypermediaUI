@@ -1,3 +1,60 @@
+.text-preview-header {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 8px;
+  width: 100%;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.language-select-button {
+  min-width: 100px;
+  justify-content: space-between;
+}
+
+.language-select-button span {
+  flex: 1;
+  text-align: left;
+  margin: 0 4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.small-button {
+  height: 32px !important;
+  line-height: 32px !important;
+  display: inline-flex;
+  align-items: center;
+  vertical-align: middle;
+  font-size: 13px;
+}
+
+.small-button mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+.small-button mat-icon:not([iconPositionEnd]) {
+  margin-right: 4px;
+}
+
+.small-button mat-icon[iconPositionEnd] {
+  margin-left: 4px;
+}
+
+.text-preview-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+
 .content-preview {
   width: 100%;
   background-color: #ffffff;

@@ -37,12 +37,23 @@ export class NonSirenViewComponent {
       (!!type && type.startsWith('application/vnd.') && type.endsWith('+json'));
   }
 
+  isOctetStream(): boolean {
+    return this.contentType?.toLowerCase() === 'application/octet-stream';
+  }
+
   getIcon(): string {
     return getIconForMimeType(this.contentType);
   }
 
   getDisplayMimeType(): string | undefined {
     return getBaseMimeType(this.contentType!) ?? this.contentType;
+  }
+
+  getContentSize(): number | undefined {
+    if (this.rawContent instanceof Blob) {
+      return this.rawContent.size;
+    }
+    return undefined;
   }
 
   download() {

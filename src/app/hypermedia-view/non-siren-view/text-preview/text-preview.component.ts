@@ -10,6 +10,7 @@ import hljs from 'highlight.js';
 })
 export class TextPreviewComponent implements OnChanges {
   @Input() blob: Blob | undefined;
+  @Input() contentType: string | undefined;
 
   public static readonly supportedMimeTypes = new Set([
     'text/markdown',
@@ -25,7 +26,7 @@ export class TextPreviewComponent implements OnChanges {
     'text/yaml'
   ]);
 
-  private static readonly mimeTypeToLanguage: Record<string, string> = {
+  public static readonly mimeTypeToLanguage: Record<string, string> = {
     'text/markdown': 'markdown',
     'text/x-markdown': 'markdown',
     'text/plain': 'plaintext',
@@ -42,39 +43,61 @@ export class TextPreviewComponent implements OnChanges {
   textContent: string | undefined;
   highlightedHtml: SafeHtml | undefined;
 
-  constructor(private readonly sanitizer: DomSanitizer) {}
+  forceTextRendering = false;
+  selectedLanguage: string | undefined;
+  languages: string[] = [];
+
+  constructor(private readonly sanitizer: DomSanitizer) {
+    const supportedLanguages = Array.from(TextPreviewComponent.supportedMimeTypes)
+      .map(mimeType => TextPreviewComponent.mimeTypeToLanguage[mimeType])
+      .filter((lang): lang is string => !!lang && lang !== 'plaintext');
+
+    this.languages = Array.from(new Set(supportedLanguages)).sort();
+  }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['blob']) {
+    if (changes['blob'] || changes['selectedLanguage'] || changes['contentType']) {
       console.log('Updating text preview');
       this.updateTextPreview();
     }
   }
 
-  private getLanguageForMimeType(mimeType: string | undefined): string | undefined {
-    if (!mimeType) return undefined;
-    const mt = mimeType.toLowerCase();
-
-    return TextPreviewComponent.mimeTypeToLanguage[mt];
+  isOctetStream(): boolean {
+    return this.contentType?.toLowerCase() === 'application/octet-stream';
   }
 
-  private async updateTextPreview() {
+  toggleForceTextRendering() {
+    this.forceTextRendering = !this.forceTextRendering;
+    this.updateTextPreview();
+  }
+
+  selectLanguage(lang: string | undefined) {
+    this.selectedLanguage = lang;
+    this.updateTextPreview();
+  }
+
+  private getLanguageForMimeType(mimeType: string | undefined): string {
+    if (!mimeType) return 'plaintext';
+    const mt = mimeType.toLowerCase();
+
+    return TextPreviewComponent.mimeTypeToLanguage[mt] ?? 'plaintext';
+  }
+
+  public async updateTextPreview() {
     this.highlightedHtml = undefined;
     if (this.blob instanceof Blob) {
       try {
         const text = await this.blob.text();
         this.textContent = text;
 
-        const lang = this.getLanguageForMimeType(this.blob.type);
-        if (lang) {
-          try {
-            const result = hljs.highlight(text, { language: lang });
-            this.highlightedHtml = this.sanitizer.bypassSecurityTrustHtml(result.value);
-          } catch (e) {
-            // If the language is not registered/supported, we fall back to plain text
-            // SRP/DIP: error handling isolated; we do not rethrow to keep UI functional
-            this.highlightedHtml = undefined;
-          }
+        const lang = this.selectedLanguage ?? this.getLanguageForMimeType(this.contentType || this.blob.type);
+        try {
+          const result = hljs.highlight(text, { language: lang });
+          this.highlightedHtml = this.sanitizer.bypassSecurityTrustHtml(result.value);
+        } catch (e) {
+          // If the language is not registered/supported, we fall back to plain text
+          // SRP/DIP: error handling isolated; we do not rethrow to keep UI functional
+          this.highlightedHtml = undefined;
         }
       } catch (e) {
         console.error('Error reading text content', e);

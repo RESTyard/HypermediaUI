@@ -8,7 +8,10 @@
     </div>
 
     <div class="actions">
-      <button mat-raised-button color="primary" (click)="download()">
+      @if (getContentSize() !== undefined) {
+        <span class="file-size">({{getContentSize() | number}} bytes)</span>
+      }
+      <button mat-raised-button color="primary" (click)="download()" class="action-button">
         <mat-icon>download</mat-icon>
         Download File
       </button>
@@ -17,8 +20,8 @@
 
   @if (isImage()) {
     <app-image-preview [blob]="rawContent" style="width: 100%"></app-image-preview>
-  } @else if (isText()) {
-    <app-text-preview [blob]="rawContent" style="width: 100%"></app-text-preview>
+  } @else if (isText() || isOctetStream()) {
+    <app-text-preview [blob]="rawContent" [contentType]="contentType" style="width: 100%"></app-text-preview>
   } @else if (isJson()) {
     <app-json-preview [blob]="rawContent" style="width: 100%"></app-json-preview>
   }

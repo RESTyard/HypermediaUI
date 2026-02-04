@@ -29,7 +29,9 @@
 
 .file-details {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  align-items: baseline;
+  gap: 8px;
 }
 
 .file-name {
@@ -51,7 +53,17 @@
   color: #757575;
 }
 
+.file-size {
+  font-size: 0.95rem;
+  font-weight: 400;
+  color: #757575;
+  margin-right: 4px;
+}
+
 .actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   margin-top: 0;
 }
 
