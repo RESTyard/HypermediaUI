@@ -7,7 +7,7 @@ export const mimeTypeIconMapping: { [key: string]: string } = {
   'image/svg+xml': 'image',
   'image/gif': 'image',
 
-  // Audio
+  // Audio: no preview for security reasons
   'audio/mpeg': 'music_note',
   'audio/wav': 'music_note',
   'audio/ogg': 'music_note',
@@ -17,7 +17,7 @@ export const mimeTypeIconMapping: { [key: string]: string } = {
   'audio/aac': 'music_note',
   'audio/flac': 'music_note',
 
-  // Video
+  // Video: no preview for security reasons
   'video/mp4': 'videocam',
   'video/mpeg': 'videocam',
   'video/ogg': 'videocam',
@@ -27,7 +27,7 @@ export const mimeTypeIconMapping: { [key: string]: string } = {
   'video/x-matroska': 'videocam', // .mkv
 
   // Documents
-  'application/pdf': 'assignment',
+  'application/pdf': 'assignment', // no preview for security reasons
   'text/plain': 'description',
   'text/markdown': 'edit_note',
 
@@ -45,7 +45,7 @@ export const mimeTypeIconMapping: { [key: string]: string } = {
   'text/toml': 'settings',
   'text/yaml': 'settings',
 
-  // Archives
+  // Archives: no preview for security /size reasons
   'application/zip': 'folder_zip',
   'application/x-zip-compressed': 'folder_zip',
 
