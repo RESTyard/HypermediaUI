@@ -17,5 +17,7 @@
 
   @if (isImage()) {
     <app-image-preview [blob]="rawContent" style="width: 100%"></app-image-preview>
+  } @else if (isText()) {
+    <app-text-preview [blob]="rawContent" style="width: 100%"></app-text-preview>
   }
 </div>

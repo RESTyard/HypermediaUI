@@ -20,6 +20,10 @@ export class NonSirenViewComponent {
     return !!this.contentType?.toLowerCase().startsWith('image/');
   }
 
+  isText(): boolean {
+    return this.contentType?.toLowerCase() === 'text/plain';
+  }
+
   getIcon(): string {
     return getIconForMimeType(this.contentType);
   }

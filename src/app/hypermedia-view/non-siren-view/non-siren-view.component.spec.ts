@@ -13,13 +13,26 @@ class MockImagePreviewComponent {
   @Input() blob: any;
 }
 
+@Component({
+  selector: 'app-text-preview',
+  template: '',
+  standalone: false
+})
+class MockTextPreviewComponent {
+  @Input() blob: any;
+}
+
 describe('NonSirenViewComponent', () => {
   let component: NonSirenViewComponent;
   let fixture: ComponentFixture<NonSirenViewComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [NonSirenViewComponent, MockImagePreviewComponent],
+      declarations: [
+        NonSirenViewComponent,
+        MockImagePreviewComponent,
+        MockTextPreviewComponent
+      ],
       imports: [MatIconModule],
       providers: [
         provideHypermediaClientServiceMock()
@@ -60,5 +73,13 @@ describe('NonSirenViewComponent', () => {
 
     component.contentType = 'application/pdf';
     expect(component.isImage()).toBeFalse();
+  });
+
+  it('should identify text mime types', () => {
+    component.contentType = 'text/plain';
+    expect(component.isText()).toBeTrue();
+
+    component.contentType = 'text/html';
+    expect(component.isText()).toBeFalse();
   });
 });
