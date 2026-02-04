@@ -1,5 +1,9 @@
 @if (textContent !== undefined) {
   <div class="content-preview">
-    <pre class="text-preview">{{textContent}}</pre>
+    @if (highlightedHtml) {
+      <pre class="text-preview"><code class="hljs" [innerHTML]="highlightedHtml"></code></pre>
+    } @else {
+      <pre class="text-preview">{{textContent}}</pre>
+    }
   </div>
 }

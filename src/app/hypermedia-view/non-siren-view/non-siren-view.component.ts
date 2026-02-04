@@ -1,6 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { getBaseMimeType, getIconForMimeType } from '../mime-type-icon-mapping';
 import { HypermediaClientService } from '../hypermedia-client.service';
+import { TextPreviewComponent } from './text-preview/text-preview.component';
 
 @Component({
   selector: 'app-non-siren-view',
@@ -21,7 +22,13 @@ export class NonSirenViewComponent {
   }
 
   isText(): boolean {
-    return this.contentType?.toLowerCase() === 'text/plain';
+    const type = this.contentType?.toLowerCase();
+    if (!type) return false;
+
+    // Normalize known vendor-specific base types (e.g., application/vnd.*+xml -> application/xml)
+    const base = getBaseMimeType(type) ?? type;
+
+    return TextPreviewComponent.supportedMimeTypes.has(base);
   }
 
   isJson(): boolean {
