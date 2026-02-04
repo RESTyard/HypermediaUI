@@ -22,6 +22,15 @@ class MockTextPreviewComponent {
   @Input() blob: any;
 }
 
+@Component({
+  selector: 'app-json-preview',
+  template: '',
+  standalone: false
+})
+class MockJsonPreviewComponent {
+  @Input() blob: any;
+}
+
 describe('NonSirenViewComponent', () => {
   let component: NonSirenViewComponent;
   let fixture: ComponentFixture<NonSirenViewComponent>;
@@ -31,7 +40,8 @@ describe('NonSirenViewComponent', () => {
       declarations: [
         NonSirenViewComponent,
         MockImagePreviewComponent,
-        MockTextPreviewComponent
+        MockTextPreviewComponent,
+        MockJsonPreviewComponent
       ],
       imports: [MatIconModule],
       providers: [
@@ -81,5 +91,16 @@ describe('NonSirenViewComponent', () => {
 
     component.contentType = 'text/html';
     expect(component.isText()).toBeFalse();
+  });
+
+  it('should identify json mime types', () => {
+    component.contentType = 'application/json';
+    expect(component.isJson()).toBeTrue();
+
+    component.contentType = 'application/vnd.siren+json';
+    expect(component.isJson()).toBeTrue();
+
+    component.contentType = 'text/plain';
+    expect(component.isJson()).toBeFalse();
   });
 });

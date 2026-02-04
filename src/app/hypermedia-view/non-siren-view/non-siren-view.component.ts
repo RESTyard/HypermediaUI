@@ -24,6 +24,12 @@ export class NonSirenViewComponent {
     return this.contentType?.toLowerCase() === 'text/plain';
   }
 
+  isJson(): boolean {
+    const type = this.contentType?.toLowerCase();
+    return type === 'application/json' ||
+      (!!type && type.startsWith('application/vnd.') && type.endsWith('+json'));
+  }
+
   getIcon(): string {
     return getIconForMimeType(this.contentType);
   }
