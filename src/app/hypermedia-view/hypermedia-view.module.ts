@@ -14,6 +14,7 @@ import {HypermediaClientService} from './hypermedia-client.service';
 import {HypermediaControlComponent} from './hypermedia-control/hypermedia-control.component';
 import {LinkViewComponent} from './link-view/link-view.component';
 import {RawViewComponent} from './raw-view/raw-view.component';
+import {NonSirenViewComponent} from './non-siren-view/non-siren-view.component';
 import {SchemaSimplifier} from './siren-parser/schema-simplifier';
 import {SirenDeserializer} from './siren-parser/siren-deserializer';
 import {ClipboardModule} from 'ngx-clipboard';
@@ -69,6 +70,7 @@ import {MatSlideToggleModule} from '@angular/material/slide-toggle';
     EmbeddedEntityViewComponent,
     EntityViewComponent,
     RawViewComponent,
+    NonSirenViewComponent,
     ActionsViewComponent,
     ParameterlessActionViewComponent,
     ParameterActionComponent,

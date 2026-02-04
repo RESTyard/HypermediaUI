@@ -5,7 +5,7 @@
          [class.download-link]="link.type !== MediaTypes.Siren && link.type != undefined"
          [href]="getBrowserUrl(link)"
          [matTooltip]="(link.type !== MediaTypes.Siren && link.type != undefined) ? link.type : ''"
-         (click)="$event.preventDefault(); (link.type !== MediaTypes.Siren && link.type != undefined) ? download(link) : navigateLink(link)">
+         (click)="$event.preventDefault(); navigateLink(link)">
         @if (link.type !== MediaTypes.Siren && link.type != undefined) {
           <mat-icon class="link-icon">{{getIconForMimeType(link.type)}}</mat-icon>
         } @else if (getRelationIcon(link.relations)) {

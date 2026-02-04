@@ -31,12 +31,12 @@ describe('mime-type-icon-mapping', () => {
   });
 
   describe('getIconForMimeType', () => {
-    it('should return help_outline for undefined', () => {
-      expect(getIconForMimeType(undefined)).toBe('help_outline');
+    it('should return insert_drive_file for undefined', () => {
+      expect(getIconForMimeType(undefined)).toBe('insert_drive_file');
     });
 
-    it('should return help_outline for unknown vendor mime type', () => {
-      expect(getIconForMimeType('application/vnd.something')).toBe('help_outline');
+    it('should return insert_drive_file for unknown vendor mime type', () => {
+      expect(getIconForMimeType('application/vnd.something')).toBe('insert_drive_file');
     });
 
     it('should return image for image types', () => {
@@ -44,18 +44,18 @@ describe('mime-type-icon-mapping', () => {
       expect(getIconForMimeType('image/gif')).toBe('image');
     });
 
-    it('should return picture_as_pdf for pdf', () => {
-      expect(getIconForMimeType('application/pdf')).toBe('picture_as_pdf');
+    it('should return assignment for pdf', () => {
+      expect(getIconForMimeType('application/pdf')).toBe('assignment');
     });
 
-    it('should return code for json and xml', () => {
-      expect(getIconForMimeType('application/json')).toBe('code');
+    it('should return data_object for json and code for xml', () => {
+      expect(getIconForMimeType('application/json')).toBe('data_object');
       expect(getIconForMimeType('application/xml')).toBe('code');
       expect(getIconForMimeType('text/xml')).toBe('code');
     });
 
-    it('should return code for vendor specific siren+json', () => {
-      expect(getIconForMimeType('application/vnd.siren+json')).toBe('code');
+    it('should return data_object for vendor specific siren+json', () => {
+      expect(getIconForMimeType('application/vnd.siren+json')).toBe('data_object');
     });
 
     it('should return description for text/plain', () => {
@@ -74,8 +74,8 @@ describe('mime-type-icon-mapping', () => {
       expect(getIconForMimeType('application/octet-stream')).toBe('file_present');
     });
 
-    it('should return help_outline for unknown application types', () => {
-      expect(getIconForMimeType('application/unknown')).toBe('help_outline');
+    it('should return insert_drive_file for unknown application types', () => {
+      expect(getIconForMimeType('application/unknown')).toBe('insert_drive_file');
     });
   });
 });

@@ -36,7 +36,7 @@ export class LinkViewComponent implements OnInit {
   }
 
   navigateLink(hypermediaLink: HypermediaLink) {
-    this.hypermediaClient.Navigate(hypermediaLink.url);
+    this.hypermediaClient.Navigate(hypermediaLink.url, { acceptType: hypermediaLink.type });
   }
 
   getRelationIcon(rels: string[]): string | undefined {

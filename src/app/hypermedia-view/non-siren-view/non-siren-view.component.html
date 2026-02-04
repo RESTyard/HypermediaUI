@@ -1,0 +1,13 @@
+<div class="non-siren-container">
+  <div class="header">
+    <mat-icon class="mime-icon">{{getIcon()}}</mat-icon>
+    <span class="mime-type">{{getDisplayMimeType()}}</span>
+  </div>
+
+  <div class="actions">
+    <button mat-raised-button color="primary" (click)="download()">
+      <mat-icon>download</mat-icon>
+      Download File
+    </button>
+  </div>
+</div>

@@ -79,6 +79,8 @@
 
 @if (GeneralSettings.showRawTab && showRaw) {
   <app-raw-view class="rawContent" [rawObject]="rawResponse"></app-raw-view>
+} @else if (contentType && contentType.toLowerCase() !== MediaTypes.Siren.toLowerCase()) {
+  <app-non-siren-view [contentType]="contentType"></app-non-siren-view>
 } @else {
   <app-entity-view [entity]="hto"></app-entity-view>
 }

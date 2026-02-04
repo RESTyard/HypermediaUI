@@ -1,0 +1,36 @@
+.non-siren-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  gap: 20px;
+  background-color: #fafafa;
+  border-radius: 8px;
+  margin: 20px;
+  border: 1px solid #e0e0e0;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.mime-icon {
+  font-size: 64px;
+  width: 64px;
+  height: 64px;
+  color: #757575;
+}
+
+.mime-type {
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: #424242;
+}
+
+.actions {
+  margin-top: 10px;
+}

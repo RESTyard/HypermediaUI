@@ -12,6 +12,7 @@ import {combineLatest} from 'rxjs';
 import {CurrentEntryPoint} from 'src/app/store/entrypoint.reducer';
 import {AuthService} from "../auth.service";
 import {updateGeneralAppSettings} from 'src/app/store/appsettings.actions';
+import {MediaTypes} from "../MediaTypes";
 
 @Component({
   selector: 'app-hypermedia-control',
@@ -21,11 +22,13 @@ import {updateGeneralAppSettings} from 'src/app/store/appsettings.actions';
 })
 export class HypermediaControlComponent implements OnInit {
   public rawResponse: object | null = null;
+  public contentType: string | undefined = undefined;
   public hto: SirenClientObject = new SirenClientObject();
   public navPaths: string[] = [];
   public isBusy: boolean = false;
   public CurrentHost: string = "";
   public CurrentEntryPoint: string = "";
+  public readonly MediaTypes = MediaTypes;
   GeneralSettings: GeneralSettings = new GeneralSettings();
   showSettingsIcon: boolean = true;
   userName: string | undefined = "";
@@ -96,6 +99,10 @@ export class HypermediaControlComponent implements OnInit {
 
     this.hypermediaClient.getHypermediaObjectRawStream().subscribe((rawResponse) => {
       this.rawResponse = rawResponse;
+    });
+
+    this.hypermediaClient.getContentTypeStream().subscribe((contentType) => {
+      this.contentType = contentType;
     });
 
     this.hypermediaClient.getNavPathsStream().subscribe((navPaths) => {
