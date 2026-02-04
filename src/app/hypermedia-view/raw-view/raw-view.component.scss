@@ -1,11 +1,11 @@
 @use '../../../styles/defaults';
 
 .jsonTree {
-  --ngx-json-string: red;
-  --ngx-json-number: darkorange;
-  --ngx-json-boolean: blue;
-  --ngx-json-null: magenta;
-  --ngx-json-undefined: magenta;
+  --ngx-json-string: #d32f2f;
+  --ngx-json-number: #e65100;
+  --ngx-json-boolean: #1976d2;
+  --ngx-json-null: #616161;
+  --ngx-json-undefined: #616161;
 }
 
 .container {
