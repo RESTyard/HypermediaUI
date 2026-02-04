@@ -29,8 +29,13 @@ export const mimeTypeIconMapping: { [key: string]: string } = {
   // Documents
   'application/pdf': 'assignment',
   'text/plain': 'description',
-  'text/csv': 'table_view',
   'text/markdown': 'edit_note',
+
+  // csv
+  'text/csv': 'table_view',
+  'application/vnd.ms-excel': 'table_view',  // Excel Hijack of csv
+  'application/csv': 'table_view',  // common non-standard variant
+
 
   // Code & Web
   'application/json': 'data_object',
