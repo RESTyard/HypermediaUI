@@ -8,14 +8,14 @@ export const mimeTypeIconMapping: { [key: string]: string } = {
   'image/gif': 'image',
 
   // Audio
-  'audio/mpeg': 'brand_awareness',
-  'audio/wav': 'brand_awareness',
-  'audio/ogg': 'brand_awareness',
-  'audio/midi': 'brand_awareness',
-  'audio/x-midi': 'brand_awareness',
-  'audio/webm': 'brand_awareness',
-  'audio/aac': 'brand_awareness',
-  'audio/flac': 'brand_awareness',
+  'audio/mpeg': 'music_note',
+  'audio/wav': 'music_note',
+  'audio/ogg': 'music_note',
+  'audio/midi': 'music_note',
+  'audio/x-midi': 'music_note',
+  'audio/webm': 'music_note',
+  'audio/aac': 'music_note',
+  'audio/flac': 'music_note',
 
   // Video
   'video/mp4': 'videocam',
@@ -107,10 +107,10 @@ export function getIconForMimeType(mimeType: string | undefined): string {
     return 'image';
   }
   if (normalizedBaseMimeType.startsWith('audio/')) {
-    return 'brand_awareness';
+    return 'music_note';
   }
   if (normalizedBaseMimeType.startsWith('video/')) {
-    return 'video_file';
+    return 'videocam';
   }
   if (normalizedBaseMimeType.startsWith('text/')) {
     return 'description';
