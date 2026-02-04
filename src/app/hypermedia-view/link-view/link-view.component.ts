@@ -52,6 +52,14 @@ export class LinkViewComponent implements OnInit {
     this.clipboardService.copyFromContent(hypermediaLink.url);
   }
 
+  // Styling/UX hint only:
+  // Determines if a link is Siren. Unknown/empty type is treated as Siren (assumed Siren).
+  isSirenLink(link: HypermediaLink): boolean {
+    const type = (link?.type ?? '').trim();
+    if (!type) return true; // unknown -> assume Siren
+    return type.toLowerCase() === MediaTypes.Siren.toLowerCase();
+  }
+
   download(hypermediaLink: HypermediaLink) {
     this.hypermediaClient.DownloadAsFile(hypermediaLink.url);
   }

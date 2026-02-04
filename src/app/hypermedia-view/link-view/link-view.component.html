@@ -2,7 +2,7 @@
   @for (link of links; track link) {
     <span class="link-group">
       <a mat-flat-button class="main-link-button"
-         [class.download-link]="link.type !== MediaTypes.Siren && link.type != undefined"
+         [class.download-link]="!isSirenLink(link)"
          [href]="getBrowserUrl(link)"
          [matTooltip]="(link.type !== MediaTypes.Siren && link.type != undefined) ? link.type : ''"
          (click)="$event.preventDefault(); navigateLink(link)">
@@ -18,7 +18,7 @@
         </span>
       </a>
       <button mat-flat-button class="dropdown-button"
-              [class.download-link]="link.type !== MediaTypes.Siren && link.type != undefined"
+              [class.download-link]="!isSirenLink(link)"
               [matMenuTriggerFor]="dropdownMenuOne">
         <mat-icon>arrow_drop_down</mat-icon>
       </button>
