@@ -3,7 +3,7 @@ import {HttpClient, HttpErrorResponse, HttpHeaders, HttpResponse} from '@angular
 import {Router} from '@angular/router';
 
 import {BehaviorSubject, lastValueFrom, tap, timeout} from 'rxjs';
-import {saveAs} from 'file-saver';
+import * as fileSaver from 'file-saver';
 
 import {SirenDeserializer} from './siren-parser/siren-deserializer';
 import {ObservableLruCache} from './api-access/observable-lru-cache';
@@ -353,7 +353,7 @@ export class HypermediaClientService implements IHypermediaClientService {
 
         const blob = response.body;
         if (blob) {
-          saveAs(blob, fileName)
+          fileSaver.saveAs(blob, fileName)
         }
       })
   }

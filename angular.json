@@ -33,7 +33,11 @@
             ],
             "scripts": [],
             "optimization": true,
-            "browser": "src/main.ts"
+            "browser": "src/main.ts",
+            "allowedCommonJsDependencies": [
+              "file-saver",
+              "simple-object-query"
+            ]
           },
           "configurations": {
             "production": {
