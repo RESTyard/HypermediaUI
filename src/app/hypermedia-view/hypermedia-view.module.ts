@@ -58,6 +58,7 @@ import {MatButtonToggleModule} from '@angular/material/button-toggle';
 import {BooleanTypeComponent} from './actions-view/parameter-action/formly-types/boolean-type';
 import {AuthService} from './auth.service';
 import {MatNativeDateModule} from '@angular/material/core';
+import {FileSizePipe} from '../common/pipes/file-size.pipe';
 import {allowEmptyArrayExtension} from "./formly-extensions";
 import {PropertyTreeComponent} from "./property-tree/property-tree.component";
 import {MatTree, MatTreeNode, MatTreeNodeDef, MatTreeNodePadding, MatTreeNodeToggle} from "@angular/material/tree";
@@ -86,6 +87,7 @@ import {MatSlideToggleModule} from '@angular/material/slide-toggle';
     MultiSchemaTypeComponent,
     NullTypeComponent,
     BooleanTypeComponent,
+    FileSizePipe,
   ],
   imports: [
     CommonModule,

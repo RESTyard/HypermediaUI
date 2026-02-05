@@ -36,7 +36,7 @@
           <ngx-dropzone-label>
             <mat-icon class="fileIcon">description</mat-icon>
             <span class="file-name" [matTooltip]="file.name">{{ file.name }}</span>
-            <span class="size">{{convertBytesToMBReadable(file.size)}}</span>
+            <span class="size">{{file.size | fileSize}}</span>
           </ngx-dropzone-label>
         </ngx-dropzone-preview>
       }

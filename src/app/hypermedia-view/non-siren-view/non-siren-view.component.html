@@ -9,7 +9,7 @@
 
     <div class="actions">
       @if (getContentSize() !== undefined) {
-        <span class="file-size">({{getContentSize() | number}} bytes)</span>
+        <span class="file-size">({{getContentSize() | fileSize}})</span>
       }
       <button mat-raised-button color="primary" (click)="download()" class="action-button">
         <mat-icon>download</mat-icon>

@@ -8,6 +8,7 @@ import { getIconForHttpMethod } from '../../icon-mapping';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmationDialogComponent } from '../../../common/confirmation-dialog/confirmation-dialog.component';
 import { AppConfigService } from 'src/app.config.service';
+import { FileSizePipe } from 'src/app/common/pipes/file-size.pipe';
 
 @Component({
     selector: 'app-file-upload-action',
@@ -28,6 +29,8 @@ export class FileUploadActionComponent implements OnInit {
   executed: boolean = false; // TODO show multiple executions as list
   problemDetailsError: ProblemDetailsError| null = null
 
+  private fileSizePipe = new FileSizePipe();
+
   constructor(
     private hypermediaClientService: HypermediaClientService,
     private snackBar: MatSnackBar,
@@ -45,12 +48,11 @@ export class FileUploadActionComponent implements OnInit {
     if($event.rejectedFiles.length > 0){
       let rejectedFilesMessage = "";
 
-      const self = this;
       $event.rejectedFiles.forEach((rejectedFile) => {
         if(rejectedFile.reason == 'size') {
-          rejectedFilesMessage += `${rejectedFile.name} too big (${self.convertBytesToMBReadable(rejectedFile.size)} > ${self.convertBytesToMBReadable(self.action.FileUploadConfiguration.MaxFileSizeBytes)})\n`;
+          rejectedFilesMessage += `${rejectedFile.name} too big (${this.fileSizePipe.transform(rejectedFile.size)} > ${this.fileSizePipe.transform(this.action.FileUploadConfiguration.MaxFileSizeBytes)})\n`;
         } else if (rejectedFile.reason == 'type'){
-          rejectedFilesMessage += `${rejectedFile.name} has wrong type. Acceptable: ${self.action.FileUploadConfiguration.getAcceptString()}\n`
+          rejectedFilesMessage += `${rejectedFile.name} has wrong type. Acceptable: ${this.action.FileUploadConfiguration.getAcceptString()}\n`
         } else if (rejectedFile.reason == 'no_multiple') {
           rejectedFilesMessage += "Only one file is allowed\n"
         } else {
@@ -128,10 +130,6 @@ export class FileUploadActionComponent implements OnInit {
         // todo handle if it has content AND location
         this.actionResultLocation = resultLocation;
       });
-  }
-
-  convertBytesToMBReadable(bytes: any): string {
-    return (bytes/Math.pow(10, 6)).toFixed(2) + " MB";
   }
 
   navigateLocation(location: string) {
