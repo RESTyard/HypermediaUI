@@ -10,6 +10,16 @@ import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 export class ImagePreviewComponent implements OnChanges, OnDestroy {
   @Input() blob: Blob | undefined;
 
+  public static readonly supportedMimeTypes = new Set([
+    'image/jpeg',
+    'image/png',
+    'image/gif',
+    'image/svg+xml',
+    'image/webp',
+    'image/bmp',
+    'image/x-icon'
+  ]);
+
   imageUrl: string | undefined;
   safeImageUrl: SafeUrl | undefined;
 

@@ -9,6 +9,10 @@ import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 export class JsonPreviewComponent implements OnChanges {
   @Input() blob: Blob | any | undefined;
 
+  public static readonly supportedMimeTypes = new Set([
+    'application/json'
+  ]);
+
   jsonObject: any;
 
   async ngOnChanges(changes: SimpleChanges) {

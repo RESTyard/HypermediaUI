@@ -2,6 +2,15 @@ import { Component, Input } from '@angular/core';
 import { getBaseMimeType, getIconForMimeType } from '../mime-type-icon-mapping';
 import { HypermediaClientService } from '../hypermedia-client.service';
 import { TextPreviewComponent } from './text-preview/text-preview.component';
+import { ImagePreviewComponent } from './image-preview/image-preview.component';
+import { JsonPreviewComponent } from './json-preview/json-preview.component';
+
+export enum PreviewType {
+  None,
+  Image,
+  Text,
+  Json
+}
 
 @Component({
   selector: 'app-non-siren-view',
@@ -13,32 +22,32 @@ export class NonSirenViewComponent {
   @Input() contentType: string | undefined;
   @Input() rawContent: any;
 
+  PreviewType = PreviewType;
+
   constructor(
     private hypermediaClient: HypermediaClientService
   ) { }
 
-  isImage(): boolean {
-    return !!this.contentType?.toLowerCase().startsWith('image/');
-  }
-
-  isText(): boolean {
+  getPreviewType(): PreviewType {
     const type = this.contentType?.toLowerCase();
-    if (!type) return false;
+    if (!type) return PreviewType.None;
 
-    // Normalize known vendor-specific base types (e.g., application/vnd.*+xml -> application/xml)
     const base = getBaseMimeType(type) ?? type;
 
-    return TextPreviewComponent.supportedMimeTypes.has(base);
-  }
+    if (ImagePreviewComponent.supportedMimeTypes.has(base) || type.startsWith('image/')) {
+      return PreviewType.Image;
+    }
 
-  isJson(): boolean {
-    const type = this.contentType?.toLowerCase();
-    return type === 'application/json' ||
-      (!!type && type.startsWith('application/vnd.') && type.endsWith('+json'));
-  }
+    if (TextPreviewComponent.supportedMimeTypes.has(base)) {
+      return PreviewType.Text;
+    }
 
-  isOctetStream(): boolean {
-    return this.contentType?.toLowerCase() === 'application/octet-stream';
+    if (JsonPreviewComponent.supportedMimeTypes.has(base) ||
+      (type.startsWith('application/vnd.') && type.endsWith('+json'))) {
+      return PreviewType.Json;
+    }
+
+    return PreviewType.None;
   }
 
   getIcon(): string {

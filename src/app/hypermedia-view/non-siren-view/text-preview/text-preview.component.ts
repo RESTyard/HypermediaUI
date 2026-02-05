@@ -23,7 +23,8 @@ export class TextPreviewComponent implements OnChanges {
     'text/xml',
     'text/html',
     'text/toml',
-    'text/yaml'
+    'text/yaml',
+    'application/octet-stream'
   ]);
 
   public static readonly mimeTypeToLanguage: Record<string, string> = {
@@ -37,7 +38,8 @@ export class TextPreviewComponent implements OnChanges {
     'text/xml': 'xml',
     'text/html': 'html',
     'text/toml': 'toml',
-    'text/yaml': 'yaml'
+    'text/yaml': 'yaml',
+    'application/octet-stream': 'plaintext'
   };
 
   textContent: string | undefined;

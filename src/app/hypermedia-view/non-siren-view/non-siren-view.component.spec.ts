@@ -79,28 +79,29 @@ describe('NonSirenViewComponent', () => {
 
   it('should identify image mime types', () => {
     component.contentType = 'image/png';
-    expect(component.isImage()).toBeTrue();
+    expect(component.getPreviewType()).toBe(component.PreviewType.Image);
 
     component.contentType = 'application/pdf';
-    expect(component.isImage()).toBeFalse();
+    expect(component.getPreviewType()).not.toBe(component.PreviewType.Image);
   });
 
   it('should identify text mime types', () => {
     component.contentType = 'text/plain';
-    expect(component.isText()).toBeTrue();
+    expect(component.getPreviewType()).toBe(component.PreviewType.Text);
 
     component.contentType = 'text/html';
-    expect(component.isText()).toBeFalse();
+    // text/html is in supportedMimeTypes of TextPreviewComponent
+    expect(component.getPreviewType()).toBe(component.PreviewType.Text);
   });
 
   it('should identify json mime types', () => {
     component.contentType = 'application/json';
-    expect(component.isJson()).toBeTrue();
+    expect(component.getPreviewType()).toBe(component.PreviewType.Json);
 
-    component.contentType = 'application/vnd.siren+json';
-    expect(component.isJson()).toBeTrue();
+    component.contentType = 'application/vnd.custom+json';
+    expect(component.getPreviewType()).toBe(component.PreviewType.Json);
 
     component.contentType = 'text/plain';
-    expect(component.isJson()).toBeFalse();
+    expect(component.getPreviewType()).not.toBe(component.PreviewType.Json);
   });
 });

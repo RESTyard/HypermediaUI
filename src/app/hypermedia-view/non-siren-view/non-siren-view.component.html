@@ -18,11 +18,11 @@
     </div>
   </div>
 
-  @if (isImage()) {
+  @if (getPreviewType() === PreviewType.Image) {
     <app-image-preview [blob]="rawContent" style="width: 100%"></app-image-preview>
-  } @else if (isText() || isOctetStream()) {
+  } @else if (getPreviewType() === PreviewType.Text) {
     <app-text-preview [blob]="rawContent" [contentType]="contentType" style="width: 100%"></app-text-preview>
-  } @else if (isJson()) {
+  } @else if (getPreviewType() === PreviewType.Json) {
     <app-json-preview [blob]="rawContent" style="width: 100%"></app-json-preview>
   }
 </div>
