@@ -93,13 +93,19 @@ export class TextPreviewComponent implements OnChanges {
         this.textContent = text;
 
         const lang = this.selectedLanguage ?? this.getLanguageForMimeType(this.contentType || this.blob.type);
-        try {
-          const result = hljs.highlight(text, { language: lang });
-          this.highlightedHtml = this.sanitizer.bypassSecurityTrustHtml(result.value);
-        } catch (e) {
-          // If the language is not registered/supported, we fall back to plain text
-          // SRP/DIP: error handling isolated; we do not rethrow to keep UI functional
+        // We only use highlight.js for actual languages to avoid unnecessary use of bypassSecurityTrustHtml.
+        // For 'plaintext', we rely on Angular's interpolation which is automatically sanitized.
+        if (lang === 'plaintext') {
           this.highlightedHtml = undefined;
+        } else {
+          try {
+            const result = hljs.highlight(text, { language: lang });
+            this.highlightedHtml = this.sanitizer.bypassSecurityTrustHtml(result.value);
+          } catch (e) {
+            // If the language is not registered/supported, we fall back to plain text
+            // SRP/DIP: error handling isolated; we do not rethrow to keep UI functional
+            this.highlightedHtml = undefined;
+          }
         }
       } catch (e) {
         console.error('Error reading text content', e);

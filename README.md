@@ -127,6 +127,24 @@ When redirected to ``auth-redirect``, the token is extracted and saved under the
 
 The exit button on the top right performs a logout action on top of leaving the API. The user is redirected to the ``/logout-redirect`` page and is able to see if the logout was successful. While the app is open it remembers this, such that when authenticating again, the OIDC provider is prompted to select an account explicitly, preventing an automatic re-login after logout, especially when the user was in a configured EntryPoint which enforces authentication from the start.
 
+## Content Preview
+
+The UI can preview various non-Siren content types directly in the browser.
+
+### Supported Media Types
+
+The following media types are supported for integrated preview:
+
+- **Images:** `image/jpeg`, `image/png`, `image/gif`, `image/svg+xml`, `image/webp`, `image/bmp`, `image/x-icon`.
+- **JSON:** `application/json` and any vendor-specific JSON types (e.g., `application/vnd.my.api+json`).
+- **Text & Code:** 
+  - Plain text: `text/plain`
+  - Markdown: `text/markdown`, `text/x-markdown`
+  - Data: `text/csv`, `application/csv`, `application/vnd.ms-excel`
+  - Markup: `application/xml`, `text/xml`, `text/html`
+  - Configuration: `text/toml`, `text/yaml`
+  - Binary/Generic: `application/octet-stream` (can be manually rendered as text with syntax highlighting options).
+
 ## 💚 Many thanks to our dear sponsors
 
 <div style="display: flex; justify-content: space-around; align-items: flex-start;">

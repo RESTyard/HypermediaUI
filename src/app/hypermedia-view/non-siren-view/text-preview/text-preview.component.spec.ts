@@ -82,4 +82,44 @@ describe('TextPreviewComponent', () => {
     const compiled = fixture.nativeElement as HTMLElement;
     expect(compiled.querySelector('.text-preview')).toBeNull();
   });
+
+  it('should sanitize content even when forced for octet-stream', async () => {
+    const maliciousText = 'Hello <script>alert("xss")</script>';
+    const blob = new Blob([maliciousText], { type: 'application/octet-stream' });
+    component.blob = blob;
+    component.contentType = 'application/octet-stream';
+    component.forceTextRendering = true;
+
+    component.ngOnChanges({
+      blob: {
+        currentValue: blob,
+        previousValue: undefined,
+        firstChange: true,
+        isFirstChange: () => true
+      },
+      contentType: {
+        currentValue: 'application/octet-stream',
+        previousValue: undefined,
+        firstChange: true,
+        isFirstChange: () => true
+      }
+    });
+
+    // Wait for the async updateTextPreview
+    await new Promise(resolve => setTimeout(resolve, 100));
+    fixture.detectChanges();
+
+    const compiled = fixture.nativeElement as HTMLElement;
+    const codeElement = compiled.querySelector('code.hljs');
+    if (codeElement) {
+      // If it's highlighted, it should be escaped
+      expect(codeElement.innerHTML).not.toContain('<script>');
+      expect(codeElement.innerHTML).toContain('&lt;script&gt;');
+    } else {
+      // If it's not highlighted, interpolation should have escaped it
+      const preElement = compiled.querySelector('pre.text-preview');
+      expect(preElement?.innerHTML).not.toContain('<script>');
+      expect(preElement?.innerHTML).toContain('&lt;script&gt;');
+    }
+  });
 });
