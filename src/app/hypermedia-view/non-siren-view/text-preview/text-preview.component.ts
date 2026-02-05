@@ -1,6 +1,19 @@
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
-import hljs from 'highlight.js';
+import hljs from 'highlight.js/lib/core';
+import markdown from 'highlight.js/lib/languages/markdown';
+import xml from 'highlight.js/lib/languages/xml';
+import yaml from 'highlight.js/lib/languages/yaml';
+import ini from 'highlight.js/lib/languages/ini';
+import json from 'highlight.js/lib/languages/json';
+import plaintext from 'highlight.js/lib/languages/plaintext';
+
+hljs.registerLanguage('markdown', markdown);
+hljs.registerLanguage('xml', xml);
+hljs.registerLanguage('yaml', yaml);
+hljs.registerLanguage('toml', ini);
+hljs.registerLanguage('json', json);
+hljs.registerLanguage('plaintext', plaintext);
 
 @Component({
   selector: 'app-text-preview',
@@ -22,6 +35,7 @@ export class TextPreviewComponent implements OnChanges {
     'application/xml',
     'text/xml',
     'text/html',
+    'application/json',
     'text/toml',
     'text/yaml',
     'application/octet-stream'
@@ -31,12 +45,13 @@ export class TextPreviewComponent implements OnChanges {
     'text/markdown': 'markdown',
     'text/x-markdown': 'markdown',
     'text/plain': 'plaintext',
-    'text/csv': 'csv',
-    'application/csv': 'csv',
-    'application/vnd.ms-excel': 'csv',
+    'text/csv': 'plaintext',
+    'application/csv': 'plaintext',
+    'application/vnd.ms-excel': 'plaintext',
     'application/xml': 'xml',
     'text/xml': 'xml',
     'text/html': 'html',
+    'application/json': 'json',
     'text/toml': 'toml',
     'text/yaml': 'yaml',
     'application/octet-stream': 'plaintext'
