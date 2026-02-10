@@ -79,7 +79,11 @@ export class SiteSettingsComponent implements OnInit {
 
   removeHeader(index: number) {
     const header = Array.from(this.siteSetting!.headers.entries())[index];
-    this.store.dispatch(removeHeader({ siteUrl: this.siteSetting!.siteUrl, key: header[0]}));
+    if (header) {
+      this.store.dispatch(removeHeader({ siteUrl: this.siteSetting!.siteUrl, key: header[0]}));
+    } else {
+      this.headerFormGroups.splice(index, 1);
+    }
   }
 
   removeSite() {
