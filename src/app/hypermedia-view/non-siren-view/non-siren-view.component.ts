@@ -38,13 +38,13 @@ export class NonSirenViewComponent {
       return PreviewType.Image;
     }
 
-    if (TextPreviewComponent.supportedMimeTypes.has(base)) {
-      return PreviewType.Text;
-    }
-
     if (JsonPreviewComponent.supportedMimeTypes.has(base) ||
       (type.startsWith('application/vnd.') && type.endsWith('+json'))) {
       return PreviewType.Json;
+    }
+
+    if (TextPreviewComponent.supportedMimeTypes.has(base)) {
+      return PreviewType.Text;
     }
 
     return PreviewType.None;
