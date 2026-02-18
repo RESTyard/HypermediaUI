@@ -236,6 +236,25 @@ export class HypermediaClientService implements IHypermediaClientService {
   }
 
   private async handleNavigateError(url: string, err: any) {
+    // Handle Blob errors first to ensure 'err.error' is readable JSON.
+    // Do not gate on content-type: the server may return application/vnd.siren+json
+    // for error responses when that type was requested via Accept.
+    if (err instanceof HttpErrorResponse && err.error instanceof Blob) {
+      try {
+        // Convert the Blob to a string and parse it as JSON
+        const text = await err.error.text();
+        err = new HttpErrorResponse({
+          error: JSON.parse(text),
+          headers: err.headers,
+          status: err.status,
+          statusText: err.statusText,
+          url: err.url || undefined
+        });
+      } catch (e) {
+        console.error("Failed to parse error blob", e);
+      }
+    }
+
     if (err instanceof SyntaxError) {
       this.problemDetailsErrorService.showErrorDialog(
         "Content Error",
@@ -520,7 +539,7 @@ export class HypermediaClientService implements IHypermediaClientService {
     // try parse problem details
     if (errorResponse.headers) {
       const contentType = errorResponse.headers.get('Content-Type')
-      if (contentType?.includes(problemDetailsMimeType)) {
+      if (contentType?.includes(problemDetailsMimeType) || contentType?.includes('json')) {
         console.error("API Error:" + JSON.stringify(errorResponse.error, null, 4));
         return Object.assign(new ProblemDetailsError({rawObject: errorResponse.error}), errorResponse.error);
       }
