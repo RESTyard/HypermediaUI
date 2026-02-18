@@ -85,19 +85,19 @@ export class ProblemDetailsError implements Error {
         }
 
         if (jsonObj.title) {
-            this.type = jsonObj.title;
+            this.title = jsonObj.title;
         }
 
         if (jsonObj.detail) {
-            this.type = jsonObj.detail;
+            this.detail = jsonObj.detail;
         }
 
         if (jsonObj.status) {
-            this.type = jsonObj.status;
+            this.status = jsonObj.status;
         }
 
         if (jsonObj.instance) {
-            this.type = jsonObj.instance;
+            this.instance = jsonObj.instance;
         }
 
         return this;
