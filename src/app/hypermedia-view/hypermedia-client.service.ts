@@ -467,7 +467,10 @@ export class HypermediaClientService implements IHypermediaClientService {
       }
     }
 
-    const headers = this.createHeaders(action.type, action.type)
+    // A FormData body must not carry an explicit Content-Type: the browser generates
+    // one including the multipart boundary parameter, which the server needs to parse it.
+    const contentTypeHeader = requestBody instanceof FormData ? null : action.type;
+    const headers = this.createHeaders(contentTypeHeader, action.type)
 
     // todo if action responds with a action resource, process body
     this.ExecuteRequest(action, headers, requestBody)
