@@ -31,7 +31,7 @@ export class BooleanTypeComponent extends FormlyFieldCheckbox {
         this.formControl.setValue(false);
         break;
       default:
-        this.formControl.setValue(null);
+        this.formControl.setValue(this.isNullable ? null : false);
         break;
     }
   }
