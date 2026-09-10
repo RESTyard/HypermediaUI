@@ -1,5 +1,5 @@
 import { Component, Inject } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material/dialog';
 
 export interface ConfirmationDialogData {
   title: string;
@@ -24,5 +24,25 @@ export class ConfirmationDialogComponent {
 
   onConfirm(): void {
     this.dialogRef.close(true);
+  }
+}
+
+export function doWithConfirmation(configs: HypermediaUI.IActionClassConfiguration[], dialog: MatDialog, doAction: () => void) {
+  if (configs.length > 0) {
+    const config = configs[0];
+    const dialogRef = dialog.open(ConfirmationDialogComponent, {
+      data: {
+        title: config.title,
+        message: config.message
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        doWithConfirmation(configs.slice(1), dialog, doAction);
+      }
+    });
+  } else {
+    doAction();
   }
 }

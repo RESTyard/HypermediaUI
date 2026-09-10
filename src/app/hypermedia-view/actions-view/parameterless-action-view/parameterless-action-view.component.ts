@@ -4,7 +4,7 @@ import { HypermediaAction } from '../../siren-parser/hypermedia-action';
 import { ProblemDetailsError } from 'src/app/error-dialog/problem-details-error';
 import { getIconForHttpMethod } from '../../icon-mapping';
 import { MatDialog } from '@angular/material/dialog';
-import { ConfirmationDialogComponent } from '../../../common/confirmation-dialog/confirmation-dialog.component';
+import {doWithConfirmation} from "../../../common/confirmation-dialog/confirmation-dialog.component";
 import { AppConfigService } from 'src/app.config.service';
 
 @Component({
@@ -35,27 +35,7 @@ export class ParameterlessActionViewComponent implements OnInit {
 
   public executeAction() {
     const configs = this.action.getConfigurations(this.appConfigService.actionPopupWarningConfigurations);
-    this.executeWithConfirmation(configs);
-  }
-
-  private executeWithConfirmation(configs: HypermediaUI.IActionClassConfiguration[]) {
-    if (configs.length > 0) {
-      const config = configs[0];
-      const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-        data: {
-          title: config.title,
-          message: config.message
-        }
-      });
-
-      dialogRef.afterClosed().subscribe(result => {
-        if (result) {
-          this.executeWithConfirmation(configs.slice(1));
-        }
-      });
-    } else {
-      this.doExecuteAction();
-    }
+    doWithConfirmation(configs, this.dialog, this.doExecuteAction);
   }
 
   public getActionConfigs(): HypermediaUI.IActionClassConfiguration[] {

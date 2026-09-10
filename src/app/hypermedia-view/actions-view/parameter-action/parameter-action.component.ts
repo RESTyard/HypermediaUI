@@ -10,7 +10,7 @@ import { AbstractControl, FormGroup } from '@angular/forms';
 import { FormlyJsonschema } from '@ngx-formly/core/json-schema';
 import { getIconForHttpMethod } from '../../icon-mapping';
 import { MatDialog } from '@angular/material/dialog';
-import { ConfirmationDialogComponent } from '../../../common/confirmation-dialog/confirmation-dialog.component';
+import {doWithConfirmation} from "../../../common/confirmation-dialog/confirmation-dialog.component";
 import { AppConfigService } from 'src/app.config.service';
 
 @Component({
@@ -83,27 +83,7 @@ export class ParameterActionComponent implements OnInit {
     }
 
     const configs = this.action.getConfigurations(this.appConfigService.actionPopupWarningConfigurations);
-    this.submitWithConfirmation(configs);
-  }
-
-  private submitWithConfirmation(configs: HypermediaUI.IActionClassConfiguration[]) {
-    if (configs.length > 0) {
-      const config = configs[0];
-      const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-        data: {
-          title: config.title,
-          message: config.message
-        }
-      });
-
-      dialogRef.afterClosed().subscribe(result => {
-        if (result) {
-          this.submitWithConfirmation(configs.slice(1));
-        }
-      });
-    } else {
-      this.doActionSubmitted();
-    }
+    doWithConfirmation(configs, this.dialog, this.doActionSubmitted);
   }
 
   public getActionConfigs(): HypermediaUI.IActionClassConfiguration[] {
