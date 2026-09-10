@@ -34,8 +34,7 @@ export class ParameterlessActionViewComponent implements OnInit {
   }
 
   public executeAction() {
-    const configs = this.action.getConfigurations(this.appConfigService.actionPopupWarningConfigurations);
-    doWithConfirmation(configs, this.dialog, this.doExecuteAction);
+    doWithConfirmation(this.getActionConfigs(), this.dialog, this.doExecuteAction);
   }
 
   public getActionConfigs(): HypermediaUI.IActionClassConfiguration[] {

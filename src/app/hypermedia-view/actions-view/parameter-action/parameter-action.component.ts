@@ -82,8 +82,7 @@ export class ParameterActionComponent implements OnInit {
       return;
     }
 
-    const configs = this.action.getConfigurations(this.appConfigService.actionPopupWarningConfigurations);
-    doWithConfirmation(configs, this.dialog, this.doActionSubmitted);
+    doWithConfirmation(this.getActionConfigs(), this.dialog, this.doActionSubmitted);
   }
 
   public getActionConfigs(): HypermediaUI.IActionClassConfiguration[] {
