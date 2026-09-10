@@ -8,6 +8,10 @@ import { HypermediaAction } from '../../siren-parser/hypermedia-action';
 import { FormlyFieldConfig } from '@ngx-formly/core';
 import { AbstractControl, FormGroup } from '@angular/forms';
 import { FormlyJsonschema } from '@ngx-formly/core/json-schema';
+import { getIconForHttpMethod } from '../../icon-mapping';
+import { MatDialog } from '@angular/material/dialog';
+import {doWithConfirmation} from "../../../common/confirmation-dialog/confirmation-dialog.component";
+import { AppConfigService } from 'src/app.config.service';
 
 @Component({
     selector: 'app-parameter-action',
@@ -34,6 +38,8 @@ export class ParameterActionComponent implements OnInit {
   constructor(
     private hypermediaClientService: HypermediaClientService,
     private formlyJsonschema: FormlyJsonschema,
+    private dialog: MatDialog,
+    private appConfigService: AppConfigService
   ) {}
 
   ngOnInit() {
@@ -50,7 +56,7 @@ export class ParameterActionComponent implements OnInit {
               mappedField.parsers = [
                 v => (v instanceof Date ? this.formatDate(v) : v),
               ];
-              mappedField.validators = { 
+              mappedField.validators = {
                 required: (control: AbstractControl) => (types.includes('null') || (control.value !== null && control.value !== undefined)),
               };
             }
@@ -75,6 +81,15 @@ export class ParameterActionComponent implements OnInit {
       console.log('not valid');
       return;
     }
+
+    doWithConfirmation(this.getActionConfigs(), this.dialog, this.doActionSubmitted);
+  }
+
+  public getActionConfigs(): HypermediaUI.IActionClassConfiguration[] {
+    return this.action.getConfigurations(this.appConfigService.actionPopupWarningConfigurations);
+  }
+
+  private doActionSubmitted() {
     this.action.parameters = this.form.value;
     this.actionResult = ActionResults.pending;
     this.executed = true;
@@ -104,5 +119,13 @@ export class ParameterActionComponent implements OnInit {
 
   navigateLocation(location: string) {
     this.hypermediaClientService.Navigate(location);
+  }
+
+  getBrowserUrl(url: string) {
+    return this.hypermediaClientService.getBrowserUrl(url);
+  }
+
+  getIconForMethod(method: string): string | undefined {
+    return getIconForHttpMethod(method);
   }
 }

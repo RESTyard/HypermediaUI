@@ -1,12 +1,17 @@
 @use '../../../styles/defaults';
 @use 'sass:map';
 .container {
-    padding: defaults.$containerSpacing;
+    padding: 8px defaults.$containerSpacing defaults.$containerSpacing defaults.$containerSpacing;
 }
 
 .entityTitle {
     font-size: 20px;
     font-weight: bold;
+    margin-bottom: defaults.$spacing;
+}
+
+app-property-tree {
+    display: block;
     margin-bottom: defaults.$spacing;
 }
 

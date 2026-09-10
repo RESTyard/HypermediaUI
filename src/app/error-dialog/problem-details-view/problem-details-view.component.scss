@@ -18,6 +18,23 @@ p {
   padding: defaults.$spacing;
   margin: 0;
   box-shadow: none;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.raw-response-container {
+  padding: defaults.$spacing;
+}
+
+.raw-response-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.raw-response-title {
+  font-weight: 500;
+  color: #666;
 }
 
 .CopyToClipboardButton {

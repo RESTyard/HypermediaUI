@@ -18,6 +18,7 @@ export const selectEffectiveGeneralSettings = createSelector(
             showEmptyActions: generalSettings.showEmptyActions && !appConfig.disableDeveloperControls,
             useEmbeddingPropertyForActionParameters: generalSettings.useEmbeddingPropertyForActionParameters && !appConfig.disableDeveloperControls,
             showHostInformation: generalSettings.showHostInformation && !appConfig.disableDeveloperControls,
+            showPropertyTreeControls: generalSettings.showPropertyTreeControls && !appConfig.disableDeveloperControls,
             actionExecutionTimeoutMs: generalSettings.actionExecutionTimeoutMs
         });
     }

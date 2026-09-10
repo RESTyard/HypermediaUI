@@ -11,6 +11,8 @@ import {selectEffectiveGeneralSettings, selectUserNameForCurrentSite} from 'src/
 import {combineLatest} from 'rxjs';
 import {CurrentEntryPoint} from 'src/app/store/entrypoint.reducer';
 import {AuthService} from "../auth.service";
+import {updateGeneralAppSettings} from 'src/app/store/appsettings.actions';
+import {MediaTypes} from "../MediaTypes";
 
 @Component({
   selector: 'app-hypermedia-control',
@@ -20,17 +22,21 @@ import {AuthService} from "../auth.service";
 })
 export class HypermediaControlComponent implements OnInit {
   public rawResponse: object | null = null;
+  public contentType: string | undefined = undefined;
   public hto: SirenClientObject = new SirenClientObject();
   public navPaths: string[] = [];
   public isBusy: boolean = false;
   public CurrentHost: string = "";
   public CurrentEntryPoint: string = "";
+  public readonly MediaTypes = MediaTypes;
   GeneralSettings: GeneralSettings = new GeneralSettings();
   showSettingsIcon: boolean = true;
   userName: string | undefined = "";
   allowOnlyConfiguredEntryPoints: boolean = true
   IsInsecureConnection: boolean = false;
   title: string = "";
+  public showRaw: boolean = false;
+  public showPropertyTreeControls: boolean = true;
 
   constructor(
     private hypermediaClient: HypermediaClientService,
@@ -42,7 +48,10 @@ export class HypermediaControlComponent implements OnInit {
     store
       .select(selectEffectiveGeneralSettings)
       .subscribe({
-        next: generalSettings => this.GeneralSettings = generalSettings,
+        next: generalSettings => {
+          this.GeneralSettings = generalSettings;
+          this.showPropertyTreeControls = generalSettings.showPropertyTreeControls;
+        },
       });
     store
       .select(state => state.appConfig)
@@ -90,6 +99,10 @@ export class HypermediaControlComponent implements OnInit {
 
     this.hypermediaClient.getHypermediaObjectRawStream().subscribe((rawResponse) => {
       this.rawResponse = rawResponse;
+    });
+
+    this.hypermediaClient.getContentTypeStream().subscribe((contentType) => {
+      this.contentType = contentType;
     });
 
     this.hypermediaClient.getNavPathsStream().subscribe((navPaths) => {
@@ -148,8 +161,18 @@ export class HypermediaControlComponent implements OnInit {
     return decoded;
   }
 
+  public getBrowserUrl(url: string) {
+    return this.hypermediaClient.getBrowserUrl(url);
+  }
+
   public navigateLink(url: string) {
     this.hypermediaClient.Navigate(url);
+  }
+
+  public togglePropertyTreeControls(checked: boolean) {
+    this.store.dispatch(updateGeneralAppSettings({
+      newGeneralSettings: this.GeneralSettings.set("showPropertyTreeControls", checked)
+    }));
   }
 
   public async exitApi() {

@@ -1,62 +1,70 @@
-<mat-expansion-panel>
-  <mat-expansion-panel-header>
+<mat-expansion-panel class="action-panel" [hideToggle]="true">
+  <mat-expansion-panel-header #panelHeader>
     <mat-panel-title>
-      <button class="executeButton containerElement" mat-raised-button color="primary"
-        matTooltip="{{action.title}}">
-        <mat-icon class="icon" color="secondary">play_circle_outline</mat-icon>
-        {{action.name}}
-      </button>
-      <mat-icon class="icon" color="primary" style="margin-left: 4px;">expand_more</mat-icon>
+      <div class="action-header-content">
+        <button class="execute-button" mat-flat-button color="primary">
+          @if (getIconForMethod(action.method)) {
+            <mat-icon class="action-icon">{{getIconForMethod(action.method)}}</mat-icon>
+          } @else {
+            <mat-icon class="action-icon">play_circle_outline</mat-icon>
+          }
+          <span class="action-name">{{action.title || action.name}}</span>
+          @for (config of getActionConfigs(); track config.actionClass) {
+            <mat-icon iconPositionEnd class="action-icon action-class-icon trailing-icon" [matTooltip]="config.title">{{config.icon}}</mat-icon>
+          }
+        </button>
+        <mat-icon class="expand-icon" [class.expanded]="panelHeader.panel.expanded">expand_more</mat-icon>
+      </div>
     </mat-panel-title>
     <mat-panel-description>
-      {{action.title}}
+      {{action.name}}
     </mat-panel-description>
   </mat-expansion-panel-header>
 
-  <!-- <div>classes: {{action.classes.join(",")}}</div> -->
-  <!-- <div>schema: {{action.waheActionParameterJsonSchema | async}}</div> -->
-
-  <!-- todo if contains body show it / navigate to it -->
   <ng-template matExpansionPanelContent>
     <form [formGroup]="form" (ngSubmit)="onActionSubmitted()">
-      <formly-form [fields]="formlyFields" [form]="form" [model]="model"></formly-form>
-      <div class="buttonRow">
-        <button mat-raised-button color="primary" type="submit">Submit</button>
+      <div class="form-content">
+        <formly-form [fields]="formlyFields" [form]="form" [model]="model"></formly-form>
+      </div>
+      <div class="button-row">
+        <button mat-flat-button type="submit" class="submit-button" color="primary">
+          <mat-icon>send</mat-icon>
+          Submit
+        </button>
 
-        <div class="resultContainer">
-          <!-- result icon -->
+        <div class="result-container">
           @if (executed) {
-            <div class="resultIconContainer">
+            <div class="result-icon-container">
               @switch (actionResult) {
                 @case (ActionResultsEnum.ok) {
-                  <mat-icon class="containerElement" color="primary"
-                  matTooltip={{actionMessage}}>done</mat-icon>
+                  <mat-icon class="result-icon success" color="primary"
+                  matTooltip={{actionMessage}}>check_circle</mat-icon>
                 }
                 @case (ActionResultsEnum.error) {
-                  <mat-icon class="containerElement hoverButton" color="warn" [matMenuTriggerFor]="errorPopup"
+                  <mat-icon class="result-icon error hover-button" color="warn" [matMenuTriggerFor]="errorPopup"
                   matTooltip={{actionMessage}}>error</mat-icon>
                 }
                 @case (ActionResultsEnum.pending) {
-                  <mat-progress-spinner [diameter]="26" mode="indeterminate" color="accent"></mat-progress-spinner>
+                  <mat-progress-spinner [diameter]="24" mode="indeterminate"></mat-progress-spinner>
                 }
                 @case (ActionResultsEnum.undefined) {
-                  <mat-icon class="containerElement" color="primary"
-                  matTooltip={{actionMessage}}>question_mark</mat-icon>
+                  <mat-icon class="result-icon undefined"
+                  matTooltip={{actionMessage}}>help_outline</mat-icon>
                 }
               }
             </div>
           }
-          <!-- result button -->
           @if (actionResultLocation !== null) {
-            <button type="button"
-              class="containerElement"
-              mat-raised-button
-              (click)="navigateLocation(actionResultLocation)"
+            <a
+              class="result-link-button"
+              mat-flat-button
+              [href]="getBrowserUrl(actionResultLocation)"
+              (click)="$event.preventDefault(); navigateLocation(actionResultLocation)"
               color="accent"
               matTooltip="Go to result: {{actionResultLocation}}">
-              <mat-icon class="icon" color="primary">start</mat-icon>
-              Result
-            </button>
+              <mat-icon>arrow_forward</mat-icon>
+              View Result
+            </a>
           }
         </div>
       </div>
@@ -72,7 +80,7 @@
 
 
 
-<mat-menu #errorPopup="matMenu">
+<mat-menu #errorPopup="matMenu" class="error-menu-panel">
   <div (click)="$event.stopPropagation()">
     @if (problemDetailsError) {
       <app-problem-details-view [problemDetailsError]="problemDetailsError"></app-problem-details-view>

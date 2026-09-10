@@ -1,0 +1,202 @@
+$gutter-width: 320px;
+$highlight-direct: #fff9c4;
+$highlight-ancestor: #fffde7;
+
+// Toolbar Styles
+.tree-header-toolbar {
+  display: grid;
+  grid-template-columns: $gutter-width 1fr;
+  background-color: #fcfcfc;
+  border-bottom: 2px solid #eee;
+  padding: 6px 0;
+  align-items: center;
+
+  .controls-container {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding-left: 8px;
+    width: 100%;
+    box-sizing: border-box;
+
+    button {
+      flex-shrink: 0;
+      font-size: 11px;
+      height: 32px;
+      padding: 0 8px;
+      min-width: 40px;
+
+      mat-icon {
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
+        margin: 0;
+      }
+
+      span {
+        margin-left: 4px;
+        @media (max-width: 1300px) { display: none; }
+      }
+    }
+  }
+
+  .header-label {
+    padding-left: 20px;
+    font-weight: bold;
+    color: #777;
+    font-size: 12px;
+    text-transform: uppercase;
+  }
+}
+
+// search box
+.search-box {
+  display: flex;
+  align-items: center;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 0 8px;
+  height: 32px;
+  flex: 1;
+  min-width: 0;
+  margin-left: 4px;
+
+  input {
+    border: none;
+    outline: none;
+    font-size: 12px;
+    flex: 1;
+    min-width: 30px;
+    background: transparent;
+  }
+
+  .match-counter {
+    font-size: 10px;
+    font-weight: 700;
+    color: #666;
+    background: #eee;
+    padding: 2px 6px;
+    border-radius: 10px;
+    margin: 0 4px;
+    white-space: nowrap;
+
+    &.no-matches {
+      background: #ffebee;
+      color: #c62828;
+    }
+  }
+
+  .search-icon { font-size: 14px; width: 16px; height: 16px; color: #999; }
+  .clear-icon { font-size: 14px; width: 16px; height: 16px; color: #999; cursor: pointer; &:hover { color: #333; } }
+}
+
+// tree styles
+.mat-tree-node {
+  min-height: 36px;
+  display: grid !important;
+  grid-template-columns: $gutter-width 1fr;
+  border-bottom: 1px solid #f0f0f0;
+  align-items: center;
+  transition: background-color 0.2s ease;
+  overflow: hidden;
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.02);
+  }
+}
+$row-height: 32px;
+$gutter-width: 320px;
+
+button[mat-icon-button] {
+  width: $row-height;  // 32px
+  height: $row-height; // 32px
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  line-height: 1;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+        display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+  }
+}
+
+.label-cell {
+  display: flex;
+  align-items: center;
+  border-right: 1px solid #eee;
+  height: 100%;
+  padding-right: 8px;
+  overflow: hidden;
+
+  .spacer { width: 40px; flex-shrink: 0; }
+  .prop-name {
+    color: #881391;
+    font-weight: 500;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+}
+
+.value-cell {
+  padding-left: 20px;
+  padding-right: 12px;
+  font-family: 'Roboto Mono', monospace;
+  font-size: 14px;
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  align-items: center;
+}
+
+/* Types */
+.v-str { color: #c41a16; }
+.v-num { color: #1c00cf; }
+.v-null { color: #808080; font-style: italic; }
+.v-meta { color: #666; background: #eee; padding: 2px 6px; border-radius: 4px; font-size: 11px; flex-shrink: 0; }
+.v-preview {
+  color: #888;
+  margin-left: 8px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  font-size: 12px;
+  min-width: 0;
+  flex: 1;
+}
+
+::ng-deep .mat-mdc-checkbox {
+  transform: scale(0.8);
+}
+
+/* Highlighting Logik */
+.property-row {
+  &.is-direct-match {
+    background-color: $highlight-direct !important;
+    .prop-name { font-weight: bold; color: #000; }
+  }
+
+  &.is-ancestor-match:not(.is-direct-match) {
+    background-color: $highlight-ancestor !important;
+    .prop-name { border-bottom: 1px dashed #ffd600; }
+  }
+
+  &.pulse-highlight {
+    animation: search-pulse 1s ease-out;
+  }
+}
+
+@keyframes search-pulse {
+  0% { background-color: $highlight-direct; }
+  50% { background-color: #ffd600; }
+  100% { background-color: $highlight-direct; }
+}

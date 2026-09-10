@@ -16,6 +16,7 @@ export class ErrorModalDialogComponent {
   @Input() problemDetailsError: ProblemDetailsError | null = null;
 
   @Output() reload = new EventEmitter();
+  @Output() navigateBack = new EventEmitter();
   @Output() gotoEntryPoint = new EventEmitter();
   @Output() exitApi = new EventEmitter();
 

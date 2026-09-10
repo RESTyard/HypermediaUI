@@ -35,11 +35,58 @@ The UI can be customized by deploying an artifact from [Releases](https://github
       "entryPointUri": "https://localhost:1234/api/some/EntryPoint"
     }
   ],
-  "onlyAllowConfiguredEntryPoints": true
+  "onlyAllowConfiguredEntryPoints": true,
+  "relationIconMapping": {
+    "self": "home",
+    "next": "forward"
+  },
+  "httpMethodIconMapping": {
+    "post": "add_box"
+  },
+  "actionPopupWarningConfigurations": [
+    {
+      "actionClass": "destructive",
+      "title": "Confirm Destructive Action",
+      "message": "This action is destructive and cannot be undone. Are you sure you want to continue?",
+      "icon": "warning"
+    }
+  ]
 }
 ```
 
 The configuration in details works like this:
+
+### ``actionPopupWarningConfigurations``
+
+Allows defining custom behaviors for actions based on their Siren classes. Matching is **case-insensitive**.
+
+- `actionClass`: The Siren class to match.
+- `title`: Title for the confirmation popup.
+- `message`: Message in the confirmation popup.
+- `icon`: Material icon name to be displayed next to the action name.
+
+If a match is found, the user is prompted with a confirmation dialog before the action is executed. If multiple classes match, multiple popups will be shown sequentially.
+
+### ``relationIconMapping`` and ``httpMethodIconMapping``
+
+Allows to override the default icons used for relations and HTTP methods.
+The icons must be valid [Material Design Icon](https://fonts.google.com/icons) names.
+
+**Note:** If these properties are provided in `app.config.json` and are not empty, they will replace the default mappings entirely. If they are omitted or empty, the defaults are used. This allows users to completely redefine the icon mapping or remove default ones by not including them in the provided configuration.
+
+#### Example
+
+```json
+{
+  "relationIconMapping": {
+    "self": "home",
+    "next": "forward"
+  },
+  "httpMethodIconMapping": {
+    "post": "add_box"
+  }
+}
+```
 
 ### ``disableDeveloperControls``
 
@@ -79,6 +126,24 @@ The redirect uri is given as ``/auth_redirect`` with the current alias (in case 
 When redirected to ``auth-redirect``, the token is extracted and saved under the site specific settings for the API, and the user is internally redirected to the page they just requested using the ``path`` and ``apiPath`` parameters.
 
 The exit button on the top right performs a logout action on top of leaving the API. The user is redirected to the ``/logout-redirect`` page and is able to see if the logout was successful. While the app is open it remembers this, such that when authenticating again, the OIDC provider is prompted to select an account explicitly, preventing an automatic re-login after logout, especially when the user was in a configured EntryPoint which enforces authentication from the start.
+
+## Content Preview
+
+The UI can preview various non-Siren content types directly in the browser.
+
+### Supported Media Types
+
+The following media types are supported for integrated preview:
+
+- **Images:** `image/jpeg`, `image/png`, `image/gif`, `image/svg+xml`, `image/webp`, `image/bmp`, `image/x-icon`.
+- **JSON:** `application/json` and any vendor-specific JSON types (e.g., `application/vnd.my.api+json`).
+- **Text & Code:** 
+  - Plain text: `text/plain`
+  - Markdown: `text/markdown`, `text/x-markdown`
+  - Data: `text/csv`, `application/csv`, `application/vnd.ms-excel`
+  - Markup: `application/xml`, `text/xml`, `text/html`
+  - Configuration: `text/toml`, `text/yaml`
+  - Binary/Generic: `application/octet-stream` (can be manually rendered as text with syntax highlighting options).
 
 ## 💚 Many thanks to our dear sponsors
 

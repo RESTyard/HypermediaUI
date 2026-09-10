@@ -28,11 +28,16 @@
             ],
             "styles": [
               "src/styles/hypermedia-ui-theme.scss",
-              "src/styles/styles.scss"
+              "src/styles/styles.scss",
+              "node_modules/highlight.js/styles/github.css"
             ],
             "scripts": [],
             "optimization": true,
-            "browser": "src/main.ts"
+            "browser": "src/main.ts",
+            "allowedCommonJsDependencies": [
+              "file-saver",
+              "simple-object-query"
+            ]
           },
           "configurations": {
             "production": {
@@ -147,7 +152,8 @@
             ],
             "styles": [
               "src/styles/hypermedia-ui-theme.scss",
-              "src/styles/styles.scss"
+              "src/styles/styles.scss",
+              "node_modules/highlight.js/styles/github.css"
             ],
             "scripts": []
           }

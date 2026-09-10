@@ -3,7 +3,7 @@ import {HttpClient, HttpErrorResponse, HttpHeaders, HttpResponse} from '@angular
 import {Router} from '@angular/router';
 
 import {BehaviorSubject, lastValueFrom, tap, timeout} from 'rxjs';
-import {saveAs} from 'file-saver';
+import * as fileSaver from 'file-saver';
 
 import {SirenDeserializer} from './siren-parser/siren-deserializer';
 import {ObservableLruCache} from './api-access/observable-lru-cache';
@@ -41,13 +41,13 @@ export interface IHypermediaClientService {
 
   get currentApiPath(): ApiPath;
 
-  Navigate(url: string): void;
+  Navigate(url: string, options?: { inplace?: boolean, acceptType?: string }): void;
 
   DownloadAsFile(downloadUrl: string): void;
 
   navigateToMainPage(): void;
 
-  createHeaders(withContentType: string | null): HttpHeaders;
+  createHeaders(withContentType: string | null, withAcceptType: string | null): HttpHeaders;
 
   createWaheStyleActionParameters(action: HypermediaAction): any;
 
@@ -60,6 +60,7 @@ const problemDetailsMimeType = "application/problem+json";
 export class HypermediaClientService implements IHypermediaClientService {
   private currentClientObject$: BehaviorSubject<SirenClientObject> = new BehaviorSubject<SirenClientObject>(new SirenClientObject());
   private currentClientObjectRaw$: BehaviorSubject<object> = new BehaviorSubject<object>({});
+  private currentContentType$: BehaviorSubject<string | undefined> = new BehaviorSubject<string | undefined>(undefined);
   private currentNavPaths$: BehaviorSubject<Array<string>> = new BehaviorSubject<Array<string>>(new Array<string>());
   private apiPath: ApiPath = new ApiPath();
   private path: string | undefined;
@@ -103,6 +104,12 @@ export class HypermediaClientService implements IHypermediaClientService {
         this.navigateToMainPage();
       }
     });
+
+    globalNavigationEvents.onGotoPreviousStep.subscribe({
+      next: _ => {
+        this.navigateToPreviousStep();
+      }
+    });
   }
 
   getHypermediaObjectStream(): BehaviorSubject<SirenClientObject> {
@@ -111,6 +118,10 @@ export class HypermediaClientService implements IHypermediaClientService {
 
   getHypermediaObjectRawStream(): BehaviorSubject<object> {
     return this.currentClientObjectRaw$;
+  }
+
+  getContentTypeStream(): BehaviorSubject<string | undefined> {
+    return this.currentContentType$;
   }
 
   getNavPathsStream(): BehaviorSubject<Array<string>> {
@@ -125,7 +136,16 @@ export class HypermediaClientService implements IHypermediaClientService {
     }
   }
 
-  NavigateToApiPath(apiPath: ApiPath, options?: { inplace: boolean }) {
+  navigateToPreviousStep() {
+    if (!this.apiPath || this.apiPath.pathLength < 2) {
+      this.navigateToEntryPoint();
+    } else {
+      this.apiPath.removeLast();
+      this.Navigate(this.apiPath.newestSegment);
+    }
+  }
+
+  NavigateToApiPath(apiPath: ApiPath, options?: { inplace?: boolean, acceptType?: string }) {
     if (!apiPath || !apiPath.hasPath) {
       this.router.navigate([''], { replaceUrl: options?.inplace ?? false });
     }
@@ -138,20 +158,20 @@ export class HypermediaClientService implements IHypermediaClientService {
     return this.apiPath;
   }
 
-  async Navigate(url: string, options?: { inplace: boolean }) {
+  async Navigate(url: string, options?: { inplace?: boolean, acceptType?: string }) {
     this.apiPath.setCurrentStep(url);
 
-    // todo use media type of link if exists in siren, maybe check for supported types?
-    const headers = new HttpHeaders().set('Accept', MediaTypes.Siren);
+    const acceptHeader = options?.acceptType ?? MediaTypes.Siren;
+    const headers = new HttpHeaders().set('Accept', acceptHeader);
 
     this.AddBusyRequest();
-    let response: HttpResponse<object>;
+    let response: HttpResponse<any>;
     try {
       response = await lastValueFrom(this.httpClient
         .get(url, {
           headers: headers,
           observe: 'response',
-          // responseType:'blob' // use for generic access
+          responseType: 'blob'
         })
         .pipe(
           tap({
@@ -164,6 +184,10 @@ export class HypermediaClientService implements IHypermediaClientService {
     }
 
     this.authService.requestSuccessfulFor(url);
+    const contentTypeHeader = response.headers.get('Content-Type');
+    const contentType = contentTypeHeader ? contentTypeHeader.split(';')[0].trim() : MediaTypes.Siren;
+    this.currentContentType$.next(contentType);
+
     this.router.navigate(
       ['hui'],
       {
@@ -175,18 +199,89 @@ export class HypermediaClientService implements IHypermediaClientService {
       });
 
     if (response.body) {
-      const sirenClientObject = this.MapResponse(response.body);
-      this.currentClientObject$.next(sirenClientObject);
-      this.currentClientObjectRaw$.next(response.body!);
-      this.currentNavPaths$.next(this.apiPath.fullPath);
+      const normalizedContentType = contentType.toLowerCase();
+      const isSiren = normalizedContentType === MediaTypes.Siren.toLowerCase();
+      const isJson = normalizedContentType === MediaTypes.Json.toLowerCase();
+      const isVendorJson = normalizedContentType.startsWith('application/vnd.') && normalizedContentType.endsWith('+json');
+
+      if (isSiren || isJson || isVendorJson) {
+        const text = await (response.body as Blob).text();
+        let body: any;
+        try {
+          body = JSON.parse(text);
+        } catch (e) {
+          console.error('Error parsing JSON body', e);
+          this.currentClientObject$.next(new SirenClientObject());
+          this.currentClientObjectRaw$.next(response.body);
+          this.currentNavPaths$.next(this.apiPath.fullPath);
+          return;
+        }
+
+        if (isSiren) {
+          const sirenClientObject = this.MapResponse(body);
+          this.currentClientObject$.next(sirenClientObject);
+        } else {
+          this.currentClientObject$.next(new SirenClientObject());
+        }
+        this.currentClientObjectRaw$.next(body);
+      } else {
+        this.currentClientObject$.next(new SirenClientObject());
+        this.currentClientObjectRaw$.next(response.body);
+      }
+    } else {
+      this.currentClientObject$.next(new SirenClientObject());
+      this.currentClientObjectRaw$.next({});
     }
+    this.currentNavPaths$.next(this.apiPath.fullPath);
   }
 
   private async handleNavigateError(url: string, err: any) {
+    // Handle Blob errors first to ensure 'err.error' is readable JSON.
+    // Do not gate on content-type: the server may return application/vnd.siren+json
+    // for error responses when that type was requested via Accept.
+    if (err instanceof HttpErrorResponse && err.error instanceof Blob) {
+      try {
+        // Convert the Blob to a string and parse it as JSON
+        const text = await err.error.text();
+        err = new HttpErrorResponse({
+          error: JSON.parse(text),
+          headers: err.headers,
+          status: err.status,
+          statusText: err.statusText,
+          url: err.url || undefined
+        });
+      } catch (e) {
+        console.error("Failed to parse error blob", e);
+      }
+    }
+
+    if (err instanceof SyntaxError) {
+      this.problemDetailsErrorService.showErrorDialog(
+        "Content Error",
+        "Server did not respond with expected content. Error parsing response.");
+      return;
+    }
+
     if (!(err instanceof HttpErrorResponse)) {
       throw err;
     }
 
+    switch (err.status) {
+      // @ts-ignore
+      case 401:
+        if (!this.authService.isTokenRecentlyAcquired(url)) {
+          await this.handleAuthenticationChallenge(url, err);
+          break;
+        }
+        // fallthrough if token was recently acquired, treat as normal error
+      default:
+        const problemDetailsError = this.MapHttpErrorResponseToProblemDetails(err);
+        this.problemDetailsErrorService.showProblemDetailsDialog(problemDetailsError);
+        break;
+    }
+  }
+
+  private async handleAuthenticationChallenge(url: string, err: HttpErrorResponse) {
     // https://learn.microsoft.com/en-us/entra/msal/dotnet/advanced/extract-authentication-parameters
     let queryParams = this.buildApiPathSearchParams(this.apiPath.fullPath, 'apiPath');
     if (this.path) {
@@ -194,33 +289,28 @@ export class HypermediaClientService implements IHypermediaClientService {
     }
     let redirectUri = window.location.origin + "/auth-redirect?" + queryParams.toString();
     const result = await resultPipe(
-      () => this.assertAuthenticationError(err, url),
-      bind(_ => {
+      () => {
         const header = err.headers.get('www-authenticate');
         return header ? Success(header) : Failure('No authorization challenges provided from the backend.');
-      }),
+      },
       bind((header: string) => this.parseWWWAuthenticateHeaderSchemeParams(header, "Bearer")),
       bind((authSchemaParameter: Map<string, string>) => this.assertOIDCChallengeHeadersArePresent(authSchemaParameter)),
       bindAsync((tuple: { authUri: string, clientId: string }) => this.authService.login({
         entryPoint: url,
-              authority: tuple.authUri,
-              client_id: tuple.clientId,
-              redirect_uri: redirectUri,
-              scope: 'openid profile email offline_access'
+        authority: tuple.authUri,
+        client_id: tuple.clientId,
+        redirect_uri: redirectUri,
+        scope: 'openid profile email offline_access'
       })),
     )(0);
+
     if (isFailure(result)) {
-        console.error(result.value);
-        this.problemDetailsErrorService.showErrorDialog(
-          "Authentication error",
-          result.value);
+      console.error(result.value);
+      this.problemDetailsErrorService.showErrorDialog(
+        "Authentication error",
+        result.value);
     }
   }
-
-  private assertAuthenticationError = (error: HttpErrorResponse, url: string): Result<Unit, string> =>
-    error.status === 401 && !this.authService.isTokenRecentlyAcquired(url)
-      ? Success(Unit.NoThing)
-      : Failure("");
 
   private parseWWWAuthenticateHeaderSchemeParams(header: string | null, authScheme: string): Result<Map<string, string>, string> {
     if (!header?.startsWith('Bearer')) {
@@ -252,6 +342,12 @@ export class HypermediaClientService implements IHypermediaClientService {
     return usePath + '?' + queryParams.toString();
   }
 
+  getBrowserUrl(url: string) {
+    const tempPath = new ApiPath(this.currentApiPath.fullPath);
+    tempPath.setCurrentStep(url);
+    return this.buildBrowserUrl(undefined, tempPath);
+  }
+
   buildApiPathSearchParams(apiPath: string[], variableName: string) {
     const queryParams = new URLSearchParams(apiPath.map(pathSegment => [variableName, pathSegment]));
     return queryParams;
@@ -276,7 +372,7 @@ export class HypermediaClientService implements IHypermediaClientService {
 
         const blob = response.body;
         if (blob) {
-          saveAs(blob, fileName)
+          fileSaver.saveAs(blob, fileName)
         }
       })
   }
@@ -296,13 +392,13 @@ export class HypermediaClientService implements IHypermediaClientService {
     this.router.navigate([''], {});
   }
 
-  createHeaders(withContentType: string | null = null): HttpHeaders {
-    const headers = new HttpHeaders();
+  createHeaders(withContentType: string | null = null, withAcceptType: string | null = null): HttpHeaders {
+    let headers = new HttpHeaders();
 
     if (withContentType) {
-      headers.set('Content-Type', withContentType);
+      headers = headers.set('Content-Type', withContentType);
     }
-    headers.set('Accept', MediaTypes.Siren);
+    headers = headers.set('Accept', withAcceptType ?? MediaTypes.Siren);
 
     return headers;
   }
@@ -371,7 +467,10 @@ export class HypermediaClientService implements IHypermediaClientService {
       }
     }
 
-    const headers = this.createHeaders(action.type)
+    // A FormData body must not carry an explicit Content-Type: the browser generates
+    // one including the multipart boundary parameter, which the server needs to parse it.
+    const contentTypeHeader = requestBody instanceof FormData ? null : action.type;
+    const headers = this.createHeaders(contentTypeHeader, action.type)
 
     // todo if action responds with a action resource, process body
     this.ExecuteRequest(action, headers, requestBody)
@@ -405,7 +504,7 @@ export class HypermediaClientService implements IHypermediaClientService {
   }
 
   private MapHttpErrorResponseToProblemDetails(errorResponse: HttpErrorResponse): ProblemDetailsError {
-    if (errorResponse.error && errorResponse.error.error instanceof SyntaxError) {
+    if (errorResponse.error instanceof SyntaxError) {
       // we did not receive a json
       console.error('Content error:', errorResponse.error.message);
       return new ProblemDetailsError({
@@ -443,7 +542,7 @@ export class HypermediaClientService implements IHypermediaClientService {
     // try parse problem details
     if (errorResponse.headers) {
       const contentType = errorResponse.headers.get('Content-Type')
-      if (contentType?.includes(problemDetailsMimeType)) {
+      if (contentType?.includes(problemDetailsMimeType) || contentType?.includes('json')) {
         console.error("API Error:" + JSON.stringify(errorResponse.error, null, 4));
         return Object.assign(new ProblemDetailsError({rawObject: errorResponse.error}), errorResponse.error);
       }

@@ -42,3 +42,103 @@ rawContent{
   color: red;
   margin-right: 16px;
 }
+
+.apiToolbar {
+  background-color: transparent !important;
+  height: auto !important;
+  min-height: 40px;
+  padding: 0 16px !important;
+}
+
+.breadcrumb-container {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.breadcrumb-link {
+  display: flex;
+  align-items: center;
+  padding: 0 8px !important;
+  min-width: 0 !important;
+  font-weight: 500;
+  color: #555 !important;
+
+  &:hover {
+    color: #000 !important;
+    background-color: rgba(0, 0, 0, 0.05) !important;
+  }
+}
+
+.breadcrumb-icon {
+  margin-right: 4px;
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+}
+
+.breadcrumb-text {
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.breadcrumb-separator {
+  color: #999;
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+  margin: 0 4px;
+  font-weight: bold;
+}
+
+.view-toggle {
+  height: 32px;
+  align-items: center;
+
+  mat-button-toggle {
+    display: flex;
+    align-items: center;
+    background-color: transparent !important;
+
+    &.mat-button-toggle-checked {
+      background-color: rgba(0, 0, 0, 0.05) !important;
+    }
+
+    ::ng-deep .mat-button-toggle-label-content {
+      line-height: 32px;
+      padding: 0 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+    }
+
+    mat-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+    }
+  }
+}
+
+.property-toggle {
+  margin-right: 24px;
+  display: flex;
+  align-items: center;
+
+  mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    margin-left: 8px;
+    color: #666;
+  }
+
+  ::ng-deep .mdc-label {
+    display: flex;
+    align-items: center;
+    padding-left: 0;
+  }
+}

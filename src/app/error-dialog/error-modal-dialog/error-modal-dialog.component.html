@@ -26,6 +26,14 @@
         Reload page
       </button>
 
+      <button (click)="navigateBack.emit()"
+        mat-raised-button
+        [color]="color"
+        i18n="errorDialog.navigateBackButton|The text of the navigate back button in the error dialog@@errorDialogNavigateBackButton">
+        <mat-icon class="icon">arrow_back</mat-icon>
+        Navigate back
+      </button>
+
       <button (click)="gotoEntryPoint.emit()"
         mat-raised-button
         [color]="color"

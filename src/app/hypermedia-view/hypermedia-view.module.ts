@@ -1,69 +1,83 @@
-import { CommonModule } from '@angular/common';
-import { HttpClient, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
-import { LOCALE_ID, NgModule } from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {HttpClient, provideHttpClient, withInterceptorsFromDi} from '@angular/common/http';
+import {LOCALE_ID, NgModule} from '@angular/core';
 
-import { ActionsViewComponent } from './actions-view/actions-view.component';
-import { ParameterActionComponent } from './actions-view/parameter-action/parameter-action.component';
-import { ParameterlessActionViewComponent } from './actions-view/parameterless-action-view/parameterless-action-view.component';
-import { ObservableLruCache } from './api-access/observable-lru-cache';
-import { EmbeddedEntityViewComponent } from './embedded-entity-view/embedded-entity-view.component';
-import { EntityViewComponent } from './entity-view/entity-view.component';
-import { HypermediaClientService } from './hypermedia-client.service';
-import { HypermediaControlComponent } from './hypermedia-control/hypermedia-control.component';
-import { LinkViewComponent } from './link-view/link-view.component';
-import { PropertyGridComponent } from './property-grid/property-grid.component';
-import { RawViewComponent } from './raw-view/raw-view.component';
-import { SchemaSimplifier } from './siren-parser/schema-simplifier';
-import { SirenDeserializer } from './siren-parser/siren-deserializer';
-import { ClipboardModule } from 'ngx-clipboard';
-import { MatCardModule } from '@angular/material/card';
-import { MatButtonModule } from '@angular/material/button';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatGridListModule } from '@angular/material/grid-list';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatExpansionModule } from '@angular/material/expansion';
-import { MatTabsModule } from '@angular/material/tabs';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatIconModule } from '@angular/material/icon';
-import { MatListModule } from '@angular/material/list';
-import { MatSelectModule } from '@angular/material/select';
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatInputModule } from '@angular/material/input';
-import { FormsModule } from '@angular/forms';
-import { SettingsModule } from '../settings/settings.module';
+import {ActionsViewComponent} from './actions-view/actions-view.component';
+import {ParameterActionComponent} from './actions-view/parameter-action/parameter-action.component';
+import {
+  ParameterlessActionViewComponent
+} from './actions-view/parameterless-action-view/parameterless-action-view.component';
+import {ObservableLruCache} from './api-access/observable-lru-cache';
+import {EmbeddedEntityViewComponent} from './embedded-entity-view/embedded-entity-view.component';
+import {EntityViewComponent} from './entity-view/entity-view.component';
+import {HypermediaClientService} from './hypermedia-client.service';
+import {HypermediaControlComponent} from './hypermedia-control/hypermedia-control.component';
+import {LinkViewComponent} from './link-view/link-view.component';
+import {RawViewComponent} from './raw-view/raw-view.component';
+import {NonSirenViewComponent} from './non-siren-view/non-siren-view.component';
+import {ImagePreviewComponent} from './non-siren-view/image-preview/image-preview.component';
+import {TextPreviewComponent} from './non-siren-view/text-preview/text-preview.component';
+import {JsonPreviewComponent} from './non-siren-view/json-preview/json-preview.component';
+import {SchemaSimplifier} from './siren-parser/schema-simplifier';
+import {SirenDeserializer} from './siren-parser/siren-deserializer';
+import {ClipboardModule} from 'ngx-clipboard';
+import {MatCardModule} from '@angular/material/card';
+import {MatButtonModule} from '@angular/material/button';
+import {MatDatepickerModule} from '@angular/material/datepicker';
+import {MatGridListModule} from '@angular/material/grid-list';
+import {MatCheckboxModule} from '@angular/material/checkbox';
+import {MatExpansionModule} from '@angular/material/expansion';
+import {MatTabsModule} from '@angular/material/tabs';
+import {MatTooltipModule} from '@angular/material/tooltip';
+import {MatIconModule} from '@angular/material/icon';
+import {MatListModule} from '@angular/material/list';
+import {MatSelectModule} from '@angular/material/select';
+import {MatToolbarModule} from '@angular/material/toolbar';
+import {MatInputModule} from '@angular/material/input';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {SettingsModule} from '../settings/settings.module';
 
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+import {MatProgressBarModule} from '@angular/material/progress-bar';
 
-import { NgxJsonViewerModule } from 'ngx-json-viewer';
-import { MatMenuModule } from '@angular/material/menu';
-import { ErrorDialogModule } from '../error-dialog/error-dialog.module';
-import { FileUploadActionComponent } from './actions-view/file-upload-action/file-upload-action.component';
-import { NgxDropzoneModule } from 'ngx-dropzone';
-import { MatStepperModule } from '@angular/material/stepper';
-
-import { ReactiveFormsModule } from '@angular/forms';
-import { FormlyFieldConfig, FormlyModule } from '@ngx-formly/core';
-import { FormlyMaterialModule } from '@ngx-formly/material';
-import { FormlyFieldDatepicker, FormlyMatDatepickerModule } from '@ngx-formly/material/datepicker';
-import { ArrayTypeComponent } from './actions-view/parameter-action/formly-types/array-type';
-import { ObjectTypeComponent } from './actions-view/parameter-action/formly-types/object-type';
-import { MultiSchemaTypeComponent } from './actions-view/parameter-action/formly-types/multi-schema-type';
-import { NullTypeComponent } from './actions-view/parameter-action/formly-types/null-type';
-import { MatButtonToggleModule } from '@angular/material/button-toggle';
-import { BooleanTypeComponent } from './actions-view/parameter-action/formly-types/boolean-type';
-import { AuthService } from './auth.service';
-import { MAT_DATE_FORMATS, MAT_DATE_LOCALE, MatNativeDateModule } from '@angular/material/core';
+import {NgxJsonViewerModule} from 'ngx-json-viewer';
+import {MatMenuModule} from '@angular/material/menu';
+import {MatDividerModule} from '@angular/material/divider';
+import {ErrorDialogModule} from '../error-dialog/error-dialog.module';
+import {FileUploadActionComponent} from './actions-view/file-upload-action/file-upload-action.component';
+import {NgxDropzoneModule} from 'ngx-dropzone';
+import {MatStepperModule} from '@angular/material/stepper';
+import {FormlyFieldConfig, FormlyModule} from '@ngx-formly/core';
+import {FormlyMaterialModule} from '@ngx-formly/material';
+import {FormlyFieldDatepicker, FormlyMatDatepickerModule} from '@ngx-formly/material/datepicker';
+import {ArrayTypeComponent} from './actions-view/parameter-action/formly-types/array-type';
+import {ObjectTypeComponent} from './actions-view/parameter-action/formly-types/object-type';
+import {MultiSchemaTypeComponent} from './actions-view/parameter-action/formly-types/multi-schema-type';
+import {NullTypeComponent} from './actions-view/parameter-action/formly-types/null-type';
+import {MatButtonToggleModule} from '@angular/material/button-toggle';
+import {BooleanTypeComponent} from './actions-view/parameter-action/formly-types/boolean-type';
+import {AuthService} from './auth.service';
+import {MatNativeDateModule} from '@angular/material/core';
+import {FileSizePipe} from '../common/pipes/file-size.pipe';
+import {allowEmptyArrayExtension} from "./formly-extensions";
+import {PropertyTreeComponent} from "./property-tree/property-tree.component";
+import {MatTree, MatTreeNode, MatTreeNodeDef, MatTreeNodePadding, MatTreeNodeToggle} from "@angular/material/tree";
+import {MatChipsModule} from '@angular/material/chips';
+import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 
 @NgModule({
   exports: [HypermediaControlComponent],
   declarations: [
     HypermediaControlComponent,
-    PropertyGridComponent,
+    PropertyTreeComponent,
     LinkViewComponent,
     EmbeddedEntityViewComponent,
     EntityViewComponent,
     RawViewComponent,
+    NonSirenViewComponent,
+    ImagePreviewComponent,
+    TextPreviewComponent,
+    JsonPreviewComponent,
     ActionsViewComponent,
     ParameterlessActionViewComponent,
     ParameterActionComponent,
@@ -73,6 +87,7 @@ import { MAT_DATE_FORMATS, MAT_DATE_LOCALE, MatNativeDateModule } from '@angular
     MultiSchemaTypeComponent,
     NullTypeComponent,
     BooleanTypeComponent,
+    FileSizePipe,
   ],
   imports: [
     CommonModule,
@@ -92,53 +107,62 @@ import { MAT_DATE_FORMATS, MAT_DATE_LOCALE, MatNativeDateModule } from '@angular
     MatDatepickerModule,
     MatNativeDateModule,
     MatMenuModule,
+    MatDividerModule,
+    MatButtonToggleModule,
+    MatSlideToggleModule,
     ErrorDialogModule,
     MatProgressSpinnerModule,
     MatProgressBarModule,
     NgxJsonViewerModule,
     ReactiveFormsModule,
     FormlyModule.forRoot({
-        validationMessages: [
-            { name: 'required', message: 'This field is required' },
-            { name: 'type', message: typeValidationMessage },
-            { name: 'minLength', message: minLengthValidationMessage },
-            { name: 'maxLength', message: maxLengthValidationMessage },
-            { name: 'min', message: minValidationMessage },
-            { name: 'max', message: maxValidationMessage },
-            { name: 'multipleOf', message: multipleOfValidationMessage },
-            {
-                name: 'exclusiveMinimum',
-                message: exclusiveMinimumValidationMessage,
-            },
-            {
-                name: 'exclusiveMaximum',
-                message: exclusiveMaximumValidationMessage,
-            },
-            { name: 'minItems', message: minItemsValidationMessage },
-            { name: 'maxItems', message: maxItemsValidationMessage },
-            { name: 'uniqueItems', message: 'should NOT have duplicate items' },
-            { name: 'const', message: constValidationMessage },
-        ],
-        types: [
-            {
-                name: 'null',
-                component: NullTypeComponent,
-                wrappers: ['form-field'],
-            },
-            { name: 'array', component: ArrayTypeComponent },
-            { name: 'object', component: ObjectTypeComponent },
-            { name: 'multischema', component: MultiSchemaTypeComponent },
-            {
-                name: 'boolean',
-                component: BooleanTypeComponent,
-                wrappers: ['form-field'],
-            },
-            {
-              name: 'date',
-              component: FormlyFieldDatepicker,
-              wrappers: ['form-field'],
-            }
-        ],
+      extensions: [
+        {name: 'fix-allow-empty-arrays', extension: allowEmptyArrayExtension}
+      ],
+      validationMessages: [
+        {name: 'required', message: 'This field is required'},
+        {name: 'type', message: typeValidationMessage},
+        {name: 'minLength', message: minLengthValidationMessage},
+        {name: 'maxLength', message: maxLengthValidationMessage},
+        {name: 'min', message: minValidationMessage},
+        {name: 'max', message: maxValidationMessage},
+        {name: 'multipleOf', message: multipleOfValidationMessage},
+        {
+          name: 'exclusiveMinimum',
+          message: exclusiveMinimumValidationMessage,
+        },
+        {
+          name: 'exclusiveMaximum',
+          message: exclusiveMaximumValidationMessage,
+        },
+        {name: 'minItems', message: minItemsValidationMessage},
+        {name: 'maxItems', message: maxItemsValidationMessage},
+        {name: 'uniqueItems', message: 'should NOT have duplicate items'},
+        {name: 'const', message: constValidationMessage},
+      ],
+      types: [
+        {
+          name: 'null',
+          component: NullTypeComponent,
+          wrappers: ['form-field'],
+        },
+        {
+          name: 'array',
+          component: ArrayTypeComponent
+        },
+        {name: 'object', component: ObjectTypeComponent},
+        {name: 'multischema', component: MultiSchemaTypeComponent},
+        {
+          name: 'boolean',
+          component: BooleanTypeComponent,
+          wrappers: ['form-field'],
+        },
+        {
+          name: 'date',
+          component: FormlyFieldDatepicker,
+          wrappers: ['form-field'],
+        }
+      ],
     }),
     FormlyMaterialModule,
     ClipboardModule,
@@ -146,7 +170,14 @@ import { MAT_DATE_FORMATS, MAT_DATE_LOCALE, MatNativeDateModule } from '@angular
     SettingsModule,
     NgxDropzoneModule,
     MatStepperModule,
-    MatButtonToggleModule],
+    MatButtonToggleModule,
+    MatTree,
+    MatTreeNode,
+    MatTreeNodePadding,
+    MatTreeNodeDef,
+    MatTreeNodeToggle,
+    MatChipsModule
+  ],
   providers: [
     HypermediaClientService,
     AuthService,

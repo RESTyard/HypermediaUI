@@ -11,6 +11,9 @@ export class AppSettingsStorageModel {
         if (!this.GeneralSettings.actionExecutionTimeoutMs) {
             this.GeneralSettings.actionExecutionTimeoutMs = 60000;
         }
+        if (this.GeneralSettings.showPropertyTreeControls === undefined) {
+            this.GeneralSettings.showPropertyTreeControls = true;
+        }
     }
 }
 
@@ -32,6 +35,8 @@ export class GeneralSettingsStorageModel {
     useEmbeddingPropertyForActionParameters: boolean = true;
 
     showHostInformation: boolean = true;
+
+    showPropertyTreeControls: boolean = true;
 
     actionExecutionTimeoutMs: number = 60000;
 }

@@ -27,6 +27,7 @@ export class GeneralSettingsPageComponent implements OnInit {
   showEmptyActions: FormControl<boolean>= new FormControl();
   useEmbeddingPropertyForActionParameters: FormControl<boolean>= new FormControl();
   showHostInformation: FormControl<boolean>= new FormControl();
+  showPropertyTreeControls: FormControl<boolean>= new FormControl();
   actionExecutionTimeoutMs: FormControl<number>= new FormControl();
 
   constructor(
@@ -73,6 +74,9 @@ export class GeneralSettingsPageComponent implements OnInit {
 
     this.showHostInformation = new FormControl<boolean>(this.generalSettings.showHostInformation, { nonNullable: true });
     this.showHostInformation.valueChanges.subscribe(v => this.store.dispatch(updateGeneralAppSettings({ newGeneralSettings: this.generalSettings.set("showHostInformation", v)})));
+
+    this.showPropertyTreeControls = new FormControl<boolean>(this.generalSettings.showPropertyTreeControls, { nonNullable: true });
+    this.showPropertyTreeControls.valueChanges.subscribe(v => this.store.dispatch(updateGeneralAppSettings({ newGeneralSettings: this.generalSettings.set("showPropertyTreeControls", v)})));
 
     this.actionExecutionTimeoutMs = new FormControl<number>(this.generalSettings.actionExecutionTimeoutMs, {validators:Validators.required, nonNullable: true });
     this.actionExecutionTimeoutMs.valueChanges.subscribe(v => {

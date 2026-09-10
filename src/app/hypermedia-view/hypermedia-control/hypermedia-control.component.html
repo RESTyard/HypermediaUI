@@ -32,28 +32,55 @@
 
 
 <mat-toolbar class="apiToolbar">
-
-  @for (link of navPaths; track link; let i = $index) {
-    <button mat-raised-button matTooltip="{{link}}" (click)="navigateLink(link)" color="primary">
-      {{getUrlShortName(link)}}
-    </button>
-    @if (i < navPaths.length-1) {
-      <mat-icon>play_arrow</mat-icon>
+  <nav class="breadcrumb-container">
+    @for (link of navPaths; track link; let i = $index) {
+      <a mat-button
+         class="breadcrumb-link"
+         matTooltip="{{link}}"
+         [href]="getBrowserUrl(link)"
+         (click)="$event.preventDefault(); navigateLink(link)">
+        @if (i === 0) {
+          <mat-icon class="breadcrumb-icon">home</mat-icon>
+        }
+        <span class="breadcrumb-text">{{getUrlShortName(link)}}</span>
+      </a>
+      @if (i < navPaths.length - 1) {
+        <mat-icon class="breadcrumb-separator">chevron_right</mat-icon>
+      }
     }
+  </nav>
+
+  <span class="spacer"></span>
+
+  @if (GeneralSettings.showRawTab && !showRaw) {
+    <mat-slide-toggle
+      class="property-toggle"
+      [ngModel]="showPropertyTreeControls"
+      (change)="togglePropertyTreeControls($event.checked)"
+      color="primary"
+      matTooltip="Show property tree controls">
+      <mat-icon>tune</mat-icon>
+    </mat-slide-toggle>
+  }
+
+  @if (GeneralSettings.showRawTab) {
+    <mat-button-toggle-group class="view-toggle" [(ngModel)]="showRaw" aria-label="View Mode">
+      <mat-button-toggle [value]="false">
+        <mat-icon>grid_view</mat-icon>
+        <span>UI</span>
+      </mat-button-toggle>
+      <mat-button-toggle [value]="true">
+        <mat-icon>code</mat-icon>
+        <span>Raw</span>
+      </mat-button-toggle>
+    </mat-button-toggle-group>
   }
 </mat-toolbar>
 
-@if (GeneralSettings.showRawTab) {
-  <mat-tab-group>
-    <mat-tab label="UI">
-      <app-entity-view [entity]="hto"></app-entity-view>
-    </mat-tab>
-    <mat-tab label="Raw">
-      <app-raw-view class="rawContent" [rawObject]="rawResponse"></app-raw-view>
-    </mat-tab>
-  </mat-tab-group>
-}
-
-@if (!GeneralSettings.showRawTab) {
+@if (GeneralSettings.showRawTab && showRaw) {
+  <app-raw-view class="rawContent" [rawObject]="rawResponse"></app-raw-view>
+} @else if (contentType && contentType.toLowerCase() !== MediaTypes.Siren.toLowerCase()) {
+  <app-non-siren-view [contentType]="contentType" [rawContent]="rawResponse"></app-non-siren-view>
+} @else {
   <app-entity-view [entity]="hto"></app-entity-view>
 }

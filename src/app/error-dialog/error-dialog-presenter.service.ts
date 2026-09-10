@@ -63,6 +63,11 @@ export class ErrorDialogPresenter {
       () => this.destroy()
     );
 
+    this.modal.instance.navigateBack.subscribe(() => {
+      this.destroy();
+      this.zone.run(() => this.globalNavigationEvents.emitGotoPreviousStep());
+    });
+
     this.modal.instance.gotoEntryPoint.subscribe(() => {
       this.destroy();
       this.zone.run(() => this.globalNavigationEvents.emitGotoEntryPoint());

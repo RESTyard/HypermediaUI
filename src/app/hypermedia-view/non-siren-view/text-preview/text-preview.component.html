@@ -1,0 +1,35 @@
+<div class="text-preview-header">
+  <div class="actions">
+    @if (isOctetStream()) {
+      <button mat-stroked-button [matMenuTriggerFor]="langMenu" class="action-button small-button language-select-button">
+        <mat-icon>translate</mat-icon>
+        <span>{{ selectedLanguage || 'None' }}</span>
+        <mat-icon iconPositionEnd>arrow_drop_down</mat-icon>
+      </button>
+      <mat-menu #langMenu="matMenu">
+        <button mat-menu-item (click)="selectLanguage(undefined)">None</button>
+        @for (lang of languages; track lang) {
+          <button mat-menu-item (click)="selectLanguage(lang)">{{lang}}</button>
+        }
+      </mat-menu>
+    }
+    @if (isOctetStream()) {
+      <button mat-raised-button (click)="toggleForceTextRendering()" class="action-button small-button">
+        <mat-icon>{{ forceTextRendering ? 'visibility_off' : 'description' }}</mat-icon>
+        {{ forceTextRendering ? 'Hide content' : 'Render as Text' }}
+      </button>
+    }
+  </div>
+</div>
+
+@if (textContent !== undefined && (!isOctetStream() || forceTextRendering)) {
+  <div class="text-preview-container">
+    <div class="content-preview">
+      @if (highlightedHtml) {
+        <pre class="text-preview"><code class="hljs" [innerHTML]="highlightedHtml"></code></pre>
+      } @else {
+        <pre class="text-preview"><code class="hljs">{{textContent}}</code></pre>
+      }
+    </div>
+  </div>
+}

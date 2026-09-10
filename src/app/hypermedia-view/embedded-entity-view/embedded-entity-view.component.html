@@ -8,7 +8,20 @@
     <mat-expansion-panel  class="entityExpander" >
       <mat-expansion-panel-header>
         <mat-panel-title>
-          {{idx + 1}}: {{embeddedEntity.relations.join(",")}}
+          <span class="entity-index-badge">{{idx + 1}}</span>
+          <mat-chip-set class="relation-chips">
+            @for (rel of embeddedEntity.relations; track rel) {
+              <mat-chip>
+                @if (getRelationIcon(rel)) {
+                  <mat-icon matChipAvatar>{{getRelationIcon(rel)}}</mat-icon>
+                }
+                {{rel}}
+              </mat-chip>
+            }
+          </mat-chip-set>
+          @if(embeddedEntity.title){
+            <span class="entity-title">{{embeddedEntity.title}}</span>
+          }
         </mat-panel-title>
         @if (generalSettings.showClasses) {
           <mat-panel-description>
@@ -23,23 +36,38 @@
   }
 
   @for (embeddedLinkEntity of embeddedLinkEntities; track embeddedLinkEntity; let idx = $index) {
-    <ng-template matExpansionPanelContent>
-      <mat-card  appearance="outlined"  class="embeddedLinkEntityCard" >
-        <span>
-          {{idx + 1 + embeddedEntities?.length}}: {{embeddedLinkEntity.relations.join(",")}}
-        </span>
-        @if (generalSettings.showClasses) {
-          <span>
-            Classes: {{embeddedLinkEntity.classes.join(",")}}
-          </span>
+    <mat-card appearance="outlined" class="embeddedLinkEntityCard">
+      <div class="link-entity-header">
+        <span class="entity-index-badge">{{idx + 1 + embeddedEntities?.length}}</span>
+        <mat-chip-set class="relation-chips">
+          @for (rel of embeddedLinkEntity.relations; track rel) {
+            <mat-chip>
+              @if (getRelationIcon(rel)) {
+                <mat-icon matChipAvatar>{{getRelationIcon(rel)}}</mat-icon>
+              }
+              {{rel}}
+            </mat-chip>
+          }
+        </mat-chip-set>
+        @if(embeddedLinkEntity.title){
+          <span class="entity-title">{{embeddedLinkEntity.title}}</span>
         }
+      </div>
+
+      <div class="link-entity-classes">
+        @if (generalSettings.showClasses) {
+          <span>Classes: {{embeddedLinkEntity.classes.join(",")}}</span>
+        }
+      </div>
+
+      <div class="link-entity-actions">
         <button mat-icon-button class="CopyToClipboardButton" (click)="copyToClipBoard(embeddedLinkEntity.href)" matTooltip="Copy to clipboard" color="primary">
           <mat-icon>assignment</mat-icon>
         </button>
         <button class="entityLinkButton" mat-raised-button (click)="navigateHref(embeddedLinkEntity.href)" matTooltip="{{embeddedLinkEntity.href}}" color="primary">
           <mat-icon>play_arrow</mat-icon>
         </button>
-      </mat-card>
-    </ng-template>
+      </div>
+    </mat-card>
   }
 </div>

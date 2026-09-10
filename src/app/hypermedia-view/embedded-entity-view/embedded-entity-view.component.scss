@@ -1,7 +1,7 @@
 @use '../../../styles/defaults';
 
 .container {
-  margin-top: defaults.$containerSpacing;
+  margin-top: defaults.$spacing;
   padding: 0;
 }
 
@@ -21,21 +21,77 @@
 
 .entityExpander {
   margin: defaults.$spacing 0;
+
+  .mat-expansion-panel-header {
+    height: auto;
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+}
+
+.entity-index-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  height: 24px;
+  padding: 0 4px;
+  border-radius: 12px;
+  background-color: #e0e0e0;
+  color: #666;
+  font-size: 12px;
+  font-weight: bold;
+  margin-right: 12px;
+}
+
+.entity-title {
+  font-weight: bold;
+  font-size: 1.1em;
+  margin-left: 12px;
+}
+
+.relation-chips {
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 12px;
 }
 
 .embeddedLinkEntityCard {
   margin: defaults.$spacing 0;
   padding: defaults.$spacing;
-  display: grid;
-  grid-template-columns: 1fr 1fr auto auto;
+  display: flex;
+  flex-direction: row;
   align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.link-entity-header {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  flex: 1 1 auto;
+}
+
+.link-entity-classes {
+  flex: 0 1 auto;
+  color: grey;
+  font-size: 0.9em;
+}
+
+.link-entity-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .entityLinkButton {
-  justify-self: end;
+  // no extra rules needed
 }
 .CopyToClipboardButton{
-  justify-self: end;
+  // no extra rules needed
 }
 
 ::ng-deep div.mat-expansion-panel-body {

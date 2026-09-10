@@ -15,21 +15,20 @@
   </mat-card-content>
 
   @if (problemDetailsError?.rawObject) {
-    <mat-expansion-panel>
-      <mat-expansion-panel-header>
-        <mat-panel-title>
-          Raw response
-          <button mat-icon-button
-            class="CopyToClipboardButton hoverButton"
-            (click)="copyToClipBoard($event)"
-            matTooltip="Copy raw response body to clipboard"
-            color="primary">
-            <mat-icon>assignment</mat-icon>
-          </button>
-        </mat-panel-title>
-      </mat-expansion-panel-header>
+    <mat-divider></mat-divider>
+    <div class="raw-response-container">
+      <div class="raw-response-header">
+        <span class="raw-response-title">Raw response</span>
+        <button mat-icon-button
+                class="CopyToClipboardButton hoverButton"
+                (click)="copyToClipBoard($event)"
+                matTooltip="Copy raw response body to clipboard"
+                color="primary">
+          <mat-icon>assignment</mat-icon>
+        </button>
+      </div>
       <ngx-json-viewer class="jsonTree" [json]="problemDetailsError?.rawObject"></ngx-json-viewer>
-    </mat-expansion-panel>
+    </div>
   }
 
 </mat-card>

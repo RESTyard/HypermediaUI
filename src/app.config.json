@@ -1,5 +1,21 @@
 {
     "disableDeveloperControls": false,
     "configuredEntryPoints": [],
-    "onlyAllowConfiguredEntryPoints": false
+    "onlyAllowConfiguredEntryPoints": false,
+    "relationIconMapping": {},
+    "httpMethodIconMapping": {},
+    "actionPopupWarningConfigurations": [
+        {
+            "actionClass": "Destructive",
+            "title": "Confirm destructive Action",
+            "message": "This action is destructive and cannot be undone. Are you sure you want to continue?",
+            "icon": "warning"
+        },
+        {
+          "actionClass": "LongRunningBackground",
+          "title": "Confirm long running Action",
+          "message": "This is a long running action. Are you sure you want to continue?",
+          "icon": "timer"
+        }
+    ]
 }

@@ -60,6 +60,7 @@ export class SettingsService {
       showEmptyActions: storageModel.showEmptyActions,
       useEmbeddingPropertyForActionParameters: storageModel.useEmbeddingPropertyForActionParameters,
       showHostInformation: storageModel.showHostInformation,
+      showPropertyTreeControls: storageModel.showPropertyTreeControls,
       actionExecutionTimeoutMs: storageModel.actionExecutionTimeoutMs,
     });
   }
@@ -97,6 +98,7 @@ export class SettingsService {
       showEmptyActions: appModel.showEmptyActions,
       useEmbeddingPropertyForActionParameters: appModel.useEmbeddingPropertyForActionParameters,
       showHostInformation: appModel.showHostInformation,
+      showPropertyTreeControls: appModel.showPropertyTreeControls,
       actionExecutionTimeoutMs: appModel.actionExecutionTimeoutMs,
     };
   }

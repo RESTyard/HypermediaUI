@@ -12,6 +12,7 @@ export class GeneralSettings extends Record({
     showEmptyActions: false,
     useEmbeddingPropertyForActionParameters: true,
     showHostInformation: true,
+    showPropertyTreeControls: true,
     actionExecutionTimeoutMs: 60000
 }) {}
 

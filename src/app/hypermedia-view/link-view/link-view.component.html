@@ -1,24 +1,40 @@
 <div class="container">
   @for (link of links; track link) {
-    <span>
-      <mat-button-toggle-group class="buttonContainer">
-        <mat-button-toggle (click)="navigateLink(link)" matTooltip="{{link.url}}">
-          <mat-icon >play_arrow</mat-icon>
-          <span>
-            {{link.relations.join(',')}}
-          </span>
-        </mat-button-toggle>
-        <mat-button-toggle [matMenuTriggerFor]="dropdownMenuOne">
-          <mat-icon>arrow_drop_down</mat-icon>
-        </mat-button-toggle>
-      </mat-button-toggle-group>
-      <mat-menu #dropdownMenuOne="matMenu">
-        <button  mat-menu-item
-          (click)="copyToClipBoard(link)">
-          <mat-icon color="primary">assignment</mat-icon>
-          Copy URL to clipboard
-        </button>
+    <span class="link-group">
+      <a mat-flat-button class="main-link-button"
+         [class.download-link]="!isSirenLink(link)"
+         [href]="getBrowserUrl(link)"
+         [matTooltip]="(link.type !== MediaTypes.Siren && link.type != undefined) ? link.type : ''"
+         (click)="$event.preventDefault(); navigateLink(link)">
         @if (link.type !== MediaTypes.Siren && link.type != undefined) {
+          <mat-icon class="link-icon">{{getIconForMimeType(link.type)}}</mat-icon>
+        } @else if (getRelationIcon(link.relations)) {
+          <mat-icon class="link-icon">{{getRelationIcon(link.relations)}}</mat-icon>
+        } @else {
+          <mat-icon class="link-icon">link</mat-icon>
+        }
+        <span class="link-text">
+          {{link.relations.join(', ')}}
+        </span>
+      </a>
+      <button mat-flat-button class="dropdown-button"
+              [class.download-link]="!isSirenLink(link)"
+              [matMenuTriggerFor]="dropdownMenuOne">
+        <mat-icon>arrow_drop_down</mat-icon>
+      </button>
+
+      <mat-menu #dropdownMenuOne="matMenu">
+        <div class="menu-url-container" (click)="$event.stopPropagation()">
+          <button mat-icon-button
+                  (click)="copyToClipBoard(link)"
+                  matTooltip="copy to clipboard"
+                  color="primary">
+            <mat-icon>assignment</mat-icon>
+          </button>
+          <span class="url-text">{{link.url}}</span>
+        </div>
+        @if (link.type !== MediaTypes.Siren && link.type != undefined) {
+          <mat-divider></mat-divider>
           <button  mat-menu-item
             (click)="download(link)">
             <mat-icon color="primary">download</mat-icon>

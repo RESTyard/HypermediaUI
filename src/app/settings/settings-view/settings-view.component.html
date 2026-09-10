@@ -11,11 +11,19 @@
     </button>
   </div>
 
-  <mat-tab-group dynamicHeight >
-    <mat-tab label="General">
+  <mat-tab-group dynamicHeight color="primary">
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon class="tab-icon">settings</mat-icon>
+        <span>General</span>
+      </ng-template>
       <app-general-settings-page class="tab-content"></app-general-settings-page>
     </mat-tab>
-    <mat-tab label="Sites">
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon class="tab-icon">language</mat-icon>
+        <span>Sites</span>
+      </ng-template>
       <app-site-settings-page class="tab-content"></app-site-settings-page>
     </mat-tab>
   </mat-tab-group>

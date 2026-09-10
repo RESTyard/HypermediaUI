@@ -22,6 +22,18 @@ export class HypermediaAction {
   public FileUploadConfiguration: FileUploadConfiguration = new FileUploadConfiguration();
 
   constructor() { }
+
+  public getConfigurations(actionPopupWarningConfigurations: HypermediaUI.IActionClassConfiguration[]): HypermediaUI.IActionClassConfiguration[] {
+    if (!actionPopupWarningConfigurations || !this.classes) {
+      return [];
+    }
+
+    const lowerCaseClasses = this.classes.map(c => c.toLowerCase());
+
+    return actionPopupWarningConfigurations.filter(config =>
+      lowerCaseClasses.includes(config.actionClass.toLowerCase())
+    );
+  }
 }
 
 export enum HttpMethodTypes {
