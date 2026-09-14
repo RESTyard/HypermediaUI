@@ -1,9 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { FormBuilder, FormControl, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { AppSettings, GeneralSettings, Test } from '../app-settings';
+import { AppSettings, GeneralSettings } from '../app-settings';
 import { Store } from '@ngrx/store';
-import { updateAppSettings, updateGeneralAppSettings } from 'src/app/store/appsettings.actions';
+import { updateGeneralAppSettings } from 'src/app/store/appsettings.actions';
 import { SettingsService } from '../services/settings.service';
 import { AppConfig } from 'src/app.config.service';
 
@@ -14,27 +14,33 @@ import { AppConfig } from 'src/app.config.service';
     standalone: false
 })
 export class GeneralSettingsPageComponent implements OnInit {
+  private settingsService = inject(SettingsService);
+  private store = inject<Store<{
+    appSettings: AppSettings;
+    appConfig: AppConfig;
+}>>(Store);
+  private snackBar = inject(MatSnackBar);
+  private formBuilder = inject(FormBuilder);
+
 
   generalSettings: GeneralSettings = new GeneralSettings();
   checked = false;
-  showRawTab: FormControl<boolean>= new FormControl();
+  showRawTab: FormControl<boolean> = new FormControl<boolean>(false, { nonNullable: true });
   disableDeveloperControls: boolean = false;
-  showClasses: FormControl<boolean>= new FormControl();
-  showEmptyEntities: FormControl<boolean>= new FormControl();
-  showEmptyProperties: FormControl<boolean>= new FormControl();
-  showNullProperties: FormControl<boolean>= new FormControl();
-  showEmptyLinks: FormControl<boolean>= new FormControl();
-  showEmptyActions: FormControl<boolean>= new FormControl();
-  useEmbeddingPropertyForActionParameters: FormControl<boolean>= new FormControl();
-  showHostInformation: FormControl<boolean>= new FormControl();
-  showPropertyTreeControls: FormControl<boolean>= new FormControl();
-  actionExecutionTimeoutMs: FormControl<number>= new FormControl();
+  showClasses: FormControl<boolean> = new FormControl<boolean>(false, { nonNullable: true });
+  showEmptyEntities: FormControl<boolean> = new FormControl<boolean>(false, { nonNullable: true });
+  showEmptyProperties: FormControl<boolean> = new FormControl<boolean>(false, { nonNullable: true });
+  showNullProperties: FormControl<boolean> = new FormControl<boolean>(false, { nonNullable: true });
+  showEmptyLinks: FormControl<boolean> = new FormControl<boolean>(false, { nonNullable: true });
+  showEmptyActions: FormControl<boolean> = new FormControl<boolean>(false, { nonNullable: true });
+  useEmbeddingPropertyForActionParameters: FormControl<boolean> = new FormControl<boolean>(false, { nonNullable: true });
+  showHostInformation: FormControl<boolean> = new FormControl<boolean>(false, { nonNullable: true });
+  showPropertyTreeControls: FormControl<boolean> = new FormControl<boolean>(false, { nonNullable: true });
+  actionExecutionTimeoutMs: FormControl<number> = new FormControl<number>(0, { validators: Validators.required, nonNullable: true });
 
-  constructor(
-    private settingsService: SettingsService,
-    private store: Store<{ appSettings: AppSettings, appConfig: AppConfig }>,
-    private snackBar: MatSnackBar,
-    private formBuilder: FormBuilder) {
+  constructor() {
+      const store = this.store;
+
       store
         .select(state => state.appSettings.generalSettings)
         .subscribe({
@@ -48,37 +54,37 @@ export class GeneralSettingsPageComponent implements OnInit {
    }
 
   ngOnInit(): void {
-    this.showRawTab = new FormControl<boolean>(this.generalSettings.showRawTab, { nonNullable: true });
+    this.showRawTab.setValue(this.generalSettings.showRawTab);
     this.showRawTab.valueChanges.subscribe(v => this.store.dispatch(updateGeneralAppSettings({ newGeneralSettings: this.generalSettings.set("showRawTab", v)})));
 
-    this.showClasses = new FormControl<boolean>(this.generalSettings.showClasses, { nonNullable: true });
+    this.showClasses.setValue(this.generalSettings.showClasses);
     this.showClasses.valueChanges.subscribe(v => this.store.dispatch(updateGeneralAppSettings({ newGeneralSettings: this.generalSettings.set("showClasses", v)})));
 
-    this.showEmptyEntities = new FormControl<boolean>(this.generalSettings.showEmptyEntities, { nonNullable: true });
+    this.showEmptyEntities.setValue(this.generalSettings.showEmptyEntities);
     this.showEmptyEntities.valueChanges.subscribe(v => this.store.dispatch(updateGeneralAppSettings({ newGeneralSettings: this.generalSettings.set("showEmptyEntities", v)})));
 
-    this.showEmptyProperties = new FormControl<boolean>(this.generalSettings.showEmptyProperties, { nonNullable: true });
+    this.showEmptyProperties.setValue(this.generalSettings.showEmptyProperties);
     this.showEmptyProperties.valueChanges.subscribe(v => this.store.dispatch(updateGeneralAppSettings({ newGeneralSettings: this.generalSettings.set("showEmptyProperties", v)})));
 
-    this.showNullProperties = new FormControl<boolean>(this.generalSettings.showNullProperties, { nonNullable: true });
+    this.showNullProperties.setValue(this.generalSettings.showNullProperties);
     this.showNullProperties.valueChanges.subscribe(v => this.store.dispatch(updateGeneralAppSettings({ newGeneralSettings: this.generalSettings.set("showNullProperties", v)})));
 
-    this.showEmptyLinks = new FormControl<boolean>(this.generalSettings.showEmptyLinks, { nonNullable: true });
+    this.showEmptyLinks.setValue(this.generalSettings.showEmptyLinks);
     this.showEmptyLinks.valueChanges.subscribe(v => this.store.dispatch(updateGeneralAppSettings({ newGeneralSettings: this.generalSettings.set("showEmptyLinks", v)})));
 
-    this.showEmptyActions = new FormControl<boolean>(this.generalSettings.showEmptyActions, { nonNullable: true });
+    this.showEmptyActions.setValue(this.generalSettings.showEmptyActions);
     this.showEmptyActions.valueChanges.subscribe(v => this.store.dispatch(updateGeneralAppSettings({ newGeneralSettings: this.generalSettings.set("showEmptyActions", v)})));
 
-    this.useEmbeddingPropertyForActionParameters = new FormControl<boolean>(this.generalSettings.useEmbeddingPropertyForActionParameters, { nonNullable: true });
+    this.useEmbeddingPropertyForActionParameters.setValue(this.generalSettings.useEmbeddingPropertyForActionParameters);
     this.useEmbeddingPropertyForActionParameters.valueChanges.subscribe(v => this.store.dispatch(updateGeneralAppSettings({ newGeneralSettings: this.generalSettings.set("useEmbeddingPropertyForActionParameters", v)})));
 
-    this.showHostInformation = new FormControl<boolean>(this.generalSettings.showHostInformation, { nonNullable: true });
+    this.showHostInformation.setValue(this.generalSettings.showHostInformation);
     this.showHostInformation.valueChanges.subscribe(v => this.store.dispatch(updateGeneralAppSettings({ newGeneralSettings: this.generalSettings.set("showHostInformation", v)})));
 
-    this.showPropertyTreeControls = new FormControl<boolean>(this.generalSettings.showPropertyTreeControls, { nonNullable: true });
+    this.showPropertyTreeControls.setValue(this.generalSettings.showPropertyTreeControls);
     this.showPropertyTreeControls.valueChanges.subscribe(v => this.store.dispatch(updateGeneralAppSettings({ newGeneralSettings: this.generalSettings.set("showPropertyTreeControls", v)})));
 
-    this.actionExecutionTimeoutMs = new FormControl<number>(this.generalSettings.actionExecutionTimeoutMs, {validators:Validators.required, nonNullable: true });
+    this.actionExecutionTimeoutMs.setValue(this.generalSettings.actionExecutionTimeoutMs);
     this.actionExecutionTimeoutMs.valueChanges.subscribe(v => {
       const value = v == null ? 60000 : v;
       this.store.dispatch(updateGeneralAppSettings({ newGeneralSettings: this.generalSettings.set("actionExecutionTimeoutMs", value)}));
@@ -86,7 +92,7 @@ export class GeneralSettingsPageComponent implements OnInit {
   }
 
   saveSites(): void {
-    this.settingsService.SaveCurrentSettings(),
+    this.settingsService.SaveCurrentSettings();
     this.snackBar.open("Settings saved.");
   }
 

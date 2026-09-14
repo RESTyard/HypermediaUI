@@ -86,13 +86,13 @@ export class SchemaSimplifier {
       return;
     }
     if (schema.hasOwnProperty('oneOf') && Array.isArray(schema.oneOf)) {
-      let originalLength = schema.oneOf.length;
+      const originalLength = schema.oneOf.length;
       schema.oneOf = schema.oneOf.filter((item: any) => item.type !== 'null');
-      let nullWasRemoved = schema.oneOf.length != originalLength;
+      const nullWasRemoved = schema.oneOf.length != originalLength;
       if (schema.oneOf.length === 1) {
-        let oneOf = schema.oneOf[0];
+        const oneOf = schema.oneOf[0];
         delete schema.oneOf;
-        let key = Object.keys(parent).find((key) => parent[key] === schema);
+        const key = Object.keys(parent).find((key) => parent[key] === schema);
         if (!key) {
           console.log(`Could not minify oneof`);
         } else {
@@ -120,9 +120,9 @@ export class SchemaSimplifier {
     let iteration = 0;
     const maxTrys = 50;
     while (iteration < maxTrys) {
-      const foundRefs = <Array<any>>find(schema, {
+      const foundRefs = find(schema, {
         $ref: /\.*/,
-      });
+      }) as any[];
 
       if (foundRefs.length === 0) {
         break;
@@ -145,7 +145,7 @@ export class SchemaSimplifier {
     foundRefs.forEach((refParent) => {
       // inline subschema keyword used in draft 2019-09
       if (schema.$defs) {
-        const defsKey = (<string>refParent.$ref).replace('#/$defs/', '');
+        const defsKey = (refParent.$ref as string).replace('#/$defs/', '');
         const defsReplacement = schema.$defs[defsKey];
         if (defsReplacement) {
           const nullable = Array.isArray(refParent.type) && refParent.type.includes('null');
@@ -160,7 +160,7 @@ export class SchemaSimplifier {
 
       // inline subschema keyword used in drafts 06 and 07
       if (schema.definitions) {
-        const definitionsKey = (<string>refParent.$ref).replace(
+        const definitionsKey = (refParent.$ref as string).replace(
           '#/definitions/',
           '',
         );
@@ -187,8 +187,8 @@ export class SchemaSimplifier {
 
     if (schema.hasOwnProperty('anyOf')) {
       // if anyOf contains both number and integer, simplify to just number
-      let anyOfNumber = schema.anyOf.filter((s: any) => s.type === 'number');
-      let anyOfInteger = schema.anyOf.filter((s: any) => s.type === 'integer');
+      const anyOfNumber = schema.anyOf.filter((s: any) => s.type === 'number');
+      const anyOfInteger = schema.anyOf.filter((s: any) => s.type === 'integer');
       if (anyOfNumber.length > 0 && anyOfInteger.length > 0) {
         schema['type'] = 'number';
         delete schema.anyOf;

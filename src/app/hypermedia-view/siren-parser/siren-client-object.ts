@@ -1,8 +1,6 @@
-import { PropertyTypes, PropertyInfo } from './property-info';
-import { HypermediaAction, HttpMethodTypes } from './hypermedia-action';
+import { PropertyInfo } from './property-info';
+import { HypermediaAction } from './hypermedia-action';
 import { HypermediaLink } from './hypermedia-link';
-import { EmbeddedLinkEntity } from './embedded-link-entity';
-import { EmbeddedEntity } from './embedded-entity';
 import { ISirenClientObject, IEmbeddedLinkEntity, IEmbeddedEntity } from './entity-interfaces';
 
 
@@ -14,6 +12,4 @@ export class SirenClientObject implements ISirenClientObject {
     embeddedEntities: IEmbeddedEntity[] = [];
     title: string = "";
     actions: HypermediaAction[] = [];
-
-    constructor() { }
   }

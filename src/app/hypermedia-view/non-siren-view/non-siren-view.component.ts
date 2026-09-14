@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, inject } from '@angular/core';
 import { getBaseMimeType, getIconForMimeType } from '../mime-type-icon-mapping';
 import { HypermediaClientService } from '../hypermedia-client.service';
 import { TextPreviewComponent } from './text-preview/text-preview.component';
@@ -19,14 +19,12 @@ export enum PreviewType {
   standalone: false
 })
 export class NonSirenViewComponent {
+  private hypermediaClient = inject(HypermediaClientService);
+
   @Input() contentType: string | undefined;
   @Input() rawContent: any;
 
   PreviewType = PreviewType;
-
-  constructor(
-    private hypermediaClient: HypermediaClientService
-  ) { }
 
   getPreviewType(): PreviewType {
     const type = this.contentType?.toLowerCase();

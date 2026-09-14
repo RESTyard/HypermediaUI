@@ -1,4 +1,4 @@
-import { Component, OnInit, Input} from '@angular/core';
+import { Component, Input, inject } from '@angular/core';
 import { EmbeddedLinkEntity } from '../siren-parser/embedded-link-entity';
 import { EmbeddedEntity } from '../siren-parser/embedded-entity';
 import { getIconForRelation } from '../icon-mapping';
@@ -15,15 +15,20 @@ import { selectEffectiveGeneralSettings } from 'src/app/store/selectors';
     styleUrls: ['./embedded-entity-view.component.scss'],
     standalone: false
 })
-export class EmbeddedEntityViewComponent implements OnInit {
+export class EmbeddedEntityViewComponent {
+  private hypermediaClient = inject(HypermediaClientService);
+  private clipboardService = inject(ClipboardService);
+
   @Input() embeddedLinkEntities: EmbeddedLinkEntity[] = [];
   @Input() embeddedEntities: EmbeddedEntity[] = [];
   generalSettings: GeneralSettings = new GeneralSettings();
 
-  constructor(
-    private hypermediaClient: HypermediaClientService,
-    private clipboardService: ClipboardService,
-    store: Store<{ appSettings: AppSettings, appConfig: AppConfig }>) {
+  constructor() {
+      const store = inject<Store<{
+    appSettings: AppSettings;
+    appConfig: AppConfig;
+}>>(Store);
+
       store
         .select(selectEffectiveGeneralSettings)
         .subscribe({
@@ -42,8 +47,4 @@ export class EmbeddedEntityViewComponent implements OnInit {
   getRelationIcon(rel: string): string | undefined {
     return getIconForRelation(rel);
   }
-
-  ngOnInit() {
-  }
-
 }

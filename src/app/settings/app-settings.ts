@@ -27,7 +27,7 @@ export class SiteSetting extends Record({
     siteUrl: "",
     headers: Map<string, string>(),
     authenticationInProgress: false,
-    authConfig: <AuthenticationConfiguration | undefined> undefined,
+    authConfig: undefined as AuthenticationConfiguration | undefined,
 }) {}
 
 export class SiteSettings extends Record({

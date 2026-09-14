@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, inject } from '@angular/core';
 import { ProblemDetailsError } from 'src/app/error-dialog/problem-details-error';
 import {
   ActionResults,
@@ -20,6 +20,11 @@ import { AppConfigService } from 'src/app.config.service';
     standalone: false
 })
 export class ParameterActionComponent implements OnInit {
+  private hypermediaClientService = inject(HypermediaClientService);
+  private formlyJsonschema = inject(FormlyJsonschema);
+  private dialog = inject(MatDialog);
+  private appConfigService = inject(AppConfigService);
+
   @Input()
   action!: HypermediaAction;
 
@@ -33,14 +38,7 @@ export class ParameterActionComponent implements OnInit {
 
   formlyFields: FormlyFieldConfig[] = [];
   form: FormGroup = new FormGroup({});
-  model: any;
-
-  constructor(
-    private hypermediaClientService: HypermediaClientService,
-    private formlyJsonschema: FormlyJsonschema,
-    private dialog: MatDialog,
-    private appConfigService: AppConfigService
-  ) {}
+  model: object | undefined;
 
   ngOnInit() {
     this.action.waheActionParameterJsonSchema?.subscribe((jsonSchema) => {

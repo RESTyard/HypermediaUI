@@ -21,8 +21,6 @@ export class HypermediaAction {
   public files: File[] = [];
   public FileUploadConfiguration: FileUploadConfiguration = new FileUploadConfiguration();
 
-  constructor() { }
-
   public getConfigurations(actionPopupWarningConfigurations: HypermediaUI.IActionClassConfiguration[]): HypermediaUI.IActionClassConfiguration[] {
     if (!actionPopupWarningConfigurations || !this.classes) {
       return [];

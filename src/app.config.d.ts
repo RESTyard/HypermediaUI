@@ -3,8 +3,8 @@ declare namespace HypermediaUI {
         disableDeveloperControls: boolean;
         configuredEntryPoints: IConfiguredEntryPointsItem[];
         onlyAllowConfiguredEntryPoints: boolean;
-        relationIconMapping?: { [key: string]: string };
-        httpMethodIconMapping?: { [key: string]: string };
+        relationIconMapping?: Record<string, string>;
+        httpMethodIconMapping?: Record<string, string>;
         actionPopupWarningConfigurations?: IActionClassConfiguration[];
     }
     export interface IConfiguredEntryPointsItem {

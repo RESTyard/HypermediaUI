@@ -148,7 +148,7 @@ export class PropertyTreeComponent implements OnChanges {
     if (this.matchCount > 0) this.currentMatchIndex = 0;
   }
 
-  handleSearchEnter(event: Event) {
+  handleSearchEnter(_event: Event) {
     if (this.matchCount > 0) {
       this.scrollToMatch(this.currentMatchIndex);
       this.currentMatchIndex = (this.currentMatchIndex + 1) % this.matchCount;

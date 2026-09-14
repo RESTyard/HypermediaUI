@@ -25,8 +25,8 @@ export class HypermediaClientServiceMock implements IHypermediaClientService {
     public getContentTypeStream = (): BehaviorSubject<string | undefined> => {
         return new BehaviorSubject<string | undefined>(undefined);
     }
-    public getNavPathsStream = (): BehaviorSubject<Array<string>> => {
-        return new BehaviorSubject<Array<string>>([]);
+    public getNavPathsStream = (): BehaviorSubject<string[]> => {
+        return new BehaviorSubject<string[]>([]);
     }
     public navigateToEntryPoint = (): void => {
         throw new Error("Method not implemented.");

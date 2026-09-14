@@ -1,11 +1,5 @@
 import { ErrorDialogContainerProvider } from './application-root.provider';
-import {
-  ComponentRef,
-  Injectable,
-  Injector,
-  NgZone,
-  ViewContainerRef,
-} from '@angular/core';
+import { ComponentRef, Injectable, Injector, NgZone, ViewContainerRef, inject } from '@angular/core';
 
 import { ErrorModalDialogComponent } from './error-modal-dialog/error-modal-dialog.component';
 import { ThemePalette } from "@angular/material/core";
@@ -14,6 +8,11 @@ import { GlobalNavigationEvents } from '../global-navigation.events';
 
 @Injectable()
 export class ErrorDialogPresenter {
+  private globalNavigationEvents = inject(GlobalNavigationEvents);
+  private appRootProvider = inject(ErrorDialogContainerProvider);
+  private injector = inject(Injector);
+  private zone = inject(NgZone);
+
   _viewContainer: ViewContainerRef = undefined!;
 
   modal: ComponentRef<ErrorModalDialogComponent> = undefined!;
@@ -31,12 +30,9 @@ export class ErrorDialogPresenter {
     return this._viewContainer;
   }
 
-  constructor(
-    private globalNavigationEvents: GlobalNavigationEvents,
-    private appRootProvider: ErrorDialogContainerProvider,
-    private injector: Injector,
-    private zone: NgZone
-  ) {
+  constructor() {
+    const appRootProvider = this.appRootProvider;
+
     appRootProvider
       .container()
       .subscribe(viewContainer => this.viewContainer = viewContainer);
@@ -54,6 +50,7 @@ export class ErrorDialogPresenter {
   openProblemDetails(problemDetailsError: ProblemDetailsError, color: ThemePalette = 'warn') {
     this.modal = this.viewContainer.createComponent(ErrorModalDialogComponent);
     this.modal.instance.problemDetailsError = problemDetailsError;
+    this.modal.instance.color = color;
 
     this.HookUpSignals();
   }

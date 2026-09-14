@@ -95,13 +95,13 @@ export const appSettingsReducer = createReducer(
 );
 
 const setHeaders = (state: AppSettings, siteUrl: string, headers: Map<string, string>): AppSettings => {
-    var updatedEntry = state.siteSettings.siteSpecificSettings.get(siteUrl)!.set("headers", headers);
-    return setSite(state, siteUrl, updatedEntry);
+  const updatedEntry = state.siteSettings.siteSpecificSettings.get(siteUrl)!.set("headers", headers);
+  return setSite(state, siteUrl, updatedEntry);
 }
 
 const setSite = (state: AppSettings, siteUrl: string, siteSpecificSettings: SiteSetting): AppSettings => {
-    var updatedSiteSettings = state.siteSettings.siteSpecificSettings.set(siteUrl, siteSpecificSettings);
-    return setSiteSettings(state, updatedSiteSettings);
+  const updatedSiteSettings = state.siteSettings.siteSpecificSettings.set(siteUrl, siteSpecificSettings);
+  return setSiteSettings(state, updatedSiteSettings);
 }
 
 const setSiteSettings = (state: AppSettings, siteSettings: Map<string, SiteSetting>): AppSettings => {

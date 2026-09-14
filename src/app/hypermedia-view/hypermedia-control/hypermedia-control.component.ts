@@ -1,8 +1,7 @@
-import {Component, OnInit} from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import {HypermediaClientService} from '../hypermedia-client.service';
 import {SirenClientObject} from '../siren-parser/siren-client-object';
 import {ActivatedRoute, Router} from '@angular/router';
-import {PlatformLocation} from '@angular/common';
 import {ApiPath} from '../api-path';
 import {AppSettings, GeneralSettings} from 'src/app/settings/app-settings';
 import {Store} from '@ngrx/store';
@@ -21,6 +20,16 @@ import {MediaTypes} from "../MediaTypes";
   standalone: false
 })
 export class HypermediaControlComponent implements OnInit {
+  private hypermediaClient = inject(HypermediaClientService);
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
+  private authService = inject(AuthService);
+  private store = inject<Store<{
+    appSettings: AppSettings;
+    appConfig: AppConfig;
+    currentEntryPoint: CurrentEntryPoint;
+}>>(Store);
+
   public rawResponse: object | null = null;
   public contentType: string | undefined = undefined;
   public hto: SirenClientObject = new SirenClientObject();
@@ -38,13 +47,10 @@ export class HypermediaControlComponent implements OnInit {
   public showRaw: boolean = false;
   public showPropertyTreeControls: boolean = true;
 
-  constructor(
-    private hypermediaClient: HypermediaClientService,
-    private route: ActivatedRoute,
-    private router: Router,
-    private authService: AuthService,
-    location: PlatformLocation,
-    private store: Store<{ appSettings: AppSettings, appConfig: AppConfig, currentEntryPoint: CurrentEntryPoint }>) {
+  constructor() {
+    const router = this.router;
+    const store = this.store;
+
     store
       .select(selectEffectiveGeneralSettings)
       .subscribe({
@@ -132,7 +138,7 @@ export class HypermediaControlComponent implements OnInit {
     }
 
     this.CurrentEntryPoint = navPaths[0];
-    let url = new URL(this.CurrentEntryPoint);
+    const url = new URL(this.CurrentEntryPoint);
     this.CurrentHost = url.host;
     if (url.protocol === "http:") {
       this.IsInsecureConnection = true;

@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, OnInit, Input, OnChanges, SimpleChanges, inject } from '@angular/core';
 import { SirenClientObject } from '../siren-parser/siren-client-object';
 import { HypermediaLink } from '../siren-parser/hypermedia-link';
 import { HypermediaAction } from '../siren-parser/hypermedia-action';
@@ -16,6 +16,11 @@ import { AppConfig } from 'src/app.config.service';
     standalone: false
 })
 export class EntityViewComponent implements OnInit, OnChanges {
+  private store = inject<Store<{
+    appSettings: AppSettings;
+    appConfig: AppConfig;
+}>>(Store);
+
 
   @Input() entity: SirenClientObject = new SirenClientObject();
 
@@ -28,7 +33,9 @@ export class EntityViewComponent implements OnInit, OnChanges {
   public actions: HypermediaAction[] = new Array<HypermediaAction>();
   GeneralSettings: GeneralSettings = new GeneralSettings();
 
-  constructor(private store: Store<{ appSettings: AppSettings, appConfig: AppConfig }>) {
+  constructor() {
+    const store = this.store;
+
     store
       .select(selectEffectiveGeneralSettings)
       .subscribe({
@@ -42,7 +49,7 @@ export class EntityViewComponent implements OnInit, OnChanges {
     this.processHto();
   }
 
-  ngOnChanges(changes: SimpleChanges) {
+  ngOnChanges(_changes: SimpleChanges) {
     this.processHto();
   }
 

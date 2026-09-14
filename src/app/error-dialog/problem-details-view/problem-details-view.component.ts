@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, Input, inject } from '@angular/core';
 import { ClipboardService } from 'ngx-clipboard';
 import { ProblemDetailsError } from '../problem-details-error';
 
@@ -8,16 +8,13 @@ import { ProblemDetailsError } from '../problem-details-error';
     styleUrls: ['./problem-details-view.component.scss'],
     standalone: false
 })
-export class ProblemDetailsViewComponent implements OnInit {
+export class ProblemDetailsViewComponent {
+  private clipboardService = inject(ClipboardService);
+
 
   @Input() problemDetailsError: ProblemDetailsError | undefined;
 
-  constructor(private clipboardService: ClipboardService) { }
-
-  ngOnInit() {
-  }
-
-  copyToClipBoard(event: any) {
+  copyToClipBoard(event: PointerEvent) {
     if (this.problemDetailsError) {
       this.clipboardService.copyFromContent(JSON.stringify(this.problemDetailsError.rawObject, null, 4));
     }

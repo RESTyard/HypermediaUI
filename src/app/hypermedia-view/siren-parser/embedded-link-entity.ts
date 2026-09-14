@@ -1,20 +1,18 @@
 import { HypermediaLink } from './hypermedia-link';
 import { PropertyInfo } from './property-info';
 import { HypermediaAction } from './hypermedia-action';
-import { IEmbeddedLinkEntity } from './entity-interfaces';
+import {IEmbeddedEntity, IEmbeddedLinkEntity} from './entity-interfaces';
 
 export class EmbeddedLinkEntity implements IEmbeddedLinkEntity {
-  links: HypermediaLink[] = new Array<HypermediaLink>();
-  properties: PropertyInfo[] = new Array<PropertyInfo>() ;
-  embeddedLinkEntities: any = [];
-  embeddedEntities: any[] = [];
+  links: HypermediaLink[] = [];
+  properties: PropertyInfo[] = [];
+  embeddedLinkEntities: IEmbeddedLinkEntity[] = [];
+  embeddedEntities: IEmbeddedEntity[] = [];
   actions: HypermediaAction[] = [];
 
-  public relations: string[] = new Array<string>();
+  public relations: string[] = [];
   public href: string = "";
-  public classes: string[] = new Array<string>();
+  public classes: string[] = [];
   public mediaType: string = "";
   public title: string = "";
-
-  constructor() { }
 }

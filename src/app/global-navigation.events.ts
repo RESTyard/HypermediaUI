@@ -4,9 +4,9 @@ import { Unit } from "./utils/unit";
 
 @Injectable()
 export class GlobalNavigationEvents {
-    private gotoEntryPoint: Subject<Unit> = new Subject();
-    private gotoMainPage: Subject<Unit> = new Subject();
-    private gotoPreviousStep: Subject<Unit> = new Subject();
+    private gotoEntryPoint: Subject<Unit> = new Subject<Unit>();
+    private gotoMainPage: Subject<Unit> = new Subject<Unit>();
+    private gotoPreviousStep: Subject<Unit> = new Subject<Unit>();
 
     public emitGotoEntryPoint() {
         this.gotoEntryPoint.next(Unit.NoThing);

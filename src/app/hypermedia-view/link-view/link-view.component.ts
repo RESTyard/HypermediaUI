@@ -1,5 +1,5 @@
 import { HypermediaClientService } from '../hypermedia-client.service';
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, Input, inject } from '@angular/core';
 import { HypermediaLink } from '../siren-parser/hypermedia-link';
 import { getIconForRelation } from '../icon-mapping';
 import { getIconForMimeType } from '../mime-type-icon-mapping';
@@ -13,18 +13,14 @@ import { ApiPath } from '../api-path';
     styleUrls: ['./link-view.component.scss'],
     standalone: false
 })
-export class LinkViewComponent implements OnInit {
+export class LinkViewComponent {
+  private hypermediaClient = inject(HypermediaClientService);
+  private clipboardService = inject(ClipboardService);
+
 
   @Input() links: HypermediaLink[] = [];
   protected readonly getIconForMimeType = getIconForMimeType;
   protected readonly MediaTypes = MediaTypes;
-
-  constructor(
-    private hypermediaClient: HypermediaClientService,
-    private clipboardService: ClipboardService) { }
-
-  ngOnInit() {
-  }
 
   getBrowserUrl(hypermediaLink: HypermediaLink) {
     const apiPath = this.hypermediaClient.currentApiPath;
@@ -54,7 +50,7 @@ export class LinkViewComponent implements OnInit {
 
   // Styling/UX hint only:
   // Determines if a link is Siren. Unknown/empty type is treated as Siren (assumed Siren).
-  isSirenLink(link: HypermediaLink): boolean {
+  isSirenLink(link: HypermediaLink | undefined): boolean {
     const type = (link?.type ?? '').trim();
     if (!type) return true; // unknown -> assume Siren
     return type.toLowerCase() === MediaTypes.Siren.toLowerCase();

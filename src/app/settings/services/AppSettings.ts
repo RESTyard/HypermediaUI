@@ -52,7 +52,7 @@ export class SiteSettingStorageModel {
 }
 
 export class HeaderSettingStorageModel {
-    constructor(public Key: string = "", public Value:string ="") {
+    constructor(public Key: string = "", public Value: string = "") {
     }
 }
 

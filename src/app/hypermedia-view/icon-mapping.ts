@@ -1,4 +1,4 @@
-export let relationIconMapping: { [key: string]: string } = {
+export let relationIconMapping: Record<string, string> = {
   'self': 'subdirectory_arrow_right',
   'next': 'chevron_right',
   'previous': 'chevron_left',
@@ -36,7 +36,7 @@ export let relationIconMapping: { [key: string]: string } = {
   'patch': 'amend',
 };
 
-export let httpMethodIconMapping: { [key: string]: string } = {
+export let httpMethodIconMapping: Record<string, string> = {
   'get': 'visibility',
   'delete': 'close',
   'post': 'send',
@@ -52,7 +52,7 @@ export function getIconForHttpMethod(relation: string): string | undefined {
   return httpMethodIconMapping[relation.toLowerCase()];
 }
 
-export function updateMappingsIconMappings(relationOverrides?: { [key: string]: string }, methodOverrides?: { [key: string]: string }) {
+export function updateMappingsIconMappings(relationOverrides?: Record<string, string>, methodOverrides?: Record<string, string>) {
   if (relationOverrides && Object.keys(relationOverrides).length > 0) {
     relationIconMapping = relationOverrides;
   }

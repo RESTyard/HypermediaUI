@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { MatDialogRef} from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { SettingsService } from '../services/settings.service';
@@ -10,15 +10,14 @@ import { SettingsService } from '../services/settings.service';
     standalone: false
 })
 export class SettingsViewComponent implements OnInit {
+  private settingsService = inject(SettingsService);
+  private snackBar = inject(MatSnackBar);
+  private dialogRef = inject<MatDialogRef<SettingsViewComponent>>(MatDialogRef);
 
-  constructor(private settingsService: SettingsService,
-              private snackBar: MatSnackBar,
-              private dialogRef: MatDialogRef<SettingsViewComponent>) {
-   }
 
   ngOnInit(): void {
     this.dialogRef.afterClosed().subscribe(() => {
-      this.settingsService.SaveCurrentSettings(),
+      this.settingsService.SaveCurrentSettings();
       this.snackBar.open("Settings saved.");
     })
   }

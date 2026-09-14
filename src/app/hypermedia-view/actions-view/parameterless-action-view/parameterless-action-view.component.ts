@@ -1,5 +1,5 @@
 import { HypermediaClientService, ActionResults } from '../../hypermedia-client.service';
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, Input, inject } from '@angular/core';
 import { HypermediaAction } from '../../siren-parser/hypermedia-action';
 import { ProblemDetailsError } from 'src/app/error-dialog/problem-details-error';
 import { getIconForHttpMethod } from '../../icon-mapping';
@@ -13,7 +13,11 @@ import { AppConfigService } from 'src/app.config.service';
     styleUrls: ['./parameterless-action-view.component.scss'],
     standalone: false
 })
-export class ParameterlessActionViewComponent implements OnInit {
+export class ParameterlessActionViewComponent {
+  private hypermediaClientService = inject(HypermediaClientService);
+  private dialog = inject(MatDialog);
+  private appConfigService = inject(AppConfigService);
+
   @Input() action!: HypermediaAction;
 
   ActionResultsEnum = ActionResults;
@@ -22,16 +26,7 @@ export class ParameterlessActionViewComponent implements OnInit {
   actionResultLocation: string | null = null;
   actionMessage: string = "";  // TODO: Needs to be updated
   executed: boolean = false; // TODO show multiple executions as list
-  problemDetailsError: ProblemDetailsError| null = null
-
-  constructor(
-    private hypermediaClientService: HypermediaClientService,
-    private dialog: MatDialog,
-    private appConfigService: AppConfigService
-  ) { }
-
-  ngOnInit() {
-  }
+  problemDetailsError: ProblemDetailsError| null = null;
 
   public executeAction() {
     doWithConfirmation(this.getActionConfigs(), this.dialog, this.doExecuteAction);
