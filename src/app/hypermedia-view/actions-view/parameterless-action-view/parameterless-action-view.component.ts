@@ -41,7 +41,7 @@ export class ParameterlessActionViewComponent implements OnInit {
     return this.action.getConfigurations(this.appConfigService.actionPopupWarningConfigurations);
   }
 
-  private doExecuteAction() {
+  private doExecuteAction = () => {
     this.actionResult= ActionResults.pending;
     this.executed = true;
     this.hypermediaClientService.executeAction(

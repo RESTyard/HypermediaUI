@@ -89,7 +89,7 @@ export class ParameterActionComponent implements OnInit {
     return this.action.getConfigurations(this.appConfigService.actionPopupWarningConfigurations);
   }
 
-  private doActionSubmitted() {
+  private doActionSubmitted = () => {
     this.action.parameters = this.form.value;
     this.actionResult = ActionResults.pending;
     this.executed = true;
