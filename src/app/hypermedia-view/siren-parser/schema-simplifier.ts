@@ -148,8 +148,12 @@ export class SchemaSimplifier {
         const defsKey = (<string>refParent.$ref).replace('#/$defs/', '');
         const defsReplacement = schema.$defs[defsKey];
         if (defsReplacement) {
+          const nullable = Array.isArray(refParent.type) && refParent.type.includes('null');
           delete refParent.$ref;
           Object.assign(refParent, defsReplacement);
+          if (nullable) {
+            refParent.type = [refParent.type, 'null'];
+          }
           return;
         }
       }
@@ -162,8 +166,12 @@ export class SchemaSimplifier {
         );
         const definitionsReplacement = schema.definitions[definitionsKey];
         if (definitionsReplacement) {
+          const nullable = Array.isArray(refParent.type) && refParent.type.includes('null');
           delete refParent.$ref;
           Object.assign(refParent, definitionsReplacement);
+          if (nullable) {
+            refParent.type = [refParent.type, 'null'];
+          }
           return;
         }
       }
