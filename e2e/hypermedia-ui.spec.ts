@@ -44,6 +44,9 @@ const customer = {
       name: 'activate', title: 'Activate customer', method: 'POST', href: `${api}/customers/42/activate`, type: 'application/json',
     },
     {
+      name: 'delete', title: 'Delete customer', method: 'DELETE', href: `${api}/customers/42`, type: 'application/json', class: ['Destructive'],
+    },
+    {
       name: 'changeAddress', title: 'Change address', method: 'PUT', href: `${api}/customers/42/address`, type: 'application/json',
       fields: [{ name: 'address', type: 'application/json', class: [`${api}/schemas/address`] }],
     },
@@ -88,6 +91,10 @@ async function installApi(page: import('@playwright/test').Page) {
       expect(request.postData()).toBeNull();
       return json({}, 204);
     }
+    if (url.pathname === '/customers/42' && request.method() === 'DELETE') {
+      expect(request.postData()).toBeNull();
+      return json({}, 204);
+    }
     if (url.pathname === '/customers/42/address') {
       expect(request.method()).toBe('PUT');
       expect(request.postDataJSON()).toEqual([{ address: { street: '12 Analytical Engine Way', city: 'London' } }]);
@@ -121,18 +128,34 @@ test('navigates from an entry point to a linked entity', async ({ page }) => {
   await expect(page.getByText('Ada Lovelace', { exact: true })).toBeVisible();
 });
 
-test('executes parameterless and parameterized entity actions', async ({ page }) => {
+test('executes an action without parameters', async ({ page }) => {
   await openEntryPoint(page);
   await page.getByRole('link', { name: 'customer' }).click();
 
   await page.getByRole('button', { name: 'Activate customer' }).click();
   await expect(page.locator('app-parameterless-action-view .success')).toBeVisible();
+});
+
+test('executes an action with parameters', async ({ page }) => {
+  await openEntryPoint(page);
+  await page.getByRole('link', { name: 'customer' }).click();
 
   await page.getByRole('button', { name: 'Change address', exact: true }).click();
   await page.getByLabel('street').fill('12 Analytical Engine Way');
   await page.getByLabel('city').fill('London');
   await page.getByRole('button', { name: 'Submit' }).click();
   await expect(page.locator('app-parameter-action .success')).toBeVisible();
+});
+
+test('requires confirmation for an action with a warning configuration', async ({ page }) => {
+  await openEntryPoint(page);
+  await page.getByRole('link', { name: 'customer' }).click();
+
+  await page.getByRole('button', { name: 'Delete customer' }).click();
+  await expect(page.getByRole('heading', { name: 'Confirm destructive Action' })).toBeVisible();
+  await expect(page.getByText('This action is destructive and cannot be undone. Are you sure you want to continue?')).toBeVisible();
+  await page.getByRole('button', { name: 'Continue' }).click();
+  await expect(page.locator('app-parameterless-action-view .success')).toBeVisible();
 });
 
 test('uploads a file through a file-upload action', async ({ page }) => {
