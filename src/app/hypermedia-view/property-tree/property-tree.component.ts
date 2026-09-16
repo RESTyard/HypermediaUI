@@ -143,6 +143,8 @@ export class PropertyTreeComponent implements OnChanges {
 
     this.matchNodes = Array.from(this.directMatches);
     this.matchCount = this.matchNodes.length;
+    // A matching descendant must be visible for search to be useful.
+    this.ancestorMatches.forEach(node => this.treeControl.expand(node));
     if (this.matchCount > 0) this.currentMatchIndex = 0;
   }
 

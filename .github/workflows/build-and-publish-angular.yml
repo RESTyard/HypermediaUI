@@ -10,6 +10,8 @@ on:
 jobs:
   build-and-release:
     runs-on: ubuntu-latest
+    name: Build and Release
+    
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -39,7 +41,16 @@ jobs:
             ${{ runner.os }}-npm-cache-
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
+
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Run unit tests
+        run: npm test -- --watch=false --browsers=ChromeHeadless
+
+      - name: Run end-to-end tests
+        run: npm run test:e2e
 
       - name: Build Angular app
         run: npm run build --prod

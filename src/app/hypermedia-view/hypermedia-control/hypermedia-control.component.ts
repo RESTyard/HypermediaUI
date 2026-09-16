@@ -181,9 +181,9 @@ export class HypermediaControlComponent implements OnInit {
     }
 
     if (this.allowOnlyConfiguredEntryPoints) {
-      this.hypermediaClient.navigateToEntryPoint()
+      this.hypermediaClient.navigateToMainPage();
+    } else {
+      this.hypermediaClient.navigateToEntryPoint();
     }
-
-    this.hypermediaClient.navigateToMainPage();
   }
 }

@@ -5,16 +5,19 @@ import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ObservableLruCache } from './api-access/observable-lru-cache';
 import { SirenDeserializer } from './siren-parser/siren-deserializer';
-import { Router } from '@angular/router';
-import { SettingsService } from '../settings/services/settings.service';
 import { SchemaSimplifier } from './siren-parser/schema-simplifier';
 import { importStore } from '../store/store-module';
+import { RouterTestingModule } from '@angular/router/testing';
+import { GlobalNavigationEvents } from '../global-navigation.events';
+import { AuthService } from './auth.service';
+import { ProblemDetailsErrorService } from '../error-dialog/problem-details-error.service';
 
 describe('HypermediaClientService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
         importStore(),
+        RouterTestingModule,
       ],
       providers: [
         HypermediaClientService,
@@ -23,8 +26,9 @@ describe('HypermediaClientService', () => {
         ObservableLruCache,
         SirenDeserializer,
         SchemaSimplifier,
-        Router,
-        SettingsService,
+        GlobalNavigationEvents,
+        { provide: AuthService, useValue: {} },
+        { provide: ProblemDetailsErrorService, useValue: {} },
       ]
     });
   });

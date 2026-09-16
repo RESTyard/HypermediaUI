@@ -66,12 +66,12 @@ describe('mime-type-icon-mapping', () => {
       expect(getIconForMimeType('text/unknown')).toBe('description');
     });
 
-    it('should return inventory_2 for zip', () => {
-      expect(getIconForMimeType('application/zip')).toBe('inventory_2');
+    it('should return folder_zip for zip', () => {
+      expect(getIconForMimeType('application/zip')).toBe('folder_zip');
     });
 
-    it('should return file_present for application/octet-stream', () => {
-      expect(getIconForMimeType('application/octet-stream')).toBe('file_present');
+    it('should return memory for application/octet-stream', () => {
+      expect(getIconForMimeType('application/octet-stream')).toBe('memory');
     });
 
     it('should return insert_drive_file for unknown application types', () => {

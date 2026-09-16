@@ -6,6 +6,10 @@ import { MatMenu } from '@angular/material/menu';
 import { MatExpansionPanel, MatExpansionPanelDescription, MatExpansionPanelHeader, MatExpansionPanelTitle } from '@angular/material/expansion';
 import { MatIcon } from '@angular/material/icon';
 import { HypermediaAction } from '../../siren-parser/hypermedia-action';
+import { MatButtonModule } from '@angular/material/button';
+import { MatDialog } from '@angular/material/dialog';
+import { AppConfigService } from 'src/app.config.service';
+import { FormlyJsonschema } from '@ngx-formly/core/json-schema';
 
 describe('ParameterActionComponent', () => {
   let component: ParameterActionComponent;
@@ -23,9 +27,13 @@ describe('ParameterActionComponent', () => {
         MatExpansionPanelTitle,
         MatIcon,
         MatExpansionPanelDescription,
+        MatButtonModule,
       ],
       providers: [
         provideHypermediaClientServiceMock(),
+        { provide: MatDialog, useValue: {} },
+        { provide: AppConfigService, useValue: { actionPopupWarningConfigurations: [] } },
+        { provide: FormlyJsonschema, useValue: { toFieldConfig: () => ({}) } },
       ],
     })
     .compileComponents();

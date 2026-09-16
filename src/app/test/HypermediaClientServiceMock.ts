@@ -22,6 +22,9 @@ export class HypermediaClientServiceMock implements IHypermediaClientService {
     public getHypermediaObjectRawStream = (): BehaviorSubject<object> => {
         return new BehaviorSubject<object>({});
     }
+    public getContentTypeStream = (): BehaviorSubject<string | undefined> => {
+        return new BehaviorSubject<string | undefined>(undefined);
+    }
     public getNavPathsStream = (): BehaviorSubject<Array<string>> => {
         return new BehaviorSubject<Array<string>>([]);
     }
@@ -32,8 +35,9 @@ export class HypermediaClientServiceMock implements IHypermediaClientService {
         throw new Error("Method not implemented.");
     }
     get currentApiPath(): ApiPath {
-        throw new Error("Method not implemented.");
+        return new ApiPath();
     }
+    public buildBrowserUrl = (): string => '';
     public Navigate = (url: string): void => {
         throw new Error("Method not implemented.");
     }

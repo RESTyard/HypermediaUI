@@ -9,6 +9,10 @@ import { MatExpansionPanel, MatExpansionPanelDescription, MatExpansionPanelHeade
 import { MatIcon } from '@angular/material/icon';
 import { HypermediaAction } from '../../siren-parser/hypermedia-action';
 import { MatTooltip } from '@angular/material/tooltip';
+import { MatButtonModule } from '@angular/material/button';
+import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { AppConfigService } from 'src/app.config.service';
 
 describe('FileUploadActionComponent', () => {
   let component: FileUploadActionComponent;
@@ -27,11 +31,15 @@ describe('FileUploadActionComponent', () => {
         MatExpansionPanelDescription,
         MatIcon,
         MatTooltip,
+        MatButtonModule,
       ],
       providers: [
         provideHttpClient(),
         provideHttpClientTesting(),
         provideHypermediaClientServiceMock(),
+        { provide: MatDialog, useValue: {} },
+        { provide: MatSnackBar, useValue: { open: () => {} } },
+        { provide: AppConfigService, useValue: { actionPopupWarningConfigurations: [] } },
       ],
     })
     .compileComponents();
