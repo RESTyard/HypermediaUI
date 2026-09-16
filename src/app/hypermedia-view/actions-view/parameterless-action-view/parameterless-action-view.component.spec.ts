@@ -7,6 +7,9 @@ import { MatIcon } from '@angular/material/icon';
 import { MatMenu } from '@angular/material/menu';
 import { MatExpansionPanel, MatExpansionPanelDescription } from '@angular/material/expansion';
 import { HypermediaAction } from '../../siren-parser/hypermedia-action';
+import { MatButtonModule } from '@angular/material/button';
+import { MatDialog } from '@angular/material/dialog';
+import { AppConfigService } from 'src/app.config.service';
 
 describe('ParameterlessActionViewComponent', () => {
   let component: ParameterlessActionViewComponent;
@@ -23,9 +26,12 @@ describe('ParameterlessActionViewComponent', () => {
         MatMenu,
         MatExpansionPanel,
         MatExpansionPanelDescription,
+        MatButtonModule,
       ],
       providers: [
         provideHypermediaClientServiceMock(),
+        { provide: MatDialog, useValue: {} },
+        { provide: AppConfigService, useValue: { actionPopupWarningConfigurations: [] } },
       ],
     })
     .compileComponents();

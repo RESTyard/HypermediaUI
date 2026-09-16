@@ -3,6 +3,11 @@ import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 import { LinkViewComponent } from './link-view.component';
 import { provideHypermediaClientServiceMock } from 'src/app/test/HypermediaClientServiceMock';
 import { HypermediaClientService } from '../hypermedia-client.service';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatDividerModule } from '@angular/material/divider';
 
 describe('LinkViewComponent', () => {
   let component: LinkViewComponent;
@@ -14,7 +19,7 @@ describe('LinkViewComponent', () => {
       declarations: [
         LinkViewComponent
       ],
-      imports: [],
+      imports: [MatButtonModule, MatIconModule, MatMenuModule, MatTooltipModule, MatDividerModule],
       providers: [
         provideHypermediaClientServiceMock(),
       ],
