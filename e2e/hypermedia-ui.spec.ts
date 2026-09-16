@@ -15,6 +15,7 @@ const entryPoint = {
     { rel: ['plain-json'], href: `${api}/documents/data`, type: 'application/json' },
     { rel: ['plain-text'], href: `${api}/documents/readme`, type: 'text/plain' },
     { rel: ['image'], href: `${api}/documents/logo`, type: 'image/png' },
+    { rel: ['missing'], href: `${api}/missing` },
   ],
   entities: [
     {
@@ -45,6 +46,12 @@ const customer = {
     },
     {
       name: 'delete', title: 'Delete customer', method: 'DELETE', href: `${api}/customers/42`, type: 'application/json', class: ['Destructive'],
+    },
+    {
+      name: 'generateReport', title: 'Generate report', method: 'POST', href: `${api}/customers/42/report`, type: 'application/json',
+    },
+    {
+      name: 'fail', title: 'Fail action', method: 'POST', href: `${api}/customers/42/fail`, type: 'application/json',
     },
     {
       name: 'changeAddress', title: 'Change address', method: 'PUT', href: `${api}/customers/42/address`, type: 'application/json',
@@ -83,6 +90,18 @@ async function installApi(page: import('@playwright/test').Page) {
           contentType: 'image/png',
           body: Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=', 'base64'),
         });
+        case '/protected': return route.fulfill({
+          status: 401,
+          headers: {
+            'www-authenticate': 'Bearer authorization_uri="https://identity.test", client_id="hypermedia-ui"',
+            'access-control-expose-headers': 'www-authenticate',
+          },
+        });
+        case '/missing': return route.fulfill({
+          status: 404,
+          contentType: 'application/problem+json',
+          body: JSON.stringify({ type: 'NotFound', title: 'API error', detail: 'The requested resource does not exist.', status: 404 }),
+        });
       }
     }
 
@@ -94,6 +113,20 @@ async function installApi(page: import('@playwright/test').Page) {
     if (url.pathname === '/customers/42' && request.method() === 'DELETE') {
       expect(request.postData()).toBeNull();
       return json({}, 204);
+    }
+    if (url.pathname === '/customers/42/report') {
+      return route.fulfill({
+        contentType: 'application/json',
+        headers: { location: `${api}/documents/data`, 'access-control-expose-headers': 'location' },
+        body: '{}',
+      });
+    }
+    if (url.pathname === '/customers/42/fail') {
+      return route.fulfill({
+        status: 422,
+        contentType: 'application/problem+json',
+        body: JSON.stringify({ type: 'ValidationError', title: 'Action failed', detail: 'The action could not be completed.', status: 422 }),
+      });
     }
     if (url.pathname === '/customers/42/address') {
       expect(request.method()).toBe('PUT');
@@ -158,6 +191,32 @@ test('requires confirmation for an action with a warning configuration', async (
   await expect(page.locator('app-parameterless-action-view .success')).toBeVisible();
 });
 
+test('does not execute a warning action when confirmation is cancelled', async ({ page }) => {
+  let deleteRequested = false;
+  await page.route(`${api}/customers/42`, async route => {
+    if (route.request().method() === 'DELETE') deleteRequested = true;
+    await route.fallback();
+  });
+  await openEntryPoint(page);
+  await page.getByRole('link', { name: 'customer' }).click();
+  await page.getByRole('button', { name: 'Delete customer' }).click();
+  await page.getByRole('button', { name: 'Cancel' }).click();
+  await expect(page.getByRole('heading', { name: 'Confirm destructive Action' })).toBeHidden();
+  expect(deleteRequested).toBe(false);
+});
+
+test('shows action errors and follows an action result location', async ({ page }) => {
+  await openEntryPoint(page);
+  await page.getByRole('link', { name: 'customer' }).click();
+
+  await page.getByRole('button', { name: 'Fail action' }).click();
+  await expect(page.locator('app-parameterless-action-view .error')).toBeVisible();
+
+  await page.getByRole('button', { name: 'Generate report' }).click();
+  await page.getByRole('link', { name: 'View Result' }).click();
+  await expect(page.locator('app-json-preview')).toContainText('ordinary JSON');
+});
+
 test('uploads a file through a file-upload action', async ({ page }) => {
   await openEntryPoint(page);
   await page.getByRole('link', { name: 'customer' }).click();
@@ -166,6 +225,15 @@ test('uploads a file through a file-upload action', async ({ page }) => {
   await expect(page.locator('.file-name')).toHaveText('avatar.txt');
   await page.getByRole('button', { name: 'Upload', exact: true }).click();
   await expect(page.locator('app-file-upload-action .success')).toBeVisible();
+});
+
+test('rejects files that do not meet upload constraints', async ({ page }) => {
+  await openEntryPoint(page);
+  await page.getByRole('link', { name: 'customer' }).click();
+  await page.getByRole('button', { name: 'Upload avatar', exact: true }).click();
+  await page.locator('input[type="file"]').setInputFiles({ name: 'avatar.png', mimeType: 'image/png', buffer: Buffer.from('not an image') });
+  await expect(page.getByText('avatar.png has wrong type. Acceptable: text/plain')).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Upload', exact: true })).toBeDisabled();
 });
 
 test('shows raw Siren data and embedded entities', async ({ page }) => {
@@ -193,6 +261,14 @@ test('previews JSON, text, and image link content', async ({ page }) => {
   await expect(page.getByAltText('Image preview')).toBeVisible();
 });
 
+test('downloads non-Siren content', async ({ page }) => {
+  await openEntryPoint(page);
+  await page.getByRole('link', { name: 'plain-text' }).click();
+  const download = page.waitForEvent('download');
+  await page.getByRole('button', { name: 'Download File' }).click();
+  expect((await download).suggestedFilename()).toBe('download.dat');
+});
+
 test('searches nested properties in the tree', async ({ page }) => {
   await openEntryPoint(page);
   await page.getByRole('switch').check();
@@ -201,4 +277,54 @@ test('searches nested properties in the tree', async ({ page }) => {
   await expect(page.getByText('searchableProperty:', { exact: true })).toBeVisible();
   await expect(page.getByText('needle-value', { exact: true })).toBeVisible();
   await expect(page.locator('.match-counter')).toHaveText('1/1');
+});
+
+test('navigates with breadcrumbs, exits the API, and recovers from an API error', async ({ page }) => {
+  await openEntryPoint(page);
+  await page.getByRole('link', { name: 'customer' }).click();
+  await page.getByRole('link', { name: 'entrypoint' }).click();
+  await expect(page.getByText('Demo API', { exact: true })).toBeVisible();
+
+  await page.getByRole('link', { name: 'customer' }).click();
+  await page.getByRole('link', { name: 'entrypoint' }).click();
+  await page.getByRole('link', { name: 'missing' }).click();
+  await expect(page.getByText('API error', { exact: true })).toBeVisible();
+  await page.getByRole('button', { name: 'Go to entry point' }).click();
+  await expect(page.getByText('Demo API', { exact: true })).toBeVisible();
+  await page.getByRole('button', { description: 'Exit API' }).click();
+  await expect(page.getByPlaceholder('Enter API entrypoint URL')).toBeVisible();
+});
+
+test('uses configured entry points and disables developer controls', async ({ page }) => {
+  await page.route('**/app.config.json', route => route.fulfill({
+    contentType: 'application/json',
+    body: JSON.stringify({
+      disableDeveloperControls: true,
+      configuredEntryPoints: [{ alias: 'demo', title: 'Configured Demo', entryPointUri: `${api}/entrypoint` }],
+      onlyAllowConfiguredEntryPoints: true,
+      relationIconMapping: {}, httpMethodIconMapping: {}, actionPopupWarningConfigurations: [],
+    }),
+  }));
+  await page.goto('/');
+  await expect(page.getByText('Configured Demo', { exact: true })).toBeVisible();
+  await expect(page.getByPlaceholder('Enter API entrypoint URL')).toBeHidden();
+  await expect(page.getByRole('radio', { name: 'Raw' })).toBeHidden();
+});
+
+test('redirects to OIDC after a 401 bearer challenge', async ({ page }) => {
+  await page.route('https://identity.test/**', async route => {
+    const path = new URL(route.request().url()).pathname;
+    if (path === '/.well-known/openid-configuration') {
+      return route.fulfill({ contentType: 'application/json', body: JSON.stringify({
+        issuer: 'https://identity.test', authorization_endpoint: 'https://identity.test/authorize', token_endpoint: 'https://identity.test/token', jwks_uri: 'https://identity.test/keys',
+      }) });
+    }
+    if (path === '/authorize') return route.fulfill({ contentType: 'text/html', body: '<h1>Identity provider</h1>' });
+    throw new Error(`Unhandled identity request: ${route.request().url()}`);
+  });
+  await page.goto('/');
+  await page.getByPlaceholder('Enter API entrypoint URL').fill(`${api}/protected`);
+  await page.getByRole('button', { name: 'Enter API' }).click();
+  await expect(page).toHaveURL(/https:\/\/identity\.test\/authorize/);
+  await expect(page.getByRole('heading', { name: 'Identity provider' })).toBeVisible();
 });
