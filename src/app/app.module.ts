@@ -17,7 +17,7 @@ import { ErrorDialogModule } from './error-dialog/error-dialog.module';
 
 import { AppComponent } from './app.component';
 import { MainPageComponent } from './main-page/main-page.component';
-import { MatTooltipDefaultOptions, MAT_TOOLTIP_DEFAULT_OPTIONS, MAT_TOOLTIP_DEFAULT_OPTIONS_FACTORY } from '@angular/material/tooltip';
+import { MatTooltipDefaultOptions, MAT_TOOLTIP_DEFAULT_OPTIONS } from '@angular/material/tooltip';
 
 
 import { MatDialogModule } from '@angular/material/dialog';
@@ -37,6 +37,7 @@ import { importStore } from './store/store-module';
 import { AliasPageComponent } from './alias-page/alias-page.component';
 import {LogoutRedirectComponent} from "./logout-redirect/logout-redirect.component";
 import { ConfirmationDialogComponent } from './common/confirmation-dialog/confirmation-dialog.component';
+import {Unit} from "./utils/unit";
 
 const appRoutes: Routes = [
   {
@@ -62,7 +63,7 @@ const appRoutes: Routes = [
   },
 ];
 
-export function appConfigInit(appConfigService: AppConfigService): Observable<any> {
+export function appConfigInit(appConfigService: AppConfigService): Observable<Unit> {
   return appConfigService.load();
 }
 

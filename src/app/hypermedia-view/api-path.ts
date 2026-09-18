@@ -1,14 +1,14 @@
 import { Params } from "@angular/router";
 
 export class ApiPath {
-   private apiPath: Array<string> = [];
+   private apiPath: string[] = [];
 
-    constructor(apiPath: Array<string> = []) {
+    constructor(apiPath: string[] = []) {
       this.apiPath = apiPath;
     }
 
     initFromRouterParams(routerParameters: Params) {
-      let apiPath: any;
+      let apiPath: string[] | string | undefined;
       apiPath = routerParameters['apiPath'];
 
       if (!apiPath) {
@@ -61,7 +61,7 @@ export class ApiPath {
       return this.apiPath.length > 0;
     }
 
-    get fullPath(): Array<string> {
+    get fullPath(): string[] {
       return [...this.apiPath];
     }
 

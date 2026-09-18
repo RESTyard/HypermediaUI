@@ -1,4 +1,4 @@
-import {Injectable} from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import {
   AppSettingsStorageModel,
   AuthenticationConfigurationStorageModel,
@@ -15,12 +15,18 @@ import {AppSettings, AuthenticationConfiguration, GeneralSettings, SiteSetting, 
 
 @Injectable()
 export class SettingsService {
+  private store = inject<Store<{
+    appSettings: AppSettings;
+}>>(Store);
+
 
   static readonly AppSettingsKey = "appSettings";
 
   private CurrentSettings: AppSettingsStorageModel = new AppSettingsStorageModel();
 
-  constructor(private store: Store<{ appSettings: AppSettings }>) {
+  constructor() {
+    const store = this.store;
+
     store
       .select(state => state.appSettings)
       .subscribe({
@@ -127,7 +133,7 @@ export class SettingsService {
   }
 
   getHeadersForSite(requestSiteHost: string): HeaderSettingStorageModel[] {
-    let specificSettings = this.CurrentSettings.SiteSettings.SiteSpecificSettings.filter(site => site.SiteUrl.trim() != '' && site.SiteUrl === requestSiteHost);
+    const specificSettings = this.CurrentSettings.SiteSettings.SiteSpecificSettings.filter(site => site.SiteUrl.trim() != '' && site.SiteUrl === requestSiteHost);
     // we should only find one site
     if (specificSettings.length > 1) {
       throw new ProblemDetailsError({

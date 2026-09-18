@@ -1,12 +1,12 @@
-import { Injectable } from '@angular/core';
-import { HttpRequest, HttpHandler, HttpEvent, HttpInterceptor, HttpHeaders } from '@angular/common/http';
+import { Injectable, inject } from '@angular/core';
+import { HttpRequest, HttpHandler, HttpEvent, HttpInterceptor } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import {SettingsService} from './services/settings.service';
 
 @Injectable()
 export class CustomHeadersInterceptor implements HttpInterceptor {
+  private settingsService = inject(SettingsService);
 
-  constructor(private settingsService: SettingsService) {}
 
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     let headers = request.headers;
@@ -14,7 +14,7 @@ export class CustomHeadersInterceptor implements HttpInterceptor {
       if (h.Key!== "") {
         headers = headers.set(h.Key, h.Value);
       }
-      
+
     });
 
     if (URL.canParse(request.url)) {

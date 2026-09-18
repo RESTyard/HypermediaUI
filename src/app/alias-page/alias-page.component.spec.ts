@@ -25,13 +25,13 @@ describe('AliasPageComponent', () => {
         importStore(),
       ],
       providers: [
-        <ValueProvider>{
+        {
           provide: ActivatedRoute,
           useValue: {
             url: of([]),
             queryParams: of(),
           }
-        },
+        } as ValueProvider,
         provideHypermediaClientServiceMock(),
         GlobalNavigationEvents,
         { provide: ErrorHandler, useValue: { handleError: () => {} } },

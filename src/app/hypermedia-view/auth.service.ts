@@ -1,4 +1,4 @@
-import {Injectable} from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import {User, UserManager} from 'oidc-client-ts';
 import {SettingsService} from '../settings/services/settings.service';
 import {Unit} from "../utils/unit";
@@ -17,13 +17,19 @@ import {LogoutRedirectComponent} from "../logout-redirect/logout-redirect.compon
 
 @Injectable()
 export class AuthService {
+  private settingsService = inject(SettingsService);
+  private store = inject<Store<{
+    appSettings: AppSettings;
+    currentEntryPoint: CurrentEntryPoint;
+}>>(Store);
+
   private tokenRecentlyAcquired: Set<string>;
   private recentlyLoggedOut: Set<string>;
 
   private siteSpecificSettings: ImmutableMap<string, SiteSetting> = ImmutableMap();
   private currentEntryPoint: CurrentEntryPoint = {};
 
-  constructor(private settingsService: SettingsService, private store: Store<{ appSettings: AppSettings, currentEntryPoint: CurrentEntryPoint }>) {
+  constructor() {
     this.tokenRecentlyAcquired = new Set();
     this.recentlyLoggedOut = new Set();
 
@@ -213,7 +219,7 @@ export class AuthService {
       this.recentlyLoggedOut.add(siteUrl)
       this.store.dispatch(setAuthConfig({siteUrl: siteUrl, authConfig: undefined}))
       return Success(Unit.NoThing);
-    } catch(err) {
+    } catch(_) {
       return Failure("Error handling response from OAuth provider.");
     }
   }

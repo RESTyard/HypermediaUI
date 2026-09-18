@@ -45,7 +45,7 @@ describe('ImagePreviewComponent', () => {
 
     expect(createSpy).toHaveBeenCalledWith(blob);
     expect(component.imageUrl).toBe('blob:url');
-    expect(component.safeImageUrl).toBe('safe-blob:url' as any);
+    expect(component.safeImageUrl).toBe('safe-blob:url');
   });
 
   it('should revoke object URL on destroy', () => {

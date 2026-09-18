@@ -34,12 +34,12 @@ describe('HypermediaControlComponent', () => {
       ],
       providers: [
         provideHypermediaClientServiceMock(),
-        <ValueProvider>{
+        {
           provide: ActivatedRoute,
           useValue: {
             queryParams: of(),
-          }
-        },
+          },
+        } as ValueProvider,
         { provide: AuthService, useValue: {} },
       ],
     })

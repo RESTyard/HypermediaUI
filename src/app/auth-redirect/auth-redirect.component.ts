@@ -1,6 +1,6 @@
-import {Component, OnInit} from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import {AuthService} from '../hypermedia-view/auth.service';
-import {ActivatedRoute, Router} from '@angular/router';
+import {ActivatedRoute} from '@angular/router';
 import {ProblemDetailsError} from '../error-dialog/problem-details-error';
 import {ApiPath} from "../hypermedia-view/api-path";
 import {SettingsService} from "../settings/services/settings.service";
@@ -19,13 +19,18 @@ import { Success, Failure, bindAsync, map as resultMap, isSuccess } from 'fnxt/r
   standalone: false
 })
 export class AuthRedirectComponent implements OnInit {
+  private authService = inject(AuthService);
+  private activatedRoute = inject(ActivatedRoute);
+  private store = inject<Store<{
+    appConfig: AppConfig;
+    currentEntryPoint: CurrentEntryPoint;
+}>>(Store);
+  private hypermediaClientService = inject(HypermediaClientService);
+
   public static readonly pathUriParameterKey: string = 'path';
-  constructor(
-    private authService: AuthService,
-    private activatedRoute: ActivatedRoute,
-    private store: Store<{ appConfig: AppConfig, currentEntryPoint: CurrentEntryPoint }>,
-    private hypermediaClientService: HypermediaClientService,
-    settingsService: SettingsService) {
+  constructor() {
+    const settingsService = inject(SettingsService);
+
     settingsService.LoadCurrentSettings();
   }
 

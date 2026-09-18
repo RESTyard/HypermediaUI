@@ -1,8 +1,9 @@
-import { Component, EventEmitter, Input, OnInit, Output, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, inject } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
-import { AppSettings, SiteSetting, SiteSettings } from '../app-settings';
+import { AppSettings, SiteSetting } from '../app-settings';
 import { Store } from '@ngrx/store';
 import { addHeader, removeHeader, updateHeader, updateSiteUrl } from 'src/app/store/appsettings.actions';
+import {Unit} from "../../utils/unit";
 
 @Component({
     selector: 'app-site-settings',
@@ -11,19 +12,19 @@ import { addHeader, removeHeader, updateHeader, updateSiteUrl } from 'src/app/st
     standalone: false
 })
 export class SiteSettingsComponent implements OnInit {
+  private formBuilder = inject(FormBuilder);
+  private store = inject<Store<{
+    appSettings: AppSettings;
+}>>(Store);
+
   @Input() siteSetting: SiteSetting | undefined = new SiteSetting();
   @Input() urlEditable: boolean = true;
   @Input() canBeDeleted: boolean = true;
   @Input() headline: string = "";
 
-  @Output() deleteRequested: EventEmitter<any> = new EventEmitter();
+  @Output() deleteRequested: EventEmitter<Unit> = new EventEmitter<Unit>();
   public urlFormControl: FormControl = new FormControl();
   headerFormGroups: FormGroup[] = [];
-
-  constructor(
-    private formBuilder: FormBuilder,
-    private store: Store<{ appSettings: AppSettings }>) {
-  }
 
   ngOnInit(): void {
     if (!this.siteSetting) {
@@ -43,10 +44,10 @@ export class SiteSettingsComponent implements OnInit {
       .map(h => this.AddHeaderFormControl(h));
   }
 
-  private AddHeaderFormControl(headerSetting: [string, string]): FormGroup<any> {
+  private AddHeaderFormControl(headerSetting: [string, string]): FormGroup {
     let key = headerSetting[0];
     let value = headerSetting[1];
-    let keyControl = new FormControl(key, { updateOn: 'blur'});
+    const keyControl = new FormControl(key, {updateOn: 'blur'});
     keyControl.valueChanges.subscribe(v => {
       v = (v ?? "").trim();
       if (key === "") {
@@ -57,7 +58,7 @@ export class SiteSettingsComponent implements OnInit {
       key = v;
     });
 
-    let valueControl = new FormControl(value, { updateOn: 'blur' });
+    const valueControl = new FormControl(value, {updateOn: 'blur'});
     valueControl.valueChanges.subscribe(v => {
       v = (v ?? "").trim();
       if (key !== "") {

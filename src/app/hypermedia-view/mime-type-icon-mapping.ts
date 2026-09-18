@@ -1,4 +1,4 @@
-export const mimeTypeIconMapping: { [key: string]: string } = {
+export const mimeTypeIconMapping: Record<string, string> = {
   // Images
   'image/jpeg': 'image',
   'image/jpg': 'image',
@@ -58,7 +58,7 @@ export const mimeTypeIconMapping: { [key: string]: string } = {
  * For example: application/vnd.siren+json -> application/json
  * @param mimeType The mime type to check.
  */
-export function getBaseMimeType(mimeType: string): string | undefined {
+export function getBaseMimeType(mimeType: string | undefined): string | undefined {
   if (!mimeType) {
     return undefined;
   }

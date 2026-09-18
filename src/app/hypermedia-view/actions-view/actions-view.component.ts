@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, OnChanges } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import {ActionType, HypermediaAction} from '../siren-parser/hypermedia-action';
 
 @Component({
@@ -7,13 +7,8 @@ import {ActionType, HypermediaAction} from '../siren-parser/hypermedia-action';
     styleUrls: ['./actions-view.component.scss'],
     standalone: false
 })
-export class ActionsViewComponent implements OnInit {
+export class ActionsViewComponent {
   @Input() actions: HypermediaAction[] = [];
-
-  constructor() { }
-
-  ngOnInit() {
-  }
 
   protected readonly ActionType = ActionType;
 }

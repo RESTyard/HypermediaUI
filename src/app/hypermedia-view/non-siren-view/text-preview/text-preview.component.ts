@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges, inject } from '@angular/core';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import hljs from 'highlight.js/lib/core';
 import markdown from 'highlight.js/lib/languages/markdown';
@@ -22,6 +22,8 @@ hljs.registerLanguage('plaintext', plaintext);
   standalone: false
 })
 export class TextPreviewComponent implements OnChanges {
+  private readonly sanitizer = inject(DomSanitizer);
+
   @Input() blob: Blob | undefined;
   @Input() contentType: string | undefined;
 
@@ -64,7 +66,7 @@ export class TextPreviewComponent implements OnChanges {
   selectedLanguage: string | undefined;
   languages: string[] = [];
 
-  constructor(private readonly sanitizer: DomSanitizer) {
+  constructor() {
     const supportedLanguages = Array.from(TextPreviewComponent.supportedMimeTypes)
       .map(mimeType => TextPreviewComponent.mimeTypeToLanguage[mimeType])
       .filter((lang): lang is string => !!lang && lang !== 'plaintext');
@@ -116,7 +118,7 @@ export class TextPreviewComponent implements OnChanges {
           try {
             const result = hljs.highlight(text, { language: lang });
             this.highlightedHtml = this.sanitizer.bypassSecurityTrustHtml(result.value);
-          } catch (e) {
+          } catch (_) {
             // If the language is not registered/supported, we fall back to plain text
             // SRP/DIP: error handling isolated; we do not rethrow to keep UI functional
             this.highlightedHtml = undefined;

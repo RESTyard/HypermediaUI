@@ -1,5 +1,5 @@
-import { Component, Input } from '@angular/core';
-import { FieldArrayType } from '@ngx-formly/core';
+import { Component } from '@angular/core';
+import {FieldArrayType, FormlyFieldConfig} from '@ngx-formly/core';
 
 @Component({
     selector: 'formly-array-type',
@@ -22,13 +22,13 @@ import { FieldArrayType } from '@ngx-formly/core';
             }
           </mat-card-title>
         </div>
-    
+
         @if (showError && formControl.errors) {
           <div role="alert">
             <formly-validation-message [field]="field"></formly-validation-message>
           </div>
         }
-    
+
         @for (field of field.fieldGroup; track field; let i = $index) {
           <mat-card-content
             class="row"
@@ -52,7 +52,7 @@ import { FieldArrayType } from '@ngx-formly/core';
     standalone: false
 })
 export class ArrayTypeComponent extends FieldArrayType {
-  getLabel(field: any): string {
+  getLabel(field: FormlyFieldConfig | undefined): string {
     if (field?.parent?.type === 'array' && !isNaN(Number(field?.parent?.key))) {
       return `[${field?.parent?.key}, ${field.key}]`;
     }

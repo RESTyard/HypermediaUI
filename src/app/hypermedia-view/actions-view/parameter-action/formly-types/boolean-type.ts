@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import { FormlyFieldCheckbox } from '@ngx-formly/material/checkbox';
 
 @Component({
@@ -15,7 +15,7 @@ import { FormlyFieldCheckbox } from '@ngx-formly/material/checkbox';
   `,
     standalone: false
 })
-export class BooleanTypeComponent extends FormlyFieldCheckbox {
+export class BooleanTypeComponent extends FormlyFieldCheckbox implements OnInit {
   state: number = -1;
   isNullable: boolean = false;
 
@@ -46,7 +46,7 @@ export class BooleanTypeComponent extends FormlyFieldCheckbox {
     }
   }
 
-  click(event: any) {
+  click(_event: PointerEvent) {
     if (!this.isNullable) {
       return;
     }

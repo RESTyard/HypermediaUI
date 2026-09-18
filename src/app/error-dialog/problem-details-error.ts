@@ -2,7 +2,7 @@
 // "application/problem+json" media type
 
 export interface ProblemDetailsErrorParams {
-    // A URI reference  that identifies the problem type.
+    // A URI reference that identifies the problem type.
     type?: string,
 
     // A short, human-readable summary of the problem type.
@@ -78,28 +78,28 @@ export class ProblemDetailsError implements Error {
     stack?: string | undefined;
 
     FromJson(json: string): ProblemDetailsError {
-        var jsonObj = JSON.parse(json);
+      const jsonObj = JSON.parse(json);
 
-        if (jsonObj.type) {
-            this.type = jsonObj.type;
-        }
+      if (jsonObj.type) {
+        this.type = jsonObj.type;
+      }
 
-        if (jsonObj.title) {
-            this.title = jsonObj.title;
-        }
+      if (jsonObj.title) {
+        this.title = jsonObj.title;
+      }
 
-        if (jsonObj.detail) {
-            this.detail = jsonObj.detail;
-        }
+      if (jsonObj.detail) {
+        this.detail = jsonObj.detail;
+      }
 
-        if (jsonObj.status) {
-            this.status = jsonObj.status;
-        }
+      if (jsonObj.status) {
+        this.status = jsonObj.status;
+      }
 
-        if (jsonObj.instance) {
-            this.instance = jsonObj.instance;
-        }
+      if (jsonObj.instance) {
+        this.instance = jsonObj.instance;
+      }
 
-        return this;
+      return this;
     }
 }

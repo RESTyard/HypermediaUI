@@ -1,10 +1,9 @@
 import { HypermediaClientService } from '../hypermedia-view/hypermedia-client.service';
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, Input, inject } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
 import { AppConfig } from 'src/app.config.service';
 import { Store } from '@ngrx/store';
 import { CurrentEntryPoint } from '../store/entrypoint.reducer';
-import { Router } from '@angular/router';
 import { redirectToHuiPage } from '../utils/redirect';
 import { ApiPath } from '../hypermedia-view/api-path';
 
@@ -14,7 +13,13 @@ import { ApiPath } from '../hypermedia-view/api-path';
     styleUrls: ['./main-page.component.scss'],
     standalone: false
 })
-export class MainPageComponent implements OnInit {
+export class MainPageComponent {
+  private hypermediaClientService = inject(HypermediaClientService);
+  private store = inject<Store<{
+    appConfig: AppConfig;
+    currentEntryPoint: CurrentEntryPoint;
+}>>(Store);
+
   showSettingsIcon: boolean = true;
 
   // note: \ need to be escaped by using \\
@@ -24,10 +29,9 @@ export class MainPageComponent implements OnInit {
 
   @Input() apiEntryPoint: string = "";
 
-  constructor(
-    private hypermediaClientService: HypermediaClientService,
-    private store: Store<{ appConfig: AppConfig, currentEntryPoint: CurrentEntryPoint }>,
-    router: Router) {
+  constructor() {
+    const store = this.store;
+
     store
       .select(state => state.appConfig)
       .subscribe({
@@ -53,8 +57,6 @@ export class MainPageComponent implements OnInit {
         Validators.pattern(this.URL_REGEX)
       ]);
   }
-
-  ngOnInit() { }
 
   navigate() {
     redirectToHuiPage(

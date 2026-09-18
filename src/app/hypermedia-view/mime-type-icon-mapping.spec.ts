@@ -3,7 +3,7 @@ import { getBaseMimeType, getIconForMimeType } from './mime-type-icon-mapping';
 describe('mime-type-icon-mapping', () => {
   describe('getBaseMimeType', () => {
     it('should return undefined for undefined or empty input', () => {
-      expect(getBaseMimeType(undefined as any)).toBeUndefined();
+      expect(getBaseMimeType(undefined)).toBeUndefined();
       expect(getBaseMimeType('')).toBeUndefined();
     });
 

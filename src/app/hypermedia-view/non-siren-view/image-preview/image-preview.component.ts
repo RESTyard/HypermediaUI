@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, OnDestroy, SimpleChanges } from '@angular/core';
+import { Component, Input, OnChanges, OnDestroy, SimpleChanges, inject } from '@angular/core';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 
 @Component({
@@ -8,6 +8,8 @@ import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
   standalone: false
 })
 export class ImagePreviewComponent implements OnChanges, OnDestroy {
+  private sanitizer = inject(DomSanitizer);
+
   @Input() blob: Blob | undefined;
 
   public static readonly supportedMimeTypes = new Set([
@@ -22,8 +24,6 @@ export class ImagePreviewComponent implements OnChanges, OnDestroy {
 
   imageUrl: string | undefined;
   safeImageUrl: SafeUrl | undefined;
-
-  constructor(private sanitizer: DomSanitizer) { }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['blob']) {

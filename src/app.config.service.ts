@@ -1,28 +1,28 @@
-import { Injectable } from "@angular/core";
+import { Injectable, inject } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
-import { map, Observable, tap } from "rxjs";
+import {map, Observable, tap} from "rxjs";
 import { Store } from "@ngrx/store";
 import { updateAppConfig } from "./app/store/appconfig.actions";
-import { Record } from "immutable";
+import { Record as ImmutableJsRecord } from "immutable";
 import { updateMappingsIconMappings } from "./app/hypermedia-view/icon-mapping";
+import IConfiguredEntryPointsItem = HypermediaUI.IConfiguredEntryPointsItem;
+import {Unit} from "./app/utils/unit";
 
 @Injectable({
     providedIn: 'root'
 })
 export class AppConfigService implements HypermediaUI.IAppConfig {
+    private http = inject(HttpClient);
+    private store = inject<Store<{ appConfig: AppConfig }>>(Store);
+
     public disableDeveloperControls: boolean = false;
     public configuredEntryPoints: ConfiguredEntryPoint[] = [];
     public onlyAllowConfiguredEntryPoints: boolean = false;
-    public relationIconMapping?: { [key: string]: string };
-    public httpMethodIconMapping?: { [key: string]: string };
+    public relationIconMapping?: Record<string, string>;
+    public httpMethodIconMapping?: Record<string, string>;
     public actionPopupWarningConfigurations: HypermediaUI.IActionClassConfiguration[] = [];
 
-    constructor(
-        private http: HttpClient,
-        private store: Store<{ appConfig: AppConfig }>) {
-    }
-
-    load = (): Observable<any> => {
+    load = (): Observable<Unit> => {
         return this.http
             .get('app.config.json')
             .pipe(
@@ -39,21 +39,23 @@ export class AppConfigService implements HypermediaUI.IAppConfig {
                     }
                     const newConfig = new AppConfig(mapped);
                     this.store.dispatch(updateAppConfig({ newConfig: newConfig }))
-            }));
+                }),
+                map((_, __) => Unit.NoThing)
+            );
     }
 }
 
-export class AppConfig extends Record({
+export class AppConfig extends ImmutableJsRecord({
     disableDeveloperControls: true,
-    configuredEntryPoints: <ConfiguredEntryPoint[] | undefined> undefined,
-    onlyAllowConfiguredEntryPoints: false,
-    relationIconMapping: <{ [key: string]: string } | undefined> undefined,
-    httpMethodIconMapping: <{ [key: string]: string } | undefined> undefined,
-    actionPopupWarningConfigurations: <HypermediaUI.IActionClassConfiguration[] | undefined> undefined,
+    configuredEntryPoints: undefined as ConfiguredEntryPoint[] | undefined,
+    onlyAllowConfiguredEntryPoints : false,
+    relationIconMapping: undefined as Record<string, string> | undefined,
+    httpMethodIconMapping: undefined as Record<string, string> | undefined,
+    actionPopupWarningConfigurations: undefined as HypermediaUI.IActionClassConfiguration[] | undefined,
 }) {}
 
-export class ConfiguredEntryPoint extends Record({
+export class ConfiguredEntryPoint extends ImmutableJsRecord({
     alias: "",
     title: "",
     entryPointUri: "",
-}) {}
+}) implements IConfiguredEntryPointsItem {}

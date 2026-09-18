@@ -9,22 +9,19 @@ import {EmbeddedLinkEntity} from './embedded-link-entity';
 import {IEmbeddedEntity, ISirenClientObject} from './entity-interfaces';
 import {EmbeddedEntity} from './embedded-entity';
 import {ObservableLruCache} from '../api-access/observable-lru-cache';
-import {Injectable} from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import {map} from 'rxjs';
 import {MediaTypes} from "../MediaTypes";
 
 @Injectable()
 export class SirenDeserializer {
+  private httpClient = inject(HttpClient);
+  private schemaCache = inject<ObservableLruCache<object>>(ObservableLruCache);
+  private schemaSimplifier = inject(SchemaSimplifier);
+
   private readonly waheActionTypes = [MediaTypes.Json, MediaTypes.FormData, MediaTypes.OctetStream];
 
   private static httpInputTypeFile = 'file';
-  constructor(
-     private httpClient: HttpClient,
-      private schemaCache: ObservableLruCache<object>,
-      private schemaSimplifier: SchemaSimplifier
-    ) {
-
-  }
 
   deserialize(raw: any): SirenClientObject {
     const result = new SirenClientObject();
@@ -43,7 +40,7 @@ export class SirenDeserializer {
 
   private deserializeEntity(raw: any, result: ISirenClientObject) {
     if (ReflectionHelpers.hasFilledArrayProperty(raw, 'class')) {
-      result.classes = [...(<string[]>raw.class)];
+      result.classes = [...(raw.class as string[])];
     }
 
     if (ReflectionHelpers.hasFilledProperty(raw, 'title')) {
@@ -57,7 +54,7 @@ export class SirenDeserializer {
     // todo preserve order of embeddedLinkEntitys and embeddedEntity, splitting formly-types changes order
     if (ReflectionHelpers.hasFilledArrayProperty(raw, 'entities')) {
       result.embeddedLinkEntities = this.deserializeEmbeddedLinkEntity(raw.entities);
-      result.embeddedEntities = this.deserializeEmbeddedEntitys(raw.entities);
+      result.embeddedEntities = this.deserializeEmbeddedEntities(raw.entities);
     }
   }
 
@@ -181,7 +178,7 @@ export class SirenDeserializer {
     return method;
   }
 
-  deserializeEmbeddedEntitys(entities: Array<any>): Array<IEmbeddedEntity> {
+  deserializeEmbeddedEntities(entities: any[]): IEmbeddedEntity[] {
     const result = new Array<EmbeddedEntity>();
     entities.forEach(entity => {
       if (this.isEmbeddedLinkEntity(entity)) {
@@ -195,8 +192,8 @@ export class SirenDeserializer {
     return result;
   }
 
-  deserializeEmbeddedLinkEntity(entities: Array<any>): Array<EmbeddedLinkEntity> {
-    const result = new Array<EmbeddedLinkEntity>();
+  deserializeEmbeddedLinkEntity(entities: any[]): EmbeddedLinkEntity[] {
+    const result : EmbeddedLinkEntity[] = [];
 
     entities.forEach(entity => {
       if (!this.isEmbeddedLinkEntity(entity)) {

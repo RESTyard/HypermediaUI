@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import { Component, Input, inject } from '@angular/core';
 import {HypermediaAction} from '../../siren-parser/hypermedia-action';
 import {NgxDropzoneChangeEvent} from 'ngx-dropzone';
 import {ActionResults, HypermediaClientService} from '../../hypermedia-client.service';
@@ -16,7 +16,12 @@ import { FileSizePipe } from 'src/app/common/pipes/file-size.pipe';
     styleUrls: ['./file-upload-action.component.scss'],
     standalone: false
 })
-export class FileUploadActionComponent implements OnInit {
+export class FileUploadActionComponent {
+  private hypermediaClientService = inject(HypermediaClientService);
+  private snackBar = inject(MatSnackBar);
+  private dialog = inject(MatDialog);
+  private appConfigService = inject(AppConfigService);
+
 
   @Input()
   action!: HypermediaAction;
@@ -30,16 +35,6 @@ export class FileUploadActionComponent implements OnInit {
   problemDetailsError: ProblemDetailsError| null = null
 
   private fileSizePipe = new FileSizePipe();
-
-  constructor(
-    private hypermediaClientService: HypermediaClientService,
-    private snackBar: MatSnackBar,
-    private dialog: MatDialog,
-    private appConfigService: AppConfigService
-  ) { }
-
-  ngOnInit(): void {
-  }
 
   onSelect($event: NgxDropzoneChangeEvent) {
     this.files.push(...$event.addedFiles);

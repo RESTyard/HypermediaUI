@@ -1,4 +1,4 @@
-import {Injectable} from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import {HttpClient, HttpErrorResponse, HttpHeaders, HttpResponse} from '@angular/common/http';
 import {Router} from '@angular/router';
 
@@ -23,7 +23,6 @@ import {Store} from '@ngrx/store';
 import {AppConfig} from 'src/app.config.service';
 import {selectEffectiveGeneralSettings} from '../store/selectors';
 import {CurrentEntryPoint} from '../store/entrypoint.reducer';
-import { Unit } from '../utils/unit';
 import {AuthRedirectComponent} from "../auth-redirect/auth-redirect.component";
 
 export interface IHypermediaClientService {
@@ -33,7 +32,7 @@ export interface IHypermediaClientService {
 
   getHypermediaObjectRawStream(): BehaviorSubject<object>;
 
-  getNavPathsStream(): BehaviorSubject<Array<string>>;
+  getNavPathsStream(): BehaviorSubject<string[]>;
 
   navigateToEntryPoint(): void;
 
@@ -58,10 +57,22 @@ const problemDetailsMimeType = "application/problem+json";
 
 @Injectable()
 export class HypermediaClientService implements IHypermediaClientService {
+  private httpClient = inject(HttpClient);
+  private schemaCache = inject<ObservableLruCache<object>>(ObservableLruCache);
+  private sirenDeserializer = inject(SirenDeserializer);
+  private router = inject(Router);
+  private authService = inject(AuthService);
+  private problemDetailsErrorService = inject(ProblemDetailsErrorService);
+  private store = inject<Store<{
+    appSettings: AppSettings;
+    appConfig: AppConfig;
+    currentEntryPoint: CurrentEntryPoint;
+}>>(Store);
+
   private currentClientObject$: BehaviorSubject<SirenClientObject> = new BehaviorSubject<SirenClientObject>(new SirenClientObject());
   private currentClientObjectRaw$: BehaviorSubject<object> = new BehaviorSubject<object>({});
   private currentContentType$: BehaviorSubject<string | undefined> = new BehaviorSubject<string | undefined>(undefined);
-  private currentNavPaths$: BehaviorSubject<Array<string>> = new BehaviorSubject<Array<string>>(new Array<string>());
+  private currentNavPaths$: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([]);
   private apiPath: ApiPath = new ApiPath();
   private path: string | undefined;
 
@@ -70,15 +81,10 @@ export class HypermediaClientService implements IHypermediaClientService {
   private busyRequestsCounter = 0;
   private generalSettings: GeneralSettings = new GeneralSettings();
 
-  constructor(
-    globalNavigationEvents: GlobalNavigationEvents,
-    private httpClient: HttpClient,
-    private schemaCache: ObservableLruCache<object>,
-    private sirenDeserializer: SirenDeserializer,
-    private router: Router,
-    private authService: AuthService,
-    private problemDetailsErrorService: ProblemDetailsErrorService,
-    private store: Store<{ appSettings: AppSettings, appConfig: AppConfig, currentEntryPoint: CurrentEntryPoint }>) {
+  constructor() {
+    const globalNavigationEvents = inject(GlobalNavigationEvents);
+    const store = this.store;
+
 
     store
       .select(selectEffectiveGeneralSettings)
@@ -124,7 +130,7 @@ export class HypermediaClientService implements IHypermediaClientService {
     return this.currentContentType$;
   }
 
-  getNavPathsStream(): BehaviorSubject<Array<string>> {
+  getNavPathsStream(): BehaviorSubject<string[]> {
     return this.currentNavPaths$;
   }
 
@@ -283,11 +289,11 @@ export class HypermediaClientService implements IHypermediaClientService {
 
   private async handleAuthenticationChallenge(url: string, err: HttpErrorResponse) {
     // https://learn.microsoft.com/en-us/entra/msal/dotnet/advanced/extract-authentication-parameters
-    let queryParams = this.buildApiPathSearchParams(this.apiPath.fullPath, 'apiPath');
+    const queryParams = this.buildApiPathSearchParams(this.apiPath.fullPath, 'apiPath');
     if (this.path) {
       queryParams.append(AuthRedirectComponent.pathUriParameterKey, this.path);
     }
-    let redirectUri = window.location.origin + "/auth-redirect?" + queryParams.toString();
+    const redirectUri = window.location.origin + "/auth-redirect?" + queryParams.toString();
     const result = await resultPipe(
       () => {
         const header = err.headers.get('www-authenticate');
@@ -317,16 +323,16 @@ export class HypermediaClientService implements IHypermediaClientService {
       return Failure("");
     }
 
-    let kvpAsString = header?.replace(authScheme, "").split(',',) ?? []
+    const kvpAsString = header?.replace(authScheme, "").split(',',) ?? [];
     return Success(new Map(kvpAsString.map(v => {
-      let keyAndValue = v.split('=');
+      const keyAndValue = v.split('=');
       return [keyAndValue[0].trim(), keyAndValue[1].substring(1, keyAndValue[1].length - 1).trim()];
     })));
   }
 
   private assertOIDCChallengeHeadersArePresent(authParams: Map<string, string>) : Result<{ authUri: string, clientId: string }, string> {
-    let authUri = authParams.get('authorization_uri')
-    let clientId = authParams.get('client_id');
+    const authUri = authParams.get('authorization_uri');
+    const clientId = authParams.get('client_id');
     return authUri && clientId
       ? Success({ authUri, clientId })
       : Failure("authorization_uri and client_id need to be configured.");
@@ -488,7 +494,7 @@ export class HypermediaClientService implements IHypermediaClientService {
     switch (action.type) {
 
       case MediaTypes.FormData:
-        let formData = new FormData();
+        const formData = new FormData();
         action.files.forEach((file) => {
           formData.append('files', file);
         });
@@ -529,7 +535,7 @@ export class HypermediaClientService implements IHypermediaClientService {
     // https://stackoverflow.com/questions/54922985/getting-status-code-0-angular-httpclient
     // status code 0 clientside or network error
     if (errorResponse.status === 0) {
-      let message = errorResponse.error.message ? ": " + errorResponse.error.message : "";
+      const message = errorResponse.error.message ? ": " + errorResponse.error.message : "";
       console.error(`Client-side error occurred ${message}`, errorResponse.error);
       return new ProblemDetailsError({
         type: "Client.RequestError",
@@ -567,7 +573,7 @@ export class HypermediaClientService implements IHypermediaClientService {
   }
 
   private HandleActionError(errorResponse: HttpErrorResponse, actionResult: (actionResults: ActionResults, resultLocation: string | null, content: any, problemDetailsError: ProblemDetailsError) => void) {
-    let problemDetailsError: ProblemDetailsError = this.MapHttpErrorResponseToProblemDetails(errorResponse);
+    const problemDetailsError: ProblemDetailsError = this.MapHttpErrorResponseToProblemDetails(errorResponse);
 
     actionResult(ActionResults.error, null, null, problemDetailsError);
   }

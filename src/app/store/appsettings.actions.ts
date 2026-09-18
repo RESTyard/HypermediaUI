@@ -1,6 +1,5 @@
 import { createAction, props } from "@ngrx/store";
 import {AppSettings, AuthenticationConfiguration, GeneralSettings, SiteSettings} from "../settings/app-settings";
-import {User} from "oidc-client-ts";
 
 export const updateAppSettings = createAction(
     '[AppSettings] Update',

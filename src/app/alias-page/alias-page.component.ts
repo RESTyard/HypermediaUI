@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { HypermediaClientService } from '../hypermedia-view/hypermedia-client.service';
 import { AppConfig } from 'src/app.config.service';
 import { ActivatedRoute } from '@angular/router';
@@ -16,13 +16,14 @@ import { redirectToHuiPage } from '../utils/redirect';
   styleUrl: './alias-page.component.css'
 })
 export class AliasPageComponent implements OnInit {
-  error: string | undefined = undefined;
+  private hypermediaClientService = inject(HypermediaClientService);
+  private store = inject<Store<{
+    appConfig: AppConfig;
+    currentEntryPoint: CurrentEntryPoint;
+}>>(Store);
+  private activatedRoute = inject(ActivatedRoute);
 
-  constructor(
-    private hypermediaClientService: HypermediaClientService,
-    private store: Store<{ appConfig: AppConfig, currentEntryPoint: CurrentEntryPoint }>,
-    private activatedRoute: ActivatedRoute) {
-    }
+  error: string | undefined = undefined;
 
   ngOnInit() {
     combineLatest(
@@ -36,7 +37,7 @@ export class AliasPageComponent implements OnInit {
             const [configuredEntryPoints, urlSegments, queryParams] = tuple;
             if (configuredEntryPoints !== undefined && urlSegments !== undefined && queryParams !== undefined) {
               const path = urlSegments[urlSegments.length - 1].path;
-              var config = configuredEntryPoints.find(e => e.alias == path);
+              const config = configuredEntryPoints.find(e => e.alias == path);
               if (config) {
                 const apiPath = new ApiPath();
                 apiPath.initFromRouterParams(queryParams);

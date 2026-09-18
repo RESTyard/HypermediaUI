@@ -8,11 +8,12 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDividerModule } from '@angular/material/divider';
+import {HypermediaLink} from "../siren-parser/hypermedia-link";
 
 describe('LinkViewComponent', () => {
   let component: LinkViewComponent;
   let fixture: ComponentFixture<LinkViewComponent>;
-  let hypermediaClientService: any;
+  let hypermediaClientService: HypermediaClientService;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
@@ -40,51 +41,51 @@ describe('LinkViewComponent', () => {
 
   describe('isSirenLink', () => {
     it('should return true for Siren', () => {
-      const link = { relations: [], url: '', type: 'application/vnd.siren+json' };
-      expect(component.isSirenLink(link as any)).toBeTrue();
+      const link = { relations: [], url: '', type: 'application/vnd.siren+json' } as HypermediaLink;
+      expect(component.isSirenLink(link)).toBeTrue();
     });
 
     it('should return true for undefined type', () => {
-      const link = { relations: [], url: '', type: undefined };
-      expect(component.isSirenLink(link as any)).toBeTrue();
+      const link = { relations: [], url: '', type: undefined } as unknown as HypermediaLink;
+      expect(component.isSirenLink(link)).toBeTrue();
     });
 
     it('should return true for empty string type (treated as unknown/Siren)', () => {
-      const link = { relations: [], url: '', type: '' } as any;
+      const link = { relations: [], url: '', type: '' } as HypermediaLink;
       expect(component.isSirenLink(link)).toBeTrue();
     });
 
     it('should return false for PDF', () => {
-      const link1 = { relations: [], url: '', type: 'application/pdf' };
-      expect(component.isSirenLink(link1 as any)).toBeFalse();
+      const link1 = { relations: [], url: '', type: 'application/pdf' } as HypermediaLink;
+      expect(component.isSirenLink(link1)).toBeFalse();
 
-      const link2 = { relations: [], url: '', type: 'application/x-pdf' };
-      expect(component.isSirenLink(link2 as any)).toBeFalse();
+      const link2 = { relations: [], url: '', type: 'application/x-pdf' } as HypermediaLink;
+      expect(component.isSirenLink(link2)).toBeFalse();
     });
 
     it('should return false for JSON', () => {
-      const link = { relations: [], url: '', type: 'application/json' };
-      expect(component.isSirenLink(link as any)).toBeFalse();
+      const link = { relations: [], url: '', type: 'application/json' } as HypermediaLink;
+      expect(component.isSirenLink(link)).toBeFalse();
     });
 
     it('should return false for vendor-specific JSON', () => {
-      const link = { relations: [], url: '', type: 'application/vnd.something+json' };
-      expect(component.isSirenLink(link as any)).toBeFalse();
+      const link = { relations: [], url: '', type: 'application/vnd.something+json' } as HypermediaLink;
+      expect(component.isSirenLink(link)).toBeFalse();
     });
 
     it('should return false for image', () => {
-      const link = { relations: [], url: '', type: 'image/png' };
-      expect(component.isSirenLink(link as any)).toBeFalse();
+      const link = { relations: [], url: '', type: 'image/png' } as HypermediaLink;
+      expect(component.isSirenLink(link)).toBeFalse();
     });
 
     it('should return false for text/plain', () => {
-      const link = { relations: [], url: '', type: 'text/plain' };
-      expect(component.isSirenLink(link as any)).toBeFalse();
+      const link = { relations: [], url: '', type: 'text/plain' } as HypermediaLink;
+      expect(component.isSirenLink(link)).toBeFalse();
     });
 
     it('should return false for other types (e.g. zip)', () => {
-      const link = { relations: [], url: '', type: 'application/zip' };
-      expect(component.isSirenLink(link as any)).toBeFalse();
+      const link = { relations: [], url: '', type: 'application/zip' } as HypermediaLink;
+      expect(component.isSirenLink(link)).toBeFalse();
     });
   });
 
@@ -94,7 +95,7 @@ describe('LinkViewComponent', () => {
       const navigateSpy = spyOn(hypermediaClientService, 'Navigate');
       const downloadSpy = spyOn(hypermediaClientService, 'DownloadAsFile');
 
-      const link = { relations: ['self'], url: 'http://example.com/file', type: 'application/pdf' } as any;
+      const link = { relations: ['self'], url: 'http://example.com/file', type: 'application/pdf' } as HypermediaLink;
       component.links = [link];
       fixture.detectChanges();
 
