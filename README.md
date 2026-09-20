@@ -112,20 +112,18 @@ The exit button on the top left then also returns the user to ``/SomePage`` inst
 
 The following values for ``alias`` will have no effect, since they are already used internally and have precedence over the wildcard route used to implement the alias:
 - hui
-- auth-redirect
-- logout-redirect
 
 ## Authentication
 
-The UI supports authentication with an OIDC provider by using the [``oidc-client-ts``](https://www.npmjs.com/package/oidc-client-ts) npm library.
+Authentication uses an OAuth 2.1 Backend for Frontend (BFF). The backend owns the authorization-code flow, client secret, token acquisition, and HTTP-only session cookie.
 
-The parameters/formats from [this Microsoft article](https://learn.microsoft.com/en-us/entra/msal/dotnet/advanced/extract-authentication-parameters) are used / asserted.
+When an API request returns ``401``, the UI requests ``/bff/session`` on that API's origin. If it returns ``{ "isAuthenticated": false }``, the browser is redirected to ``/bff/login`` on the same origin. After the BFF completes authentication, its cookie is sent with subsequent API requests. The exit button calls ``/bff/logout`` to clear the BFF session.
 
-Upon receiving a ``401`` response from the API with a ``www-authentication`` header starting with "Bearer", the values ``authorization_uri`` and ``client_id`` are extracted. These will be used to make an OIDC call to the authorization uri.<br/>
-The redirect uri is given as ``/auth_redirect`` with the current alias (in case of a configured entry point) or hui as the ``path`` parameter, and the current api path as the ``apiPath`` parameter.<br/>
-When redirected to ``auth-redirect``, the token is extracted and saved under the site specific settings for the API, and the user is internally redirected to the page they just requested using the ``path`` and ``apiPath`` parameters.
+The BFF must allow credentialed cross-origin requests from the UI origin. This CORS policy must apply to successful responses and error responses, including ``401`` responses. It must return ``Access-Control-Allow-Origin`` with the exact UI origin, rather than ``*``, and ``Access-Control-Allow-Credentials: true``. Its preflight response must allow the HTTP methods and request headers used by the UI. Without these headers, browsers hide the backend response and Angular receives a status ``0`` network error instead of the ``401`` required to start BFF login.
 
-The exit button on the top right performs a logout action on top of leaving the API. The user is redirected to the ``/logout-redirect`` page and is able to see if the logout was successful. While the app is open it remembers this, such that when authenticating again, the OIDC provider is prompted to select an account explicitly, preventing an automatic re-login after logout, especially when the user was in a configured EntryPoint which enforces authentication from the start.
+For a cross-site BFF cookie, configure it as ``Secure`` and ``SameSite=None``. Browser privacy settings can still block third-party cookies; hosting the UI and BFF on the same site avoids that restriction.
+
+Manually configured global and per-site headers, including an ``Authorization`` header, remain supported.
 
 ## Content Preview
 

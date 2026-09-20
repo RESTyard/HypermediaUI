@@ -4,8 +4,6 @@ import {
   addSite,
   removeHeader,
   removeSite,
-  setAuthConfig,
-  setAuthenticationInProgress,
   updateAppSettings,
   updateGeneralAppSettings,
   updateHeader,
@@ -75,22 +73,6 @@ export const appSettingsReducer = createReducer(
             throw new Error("site does not exists");
         }
         return setSiteSettings(state, state.siteSettings.siteSpecificSettings.remove(props.siteUrl));
-    }),
-    on(setAuthConfig, (state, props) => {
-      const existingSiteSpecificEntry = state.siteSettings.siteSpecificSettings.get(props.siteUrl);
-      if (existingSiteSpecificEntry === undefined) {
-        throw new Error("site url not present");
-      }
-      const updatedMap = existingSiteSpecificEntry.set("authConfig", props.authConfig);
-      return setSite(state, props.siteUrl, updatedMap);
-    }),
-    on(setAuthenticationInProgress, (state, props) => {
-      const existingSiteSpecificEntry = state.siteSettings.siteSpecificSettings.get(props.siteUrl);
-      if (existingSiteSpecificEntry === undefined) {
-        throw new Error("site url not present");
-      }
-      const updatedMap = existingSiteSpecificEntry.set("authenticationInProgress", props.authenticationInProgress);
-      return setSite(state, props.siteUrl, updatedMap);
     })
 );
 

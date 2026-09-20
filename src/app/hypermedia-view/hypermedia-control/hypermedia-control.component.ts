@@ -6,7 +6,7 @@ import {ApiPath} from '../api-path';
 import {AppSettings, GeneralSettings} from 'src/app/settings/app-settings';
 import {Store} from '@ngrx/store';
 import {AppConfig} from 'src/app.config.service';
-import {selectEffectiveGeneralSettings, selectUserNameForCurrentSite} from 'src/app/store/selectors';
+import {selectEffectiveGeneralSettings} from 'src/app/store/selectors';
 import {combineLatest} from 'rxjs';
 import {CurrentEntryPoint} from 'src/app/store/entrypoint.reducer';
 import {AuthService} from "../auth.service";
@@ -41,6 +41,7 @@ export class HypermediaControlComponent implements OnInit {
   GeneralSettings: GeneralSettings = new GeneralSettings();
   showSettingsIcon: boolean = true;
   userName: string | undefined = "";
+  isAuthenticated: boolean = false;
   allowOnlyConfiguredEntryPoints: boolean = true
   IsInsecureConnection: boolean = false;
   title: string = "";
@@ -75,11 +76,17 @@ export class HypermediaControlComponent implements OnInit {
         }
       });
 
-    store
-      .select(selectUserNameForCurrentSite)
+    this.authService.userName$
       .subscribe({
         next: user => {
           this.userName = user;
+        }
+      })
+
+    this.authService.isAuthenticated$
+      .subscribe({
+        next: isAuthenticated => {
+          this.isAuthenticated = isAuthenticated;
         }
       })
 
@@ -181,15 +188,15 @@ export class HypermediaControlComponent implements OnInit {
     }));
   }
 
-  public async exitApi() {
-    if (this.userName) {
-      await this.authService.handleLogout();
-    }
-
-    if (this.allowOnlyConfiguredEntryPoints) {
-      this.hypermediaClient.navigateToMainPage();
+  public exitApi() {
+    if (this.isAuthenticated && this.CurrentEntryPoint) {
+      this.authService.redirectToLogout(this.CurrentEntryPoint, window.location.origin);
     } else {
-      this.hypermediaClient.navigateToEntryPoint();
+      if (this.allowOnlyConfiguredEntryPoints) {
+        this.hypermediaClient.navigateToMainPage();
+      } else {
+        this.hypermediaClient.navigateToEntryPoint();
+      }
     }
   }
 }

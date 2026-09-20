@@ -90,12 +90,10 @@ async function installApi(page: import('@playwright/test').Page) {
           contentType: 'image/png',
           body: Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=', 'base64'),
         });
-        case '/protected': return route.fulfill({
-          status: 401,
-          headers: {
-            'www-authenticate': 'Bearer authorization_uri="https://identity.test", client_id="hypermedia-ui"',
-            'access-control-expose-headers': 'www-authenticate',
-          },
+        case '/protected': return route.fulfill({ status: 401 });
+        case '/bff/session': return route.fulfill({
+          contentType: 'application/json',
+          body: JSON.stringify({ isAuthenticated: false }),
         });
         case '/missing': return route.fulfill({
           status: 404,
@@ -311,20 +309,14 @@ test('uses configured entry points and disables developer controls', async ({ pa
   await expect(page.getByRole('radio', { name: 'Raw' })).toBeHidden();
 });
 
-test('redirects to OIDC after a 401 bearer challenge', async ({ page }) => {
-  await page.route('https://identity.test/**', async route => {
-    const path = new URL(route.request().url()).pathname;
-    if (path === '/.well-known/openid-configuration') {
-      return route.fulfill({ contentType: 'application/json', body: JSON.stringify({
-        issuer: 'https://identity.test', authorization_endpoint: 'https://identity.test/authorize', token_endpoint: 'https://identity.test/token', jwks_uri: 'https://identity.test/keys',
-      }) });
-    }
-    if (path === '/authorize') return route.fulfill({ contentType: 'text/html', body: '<h1>Identity provider</h1>' });
-    throw new Error(`Unhandled identity request: ${route.request().url()}`);
-  });
+test('redirects to the BFF login endpoint after an unauthenticated 401', async ({ page }) => {
+  await page.route(`${api}/bff/login`, route => route.fulfill({
+    contentType: 'text/html',
+    body: '<h1>BFF login</h1>',
+  }));
   await page.goto('/');
   await page.getByPlaceholder('Enter API entrypoint URL').fill(`${api}/protected`);
   await page.getByRole('button', { name: 'Enter API' }).click();
-  await expect(page).toHaveURL(/https:\/\/identity\.test\/authorize/);
-  await expect(page.getByRole('heading', { name: 'Identity provider' })).toBeVisible();
+  await expect(page).toHaveURL(`${api}/bff/login`);
+  await expect(page.getByRole('heading', { name: 'BFF login' })).toBeVisible();
 });

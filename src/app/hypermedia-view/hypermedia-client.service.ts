@@ -14,8 +14,7 @@ import {ApiPath} from './api-path';
 import {ProblemDetailsError} from '../error-dialog/problem-details-error';
 import {MediaTypes} from "./MediaTypes";
 import {AuthService} from './auth.service';
-import {Result, Success, Failure, bind, bindAsync, isFailure} from 'fnxt/result';
-import {pipe as resultPipe} from 'fnxt/pipe';
+import {isSuccess} from 'fnxt/result';
 import {ProblemDetailsErrorService} from "../error-dialog/problem-details-error.service";
 import {GlobalNavigationEvents} from '../global-navigation.events';
 import {AppSettings, GeneralSettings} from '../settings/app-settings';
@@ -23,7 +22,6 @@ import {Store} from '@ngrx/store';
 import {AppConfig} from 'src/app.config.service';
 import {selectEffectiveGeneralSettings} from '../store/selectors';
 import {CurrentEntryPoint} from '../store/entrypoint.reducer';
-import {AuthRedirectComponent} from "../auth-redirect/auth-redirect.component";
 
 export interface IHypermediaClientService {
   isBusy$: BehaviorSubject<boolean>;
@@ -189,7 +187,7 @@ export class HypermediaClientService implements IHypermediaClientService {
       return;
     }
 
-    this.authService.requestSuccessfulFor(url);
+    void this.authService.getSession(this.apiPath.firstSegment);
     const contentTypeHeader = response.headers.get('Content-Type');
     const contentType = contentTypeHeader ? contentTypeHeader.split(';')[0].trim() : MediaTypes.Siren;
     this.currentContentType$.next(contentType);
@@ -273,13 +271,9 @@ export class HypermediaClientService implements IHypermediaClientService {
     }
 
     switch (err.status) {
-      // @ts-ignore
       case 401:
-        if (!this.authService.isTokenRecentlyAcquired(url)) {
-          await this.handleAuthenticationChallenge(url, err);
-          break;
-        }
-        // fallthrough if token was recently acquired, treat as normal error
+        await this.handleAuthenticationChallenge(url, err);
+        break;
       default:
         const problemDetailsError = this.MapHttpErrorResponseToProblemDetails(err);
         this.problemDetailsErrorService.showProblemDetailsDialog(problemDetailsError);
@@ -288,54 +282,15 @@ export class HypermediaClientService implements IHypermediaClientService {
   }
 
   private async handleAuthenticationChallenge(url: string, err: HttpErrorResponse) {
-    // https://learn.microsoft.com/en-us/entra/msal/dotnet/advanced/extract-authentication-parameters
-    const queryParams = this.buildApiPathSearchParams(this.apiPath.fullPath, 'apiPath');
-    if (this.path) {
-      queryParams.append(AuthRedirectComponent.pathUriParameterKey, this.path);
-    }
-    const redirectUri = window.location.origin + "/auth-redirect?" + queryParams.toString();
-    const result = await resultPipe(
-      () => {
-        const header = err.headers.get('www-authenticate');
-        return header ? Success(header) : Failure('No authorization challenges provided from the backend.');
-      },
-      bind((header: string) => this.parseWWWAuthenticateHeaderSchemeParams(header, "Bearer")),
-      bind((authSchemaParameter: Map<string, string>) => this.assertOIDCChallengeHeadersArePresent(authSchemaParameter)),
-      bindAsync((tuple: { authUri: string, clientId: string }) => this.authService.login({
-        entryPoint: url,
-        authority: tuple.authUri,
-        client_id: tuple.clientId,
-        redirect_uri: redirectUri,
-        scope: 'openid profile email offline_access'
-      })),
-    )(0);
-
-    if (isFailure(result)) {
-      console.error(result.value);
-      this.problemDetailsErrorService.showErrorDialog(
-        "Authentication error",
-        result.value);
-    }
-  }
-
-  private parseWWWAuthenticateHeaderSchemeParams(header: string | null, authScheme: string): Result<Map<string, string>, string> {
-    if (!header?.startsWith('Bearer')) {
-      return Failure("");
+    const session = await this.authService.getSession(url);
+    if (isSuccess(session) && !session.value.isAuthenticated) {
+      const redirectUri = window.location.origin + "/" + this.buildBrowserUrl(this.path, this.apiPath);
+      this.authService.redirectToLogin(url, redirectUri);
+      return;
     }
 
-    const kvpAsString = header?.replace(authScheme, "").split(',',) ?? [];
-    return Success(new Map(kvpAsString.map(v => {
-      const keyAndValue = v.split('=');
-      return [keyAndValue[0].trim(), keyAndValue[1].substring(1, keyAndValue[1].length - 1).trim()];
-    })));
-  }
-
-  private assertOIDCChallengeHeadersArePresent(authParams: Map<string, string>) : Result<{ authUri: string, clientId: string }, string> {
-    const authUri = authParams.get('authorization_uri');
-    const clientId = authParams.get('client_id');
-    return authUri && clientId
-      ? Success({ authUri, clientId })
-      : Failure("authorization_uri and client_id need to be configured.");
+    const problemDetailsError = this.MapHttpErrorResponseToProblemDetails(err);
+    this.problemDetailsErrorService.showProblemDetailsDialog(problemDetailsError);
   }
 
   buildBrowserUrl(path: string | undefined, apiPath: ApiPath) {

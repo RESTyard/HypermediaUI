@@ -28,14 +28,12 @@ import { MatListModule } from '@angular/material/list';
 import { MatTableModule } from '@angular/material/table';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { CustomHeadersInterceptor } from './settings/custom-headers.interceptor';
-import { AuthRedirectComponent } from './auth-redirect/auth-redirect.component';
 import { ProblemDetailsErrorService } from './error-dialog/problem-details-error.service';
 import { GlobalNavigationEvents } from './global-navigation.events';
 import { AppConfigService } from 'src/app.config.service';
 import { Observable } from 'rxjs';
 import { importStore } from './store/store-module';
 import { AliasPageComponent } from './alias-page/alias-page.component';
-import {LogoutRedirectComponent} from "./logout-redirect/logout-redirect.component";
 import { ConfirmationDialogComponent } from './common/confirmation-dialog/confirmation-dialog.component';
 import {Unit} from "./utils/unit";
 
@@ -43,14 +41,6 @@ const appRoutes: Routes = [
   {
     path: 'hui',
     component: HypermediaControlComponent
-  },
-  {
-    path: 'auth-redirect',
-    component: AuthRedirectComponent
-  },
-  {
-    path: 'logout-redirect',
-    component: LogoutRedirectComponent
   },
   {
     path: '',
@@ -77,7 +67,6 @@ export const myCustomTooltipDefaults: MatTooltipDefaultOptions = {
   declarations: [
     AppComponent,
     MainPageComponent,
-    AuthRedirectComponent,
     ConfirmationDialogComponent
   ],
   imports: [

@@ -4,7 +4,7 @@ import { HypermediaControlComponent } from './hypermedia-control.component';
 import { provideHypermediaClientServiceMock } from 'src/app/test/HypermediaClientServiceMock';
 import { ActivatedRoute } from '@angular/router';
 import { ValueProvider } from '@angular/core';
-import { of } from 'rxjs';
+import { BehaviorSubject, of } from 'rxjs';
 import { importStore } from 'src/app/store/store-module';
 import { AuthService } from '../auth.service';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -40,7 +40,7 @@ describe('HypermediaControlComponent', () => {
             queryParams: of(),
           },
         } as ValueProvider,
-        { provide: AuthService, useValue: {} },
+        { provide: AuthService, useValue: { userName$: new BehaviorSubject(undefined), isAuthenticated$: new BehaviorSubject(false) } },
       ],
     })
     .compileComponents();

@@ -16,18 +16,9 @@ export class GeneralSettings extends Record({
     actionExecutionTimeoutMs: 60000
 }) {}
 
-export class AuthenticationConfiguration extends Record({
-  authority: "",
-  client_id: "",
-  redirect_uri: "",
-  scope: "",
-}) {}
-
 export class SiteSetting extends Record({
     siteUrl: "",
     headers: Map<string, string>(),
-    authenticationInProgress: false,
-    authConfig: undefined as AuthenticationConfiguration | undefined,
 }) {}
 
 export class SiteSettings extends Record({
