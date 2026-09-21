@@ -191,12 +191,13 @@ export class HypermediaControlComponent implements OnInit {
   public exitApi() {
     if (this.isAuthenticated && this.CurrentEntryPoint) {
       this.authService.redirectToLogout(this.CurrentEntryPoint, window.location.origin);
+      return;
+    }
+
+    if (this.allowOnlyConfiguredEntryPoints) {
+      this.hypermediaClient.navigateToMainPage();
     } else {
-      if (this.allowOnlyConfiguredEntryPoints) {
-        this.hypermediaClient.navigateToMainPage();
-      } else {
-        this.hypermediaClient.navigateToEntryPoint();
-      }
+      this.hypermediaClient.navigateToEntryPoint();
     }
   }
 }
