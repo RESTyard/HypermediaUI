@@ -21,7 +21,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: '20'
+          node-version: '24'
 
       - name: Install GitVersion
         uses: gittools/actions/gitversion/setup@v3.1.0

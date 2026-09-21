@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { URLPattern } from 'node:url';
 
 const api = 'https://api.test';
 const siren = 'application/vnd.siren+json';
@@ -94,6 +95,10 @@ async function installApi(page: import('@playwright/test').Page) {
         case '/bff/session': return route.fulfill({
           contentType: 'application/json',
           body: JSON.stringify({ isAuthenticated: false }),
+        });
+        case '/bff/login': return route.fulfill({
+          contentType: 'text/html',
+          body: '<h1>BFF login</h1>',
         });
         case '/missing': return route.fulfill({
           status: 404,
@@ -310,13 +315,20 @@ test('uses configured entry points and disables developer controls', async ({ pa
 });
 
 test('redirects to the BFF login endpoint after an unauthenticated 401', async ({ page }) => {
-  await page.route(`${api}/bff/login`, route => route.fulfill({
-    contentType: 'text/html',
-    body: '<h1>BFF login</h1>',
-  }));
   await page.goto('/');
   await page.getByPlaceholder('Enter API entrypoint URL').fill(`${api}/protected`);
   await page.getByRole('button', { name: 'Enter API' }).click();
-  await expect(page).toHaveURL(`${api}/bff/login`);
+  await expect(page).toHaveURL(new URLPattern({ hostname: 'api.test', pathname: '/bff/login' }));
+  const loginUrl = new URL(page.url());
+  const search = loginUrl.searchParams.get('redirectUri');
+  expect(search).not.toBeNull();
+  const redirectUrl = URL.parse(search!);
+  expect(redirectUrl).not.toBeNull();
+  expect(redirectUrl!.pathname).toBe("/hui");
+  const apiPath = redirectUrl!.searchParams.get('apiPath');
+  expect(apiPath).not.toBeNull();
+  const apiPathUrl = URL.parse(apiPath!);
+  expect(apiPathUrl).not.toBeNull();
+  expect(apiPathUrl!.pathname).toBe("/protected");
   await expect(page.getByRole('heading', { name: 'BFF login' })).toBeVisible();
 });
