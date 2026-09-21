@@ -7,6 +7,7 @@ export class GlobalNavigationEvents {
     private gotoEntryPoint: Subject<Unit> = new Subject<Unit>();
     private gotoMainPage: Subject<Unit> = new Subject<Unit>();
     private gotoPreviousStep: Subject<Unit> = new Subject<Unit>();
+    private exitApi : Subject<Unit> = new Subject<Unit>();
 
     public emitGotoEntryPoint() {
         this.gotoEntryPoint.next(Unit.NoThing);
@@ -20,6 +21,14 @@ export class GlobalNavigationEvents {
         this.gotoPreviousStep.next(Unit.NoThing);
     }
 
+    public emitExitApi() {
+      if (this.exitApi.observed) {
+        this.exitApi.next(Unit.NoThing);
+      } else {
+        this.emitGotoMainPage();
+      }
+    }
+
     public get onGotoEntryPoint() {
         return this.gotoEntryPoint.asObservable();
     }
@@ -30,5 +39,9 @@ export class GlobalNavigationEvents {
 
     public get onGotoPreviousStep() {
         return this.gotoPreviousStep.asObservable();
+    }
+
+    public get onExitApi() {
+      return this.exitApi.asObservable();
     }
 }

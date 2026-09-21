@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import {Component, OnInit, inject, OnDestroy} from '@angular/core';
 import {HypermediaClientService} from '../hypermedia-client.service';
 import {SirenClientObject} from '../siren-parser/siren-client-object';
 import {ActivatedRoute, Router} from '@angular/router';
@@ -7,11 +7,12 @@ import {AppSettings, GeneralSettings} from 'src/app/settings/app-settings';
 import {Store} from '@ngrx/store';
 import {AppConfig} from 'src/app.config.service';
 import {selectEffectiveGeneralSettings} from 'src/app/store/selectors';
-import {combineLatest} from 'rxjs';
+import {combineLatest, Subscription} from 'rxjs';
 import {CurrentEntryPoint} from 'src/app/store/entrypoint.reducer';
 import {AuthService} from "../auth.service";
 import {updateGeneralAppSettings} from 'src/app/store/appsettings.actions';
 import {MediaTypes} from "../MediaTypes";
+import {GlobalNavigationEvents} from "../../global-navigation.events";
 
 @Component({
   selector: 'app-hypermedia-control',
@@ -19,7 +20,7 @@ import {MediaTypes} from "../MediaTypes";
   styleUrls: ['./hypermedia-control.component.scss'],
   standalone: false
 })
-export class HypermediaControlComponent implements OnInit {
+export class HypermediaControlComponent implements OnInit, OnDestroy {
   private hypermediaClient = inject(HypermediaClientService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
@@ -29,6 +30,8 @@ export class HypermediaControlComponent implements OnInit {
     appConfig: AppConfig;
     currentEntryPoint: CurrentEntryPoint;
 }>>(Store);
+
+  private onExitEventSubscription: Subscription;
 
   public rawResponse: object | null = null;
   public contentType: string | undefined = undefined;
@@ -50,6 +53,7 @@ export class HypermediaControlComponent implements OnInit {
 
   constructor() {
     const router = this.router;
+    const globalNavigationEvents = inject(GlobalNavigationEvents);
     const store = this.store;
 
     store
@@ -90,6 +94,10 @@ export class HypermediaControlComponent implements OnInit {
         }
       })
 
+    this.onExitEventSubscription = globalNavigationEvents.onExitApi.subscribe({
+      next: _ => this.exitApi();
+    });
+
     combineLatest(
       [
         store.select(state => state.appConfig),
@@ -102,7 +110,7 @@ export class HypermediaControlComponent implements OnInit {
             router.navigate(['']);
           }
         }
-      })
+      });
   }
 
   ngOnInit() {
@@ -134,6 +142,10 @@ export class HypermediaControlComponent implements OnInit {
         this.hypermediaClient.NavigateToApiPath(apiPath);
       }
     });
+  }
+
+  ngOnDestroy() {
+    this.onExitEventSubscription.unsubscribe();
   }
 
   private SetHostInfo(navPaths: string[]) {

@@ -72,7 +72,7 @@ export class ErrorDialogPresenter {
 
     this.modal.instance.exitApi.subscribe(() => {
       this.destroy();
-      this.zone.run(() => this.globalNavigationEvents.emitGotoMainPage());
+      this.zone.run(() => this.globalNavigationEvents.emitExitApi());
     });
   }
 
