@@ -92,6 +92,7 @@ async function installApi(page: import('@playwright/test').Page) {
           body: Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=', 'base64'),
         });
         case '/protected': return route.fulfill({ status: 401 });
+        case '/forbidden': return route.fulfill({ status: 403 });
         case '/bff/session': return route.fulfill({
           contentType: 'application/json',
           body: JSON.stringify({ isAuthenticated: false }),
@@ -99,6 +100,10 @@ async function installApi(page: import('@playwright/test').Page) {
         case '/bff/login': return route.fulfill({
           contentType: 'text/html',
           body: '<h1>BFF login</h1>',
+        });
+        case '/bff/logout': return route.fulfill({
+          contentType: 'text/html',
+          body: '<h1>BFF logout</h1>',
         });
         case '/missing': return route.fulfill({
           status: 404,
@@ -282,7 +287,7 @@ test('searches nested properties in the tree', async ({ page }) => {
   await expect(page.locator('.match-counter')).toHaveText('1/1');
 });
 
-test('navigates with breadcrumbs, exits the API, and recovers from an API error', async ({ page }) => {
+test('navigates with breadcrumbs and recovers from an API error', async ({ page }) => {
   await openEntryPoint(page);
   await page.getByRole('link', { name: 'customer' }).click();
   await page.getByRole('link', { name: 'entrypoint' }).click();
@@ -295,7 +300,7 @@ test('navigates with breadcrumbs, exits the API, and recovers from an API error'
   await page.getByRole('button', { name: 'Go to entry point' }).click();
   await expect(page.getByText('Demo API', { exact: true })).toBeVisible();
   await page.getByRole('button', { description: 'Exit API' }).click();
-  await expect(page.getByPlaceholder('Enter API entrypoint URL')).toBeVisible();
+  await expect(page).toHaveURL(new URLPattern({ hostname: 'api.test', pathname: '/bff/logout' }));
 });
 
 test('uses configured entry points and disables developer controls', async ({ page }) => {
@@ -331,4 +336,13 @@ test('redirects to the BFF login endpoint after an unauthenticated 401', async (
   expect(apiPathUrl).not.toBeNull();
   expect(apiPathUrl!.pathname).toBe("/protected");
   await expect(page.getByRole('heading', { name: 'BFF login' })).toBeVisible();
+});
+
+test('logs out through the BFF when exiting an API error from the main page', async ({ page }) => {
+  await page.goto('/');
+  await page.getByPlaceholder('Enter API entrypoint URL').fill(`${api}/forbidden`);
+  await page.getByRole('button', { name: 'Enter API' }).click();
+  await expect(page.getByText('API error', { exact: true })).toBeVisible();
+  await page.getByRole('button', { name: 'Exit API' }).click();
+  await expect(page).toHaveURL(new URLPattern({ hostname: 'api.test', pathname: '/bff/logout' }));
 });

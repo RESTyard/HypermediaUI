@@ -1,8 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, distinctUntilChanged, filter, lastValueFrom } from 'rxjs';
-import { Result, Success, Failure } from 'fnxt/result';
-import { Unit } from '../utils/unit';
+import { Result, Success, Failure, isSuccess } from 'fnxt/result';
 import { Store } from '@ngrx/store';
 import { CurrentEntryPoint } from '../store/entrypoint.reducer';
 
@@ -56,6 +55,20 @@ export class AuthService {
     const logoutUrl = this.bffUrl(entryPoint, 'logout');
     logoutUrl.searchParams.set('redirectUri', redirectUri);
     window.location.assign(logoutUrl.toString());
+  }
+
+  async redirectToLogoutIfSessionSupported(entryPoint: string | undefined, redirectUri: string): Promise<boolean> {
+    if (!entryPoint) {
+      return false;
+    }
+
+    const session = await this.getSession(entryPoint);
+    if (!isSuccess(session)) {
+      return false;
+    }
+
+    this.redirectToLogout(entryPoint, redirectUri);
+    return true;
   }
 
   private bffUrl(entryPoint: string, endpoint: 'session' | 'login' | 'logout'): URL {

@@ -42,7 +42,7 @@ describe('HypermediaControlComponent', () => {
           },
         } as ValueProvider,
         GlobalNavigationEvents,
-        { provide: AuthService, useValue: { userName$: new BehaviorSubject(undefined), isAuthenticated$: new BehaviorSubject(false) } },
+        { provide: AuthService, useValue: { userName$: new BehaviorSubject(undefined), isAuthenticated$: new BehaviorSubject(false), redirectToLogoutIfSessionSupported: async () => false } },
       ],
     })
     .compileComponents();

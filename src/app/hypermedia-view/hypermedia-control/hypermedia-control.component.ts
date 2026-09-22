@@ -200,9 +200,8 @@ export class HypermediaControlComponent implements OnInit, OnDestroy {
     }));
   }
 
-  public exitApi() {
-    if (this.isAuthenticated && this.CurrentEntryPoint) {
-      this.authService.redirectToLogout(this.CurrentEntryPoint, window.location.origin);
+  public async exitApi() {
+    if (await this.authService.redirectToLogoutIfSessionSupported(this.CurrentEntryPoint, window.location.origin)) {
       return;
     }
 
