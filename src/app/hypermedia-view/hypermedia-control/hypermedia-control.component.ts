@@ -95,7 +95,7 @@ export class HypermediaControlComponent implements OnInit, OnDestroy {
       })
 
     this.onExitEventSubscription = globalNavigationEvents.onExitApi.subscribe({
-      next: _ => this.exitApi();
+      next: _ => this.exitApi(),
     });
 
     combineLatest(
