@@ -13,6 +13,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import {GlobalNavigationEvents} from "../../global-navigation.events";
 
 describe('HypermediaControlComponent', () => {
   let component: HypermediaControlComponent;
@@ -40,6 +41,7 @@ describe('HypermediaControlComponent', () => {
             queryParams: of(),
           },
         } as ValueProvider,
+        GlobalNavigationEvents,
         { provide: AuthService, useValue: { userName$: new BehaviorSubject(undefined), isAuthenticated$: new BehaviorSubject(false) } },
       ],
     })
