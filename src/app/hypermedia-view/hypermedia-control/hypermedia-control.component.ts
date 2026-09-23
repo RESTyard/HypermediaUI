@@ -44,7 +44,6 @@ export class HypermediaControlComponent implements OnInit, OnDestroy {
   GeneralSettings: GeneralSettings = new GeneralSettings();
   showSettingsIcon: boolean = true;
   userName: string | undefined = "";
-  isAuthenticated: boolean = false;
   allowOnlyConfiguredEntryPoints: boolean = true
   IsInsecureConnection: boolean = false;
   title: string = "";

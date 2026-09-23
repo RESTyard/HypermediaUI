@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import {FormControl} from '@angular/forms';
 import { AppSettings, SiteSettings } from '../app-settings';
 import { Store } from '@ngrx/store';
