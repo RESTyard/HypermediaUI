@@ -85,14 +85,7 @@ export class HypermediaControlComponent implements OnInit, OnDestroy {
         next: user => {
           this.userName = user;
         }
-      })
-
-    this.authService.isAuthenticated$
-      .subscribe({
-        next: isAuthenticated => {
-          this.isAuthenticated = isAuthenticated;
-        }
-      })
+      });
 
     this.onExitEventSubscription = globalNavigationEvents.onExitApi.subscribe({
       next: _ => this.exitApi(),

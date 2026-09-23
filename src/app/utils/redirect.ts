@@ -10,6 +10,6 @@ export function redirectToHuiPage(
   store: Store,
   hypermediaClientService: HypermediaClientService,
   options: { inplace: boolean }) {
-  store.dispatch(updateEntryPoint({ newEntryPoint: { title: title, path: path, entryPoint: apiPath.fullPath[0] }}));
+  store.dispatch(updateEntryPoint({ newEntryPoint: { title: title, path: path, entryPoint: apiPath.firstSegment }}));
   hypermediaClientService.NavigateToApiPath(apiPath, options);
 }

@@ -16,7 +16,6 @@ export class AuthService {
   private store = inject<Store<{ currentEntryPoint: CurrentEntryPoint }>>(Store);
 
   readonly userName$ = new BehaviorSubject<string | undefined>(undefined);
-  readonly isAuthenticated$ = new BehaviorSubject(false);
 
   constructor() {
     this.store.select(state => state.currentEntryPoint.entryPoint)
@@ -38,7 +37,6 @@ export class AuthService {
       }
 
       this.userName$.next(session.isAuthenticated ? session.name : undefined);
-      this.isAuthenticated$.next(session.isAuthenticated);
       return Success(session);
     } catch {
       return Failure('The backend does not support the BFF session endpoint.');
