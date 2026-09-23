@@ -30,6 +30,8 @@ export interface IHypermediaClientService {
 
   getHypermediaObjectRawStream(): BehaviorSubject<object>;
 
+  getContentTypeStream(): BehaviorSubject<string | undefined>;
+
   getNavPathsStream(): BehaviorSubject<string[]>;
 
   navigateToEntryPoint(): void;
