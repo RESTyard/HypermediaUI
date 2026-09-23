@@ -23,7 +23,7 @@ export class HypermediaClientServiceMock implements IHypermediaClientService {
         return new BehaviorSubject<object>({});
     }
     public getContentTypeStream = (): BehaviorSubject<string | undefined> => {
-        return new BehaviorSubject<string | undefined>(undefined);
+      return new BehaviorSubject<string | undefined>(undefined);
     }
     public getNavPathsStream = (): BehaviorSubject<string[]> => {
         return new BehaviorSubject<string[]>([]);
@@ -31,29 +31,29 @@ export class HypermediaClientServiceMock implements IHypermediaClientService {
     public navigateToEntryPoint = (): void => {
         throw new Error("Method not implemented.");
     }
-    public NavigateToApiPath = (apiPath: ApiPath): void => {
+    public NavigateToApiPath = (_apiPath: ApiPath): void => {
         throw new Error("Method not implemented.");
     }
     get currentApiPath(): ApiPath {
         return new ApiPath();
     }
     public buildBrowserUrl = (): string => '';
-    public Navigate = (url: string): void => {
+    public Navigate = (_url: string): void => {
         throw new Error("Method not implemented.");
     }
-    public DownloadAsFile = (downloadUrl: string): void => {
+    public DownloadAsFile = (_downloadUrl: string): void => {
         throw new Error("Method not implemented.");
     }
     public navigateToMainPage = (): void => {
         throw new Error("Method not implemented.");
     }
-    public createHeaders = (withContentType: string | null): HttpHeaders => {
+    public createHeaders = (_withContentType: string | null): HttpHeaders => {
         throw new Error("Method not implemented.");
     }
-    public createWaheStyleActionParameters = (action: HypermediaAction) => {
+    public createWaheStyleActionParameters = (_action: HypermediaAction) => {
         throw new Error("Method not implemented.");
     }
-    public executeAction = (action: HypermediaAction, actionResult: (actionResults: ActionResults, resultLocation: string | null, content: any, problemDetailsError: ProblemDetailsError | null) => void) => {
+    public executeAction = (_action: HypermediaAction, _actionResult: (actionResults: ActionResults, resultLocation: string | null, content: any, problemDetailsError: ProblemDetailsError | null) => void) => {
         throw new Error("Method not implemented.");
     }
 }

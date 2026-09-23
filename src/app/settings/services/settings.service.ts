@@ -1,7 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import {
   AppSettingsStorageModel,
-  AuthenticationConfigurationStorageModel,
   GeneralSettingsStorageModel,
   HeaderSettingStorageModel,
   SiteSettingsStorageModel,
@@ -11,7 +10,7 @@ import {ProblemDetailsError} from 'src/app/error-dialog/problem-details-error';
 import {Store} from '@ngrx/store';
 import {Map} from 'immutable';
 import {updateAppSettings} from 'src/app/store/appsettings.actions';
-import {AppSettings, AuthenticationConfiguration, GeneralSettings, SiteSetting, SiteSettings} from '../app-settings';
+import {AppSettings, GeneralSettings, SiteSetting, SiteSettings} from '../app-settings';
 
 @Injectable()
 export class SettingsService {
@@ -82,7 +81,6 @@ export class SettingsService {
     return new SiteSetting({
       siteUrl: storageModel.SiteUrl,
       headers: Map(storageModel.Headers.map(h => [h.Key, h.Value] as const)),
-      authConfig: this.mapAuthConfigFromStorageModel(storageModel.AuthConfig),
     });
   }
 
@@ -120,7 +118,6 @@ export class SettingsService {
     return new SiteSettingStorageModel(
       appModel.siteUrl,
       Array.from(appModel.headers.entries()).map(e => new HeaderSettingStorageModel(e[0], e[1])),
-      this.mapAuthConfigToStorageModel(appModel.authConfig),
     );
   }
 
@@ -149,22 +146,4 @@ export class SettingsService {
     return specificSettings[0].Headers;
   }
 
-  private mapAuthConfigToStorageModel(authConfig: AuthenticationConfiguration | undefined): AuthenticationConfigurationStorageModel | undefined {
-    if (authConfig === undefined) {
-      return undefined;
-    }
-    return new AuthenticationConfigurationStorageModel(authConfig.authority, authConfig.client_id, authConfig.redirect_uri, authConfig.scope);
-  }
-
-  private mapAuthConfigFromStorageModel(authConfig: AuthenticationConfigurationStorageModel | undefined): AuthenticationConfiguration | undefined {
-    if (authConfig === undefined) {
-      return undefined;
-    }
-    return new AuthenticationConfiguration({
-      authority: authConfig.authority,
-      client_id: authConfig.client_id,
-      redirect_uri: authConfig.redirect_uri,
-      scope: authConfig.scope
-    });
-  }
 }

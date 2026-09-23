@@ -1,226 +1,63 @@
 import { Injectable, inject } from '@angular/core';
-import {User, UserManager} from 'oidc-client-ts';
-import {SettingsService} from '../settings/services/settings.service';
-import {Unit} from "../utils/unit";
-import {Result, Success, Failure} from 'fnxt/result';
-import {Store} from "@ngrx/store";
-import {AppSettings, AuthenticationConfiguration, SiteSetting} from "../settings/app-settings";
-import {Map as ImmutableMap} from "immutable";
-import {
-  addHeader,
-  addSite, removeHeader, setAuthConfig,
-  setAuthenticationInProgress,
-  updateHeader
-} from "../store/appsettings.actions";
-import {CurrentEntryPoint} from "../store/entrypoint.reducer";
-import {LogoutRedirectComponent} from "../logout-redirect/logout-redirect.component";
+import { HttpClient } from '@angular/common/http';
+import { BehaviorSubject, lastValueFrom } from 'rxjs';
+import { Result, Success, Failure, isSuccess } from 'fnxt/result';
+
+export interface BffSession {
+  isAuthenticated: boolean;
+  name?: string;
+}
 
 @Injectable()
 export class AuthService {
-  private settingsService = inject(SettingsService);
-  private store = inject<Store<{
-    appSettings: AppSettings;
-    currentEntryPoint: CurrentEntryPoint;
-}>>(Store);
+  private httpClient = inject(HttpClient);
 
-  private tokenRecentlyAcquired: Set<string>;
-  private recentlyLoggedOut: Set<string>;
+  readonly userName$ = new BehaviorSubject<string | undefined>(undefined);
 
-  private siteSpecificSettings: ImmutableMap<string, SiteSetting> = ImmutableMap();
-  private currentEntryPoint: CurrentEntryPoint = {};
-
-  constructor() {
-    this.tokenRecentlyAcquired = new Set();
-    this.recentlyLoggedOut = new Set();
-
-    this.store
-      .select(s => s.appSettings.siteSettings.siteSpecificSettings)
-      .subscribe(settings => this.siteSpecificSettings = settings);
-    this.store
-      .select(s => s.currentEntryPoint)
-      .subscribe({ next: entryPoint => this.currentEntryPoint = entryPoint})
-  }
-
-  async login({entryPoint, authority, client_id, redirect_uri, scope}: {
-    entryPoint: string,
-    authority: string,
-    client_id: string,
-    redirect_uri: string,
-    scope: string
-  }): Promise<Result<Unit, string>> {
-    const siteUrl = new URL(entryPoint).host;
-
-    const userManager = new UserManager({
-      authority: authority,
-      client_id: client_id,
-      redirect_uri: redirect_uri,
-      response_type: 'code',
-      scope: scope
-    })
-
-    const siteSettings = this.getOrCreateSiteSpecificSettings(siteUrl);
-
-    if (siteSettings.authenticationInProgress) {
-      this.store.dispatch(setAuthConfig({siteUrl: siteUrl, authConfig: undefined}));
-      this.settingsService.SaveCurrentSettings();
-      return Failure("Different login is already in progress");
-    }
-    this.store.dispatch(setAuthConfig({
-      siteUrl: siteUrl,
-      authConfig: new AuthenticationConfiguration({authority, client_id, redirect_uri, scope})
-    }));
-    this.store.dispatch(setAuthenticationInProgress({siteUrl: siteUrl, authenticationInProgress: true}))
-    this.settingsService.SaveCurrentSettings();
-
+  async getSession(entryPoint: string): Promise<Result<BffSession, string>> {
     try {
-      const prompt = this.recentlyLoggedOut.has(siteUrl) ? 'select_account' : undefined;
-      await userManager.signinRedirect({prompt: prompt});
-      return Success(Unit.NoThing);
-    } catch {
-      return Failure("Error during authentication");
-    }
-  }
-
-  private getOrCreateSiteSpecificSettings(siteUrl: string) {
-    let siteSettings = this.siteSpecificSettings.get(siteUrl)
-
-    if (!siteSettings) {
-      this.store.dispatch(addSite({siteUrl: siteUrl}));
-      siteSettings = new SiteSetting({siteUrl: siteUrl});
-    }
-    return siteSettings;
-  }
-
-  isTokenRecentlyAcquired(entryPoint: string): boolean {
-    return this.tokenRecentlyAcquired.has(entryPoint);
-  }
-
-  requestSuccessfulFor(entryPoint: string) {
-    this.tokenRecentlyAcquired.delete(entryPoint);
-  }
-
-  async handleCallback(entryPoint: string): Promise<Result<Unit, string>> {
-
-    const siteUrl = new URL(entryPoint).host;
-    const siteSettings = this.getOrCreateSiteSpecificSettings(siteUrl);
-
-    if (!siteSettings.authConfig) {
-      return Failure("OAuth config was not found for entryPoint: " + entryPoint + ", siteUrl: " + siteUrl);
-    }
-
-    const authConfig = siteSettings.authConfig;
-
-    const userManager = new UserManager({
-      authority: authConfig.authority,
-      client_id: authConfig.client_id,
-      redirect_uri: authConfig.redirect_uri,
-      response_type: 'code',
-      scope: authConfig.scope
-    });
-
-    let user: User | undefined = undefined
-
-    try {
-      user = await userManager.signinCallback();
-    } catch {
-      return Failure("Error handling response from OAuth Provider.");
-    }
-
-    if (!user) {
-      return Failure("User could not be Authenticated.");
-    }
-
-    const token = user.access_token;
-
-    const authorizationHeaderKey = "Authorization";
-    const newTokenHeader = "Bearer " + token;
-
-    if (siteSettings.headers.has(authorizationHeaderKey)) {
-      this.store.dispatch(updateHeader({
-        siteUrl: siteUrl,
-        previousKey: authorizationHeaderKey,
-        newKey: authorizationHeaderKey,
-        newValue: newTokenHeader
+      const session = await lastValueFrom(this.httpClient.get<BffSession>(this.bffUrl(entryPoint, 'session').toString(), {
+        withCredentials: true,
       }));
-    } else {
-      this.store.dispatch(addHeader({
-        siteUrl: siteUrl,
-        key: authorizationHeaderKey,
-        value: newTokenHeader
-      }));
-    }
-    this.tokenRecentlyAcquired.add(entryPoint);
-    this.recentlyLoggedOut.delete(siteUrl);
-    this.store.dispatch(setAuthenticationInProgress({siteUrl: siteUrl, authenticationInProgress: false}))
-    this.settingsService.SaveCurrentSettings();
-    return Success(Unit.NoThing);
-  }
 
-  async handleLogout(): Promise<Result<Unit, string>> {
-    const entryPoint = this.currentEntryPoint.entryPoint;
-    if(!entryPoint) {
-      return Failure("Logout without entryPoint");
-    }
+      if (typeof session?.isAuthenticated !== 'boolean') {
+        return Failure('The BFF session endpoint returned an invalid response.');
+      }
 
-    const siteUrl = new URL(entryPoint).host;
-    const siteSettings = this.getOrCreateSiteSpecificSettings(siteUrl);
-
-    if (!siteSettings.authConfig) {
-      return Failure("OAuth config was not found for entryPoint: " + entryPoint + ", siteUrl: " + siteUrl);
-    }
-
-    const authConfig = siteSettings.authConfig;
-
-    let redirectUri = window.location.origin + '/logout-redirect?' + LogoutRedirectComponent.entrypointUriParameterKey + '=' + entryPoint;
-    if(this.currentEntryPoint.path !== undefined && this.currentEntryPoint.path !== 'hui') {
-      redirectUri += '&' + LogoutRedirectComponent.pathUriParameterKey + '=' + this.currentEntryPoint.path;
-    }
-
-    const userManager = new UserManager({
-      authority: authConfig.authority,
-      client_id: authConfig.client_id,
-      redirect_uri: authConfig.redirect_uri,
-      post_logout_redirect_uri: redirectUri,
-      response_type: 'code',
-      scope: authConfig.scope
-    });
-
-    this.store.dispatch(removeHeader({siteUrl: siteUrl, key: "Authorization"}));
-    this.settingsService.SaveCurrentSettings();
-
-    try {
-      await userManager.signoutRedirect();
-      return Success(Unit.NoThing);
+      this.userName$.next(session.isAuthenticated ? session.name : undefined);
+      return Success(session);
     } catch {
-      return Failure("Error redirecting to OAuth Provider for signout.");
+      return Failure('The backend does not support the BFF session endpoint.');
     }
   }
 
-  async handleLogoutCallback(entryPoint: string): Promise<Result<Unit, string>> {
-    const siteUrl = new URL(entryPoint).host;
-    const siteSettings = this.getOrCreateSiteSpecificSettings(siteUrl);
+  redirectToLogin(url: string, redirectUri: string): void {
+    const loginUrl = this.bffUrl(url, 'login');
+    loginUrl.searchParams.set('redirectUri', redirectUri);
+    window.location.assign(loginUrl.toString());
+  }
 
-    if (!siteSettings.authConfig) {
-      return Failure("OAuth config was not found for entryPoint: " + entryPoint + ", siteUrl: " + siteUrl);
+  redirectToLogout(entryPoint: string, redirectUri: string): void {
+    const logoutUrl = this.bffUrl(entryPoint, 'logout');
+    logoutUrl.searchParams.set('redirectUri', redirectUri);
+    window.location.assign(logoutUrl.toString());
+  }
+
+  async redirectToLogoutIfSessionSupported(entryPoint: string | undefined, redirectUri: string): Promise<boolean> {
+    if (!entryPoint) {
+      return false;
     }
 
-    const authConfig = siteSettings.authConfig;
-
-    const userManager = new UserManager({
-      authority: authConfig.authority,
-      client_id: authConfig.client_id,
-      redirect_uri: authConfig.redirect_uri,
-      response_type: 'code',
-      scope: authConfig.scope
-    });
-
-    try {
-      await userManager.signoutCallback();
-      this.recentlyLoggedOut.add(siteUrl)
-      this.store.dispatch(setAuthConfig({siteUrl: siteUrl, authConfig: undefined}))
-      return Success(Unit.NoThing);
-    } catch(_) {
-      return Failure("Error handling response from OAuth provider.");
+    const session = await this.getSession(entryPoint);
+    if (!isSuccess(session)) {
+      return false;
     }
+
+    this.redirectToLogout(entryPoint, redirectUri);
+    return true;
+  }
+
+  private bffUrl(entryPoint: string, endpoint: 'session' | 'login' | 'logout'): URL {
+    return new URL(`/bff/${endpoint}`, entryPoint);
   }
 }

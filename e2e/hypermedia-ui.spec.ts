@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { URLPattern } from 'node:url';
 
 const api = 'https://api.test';
 const siren = 'application/vnd.siren+json';
@@ -90,12 +91,19 @@ async function installApi(page: import('@playwright/test').Page) {
           contentType: 'image/png',
           body: Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=', 'base64'),
         });
-        case '/protected': return route.fulfill({
-          status: 401,
-          headers: {
-            'www-authenticate': 'Bearer authorization_uri="https://identity.test", client_id="hypermedia-ui"',
-            'access-control-expose-headers': 'www-authenticate',
-          },
+        case '/protected': return route.fulfill({ status: 401 });
+        case '/forbidden': return route.fulfill({ status: 403 });
+        case '/bff/session': return route.fulfill({
+          contentType: 'application/json',
+          body: JSON.stringify({ isAuthenticated: false }),
+        });
+        case '/bff/login': return route.fulfill({
+          contentType: 'text/html',
+          body: '<h1>BFF login</h1>',
+        });
+        case '/bff/logout': return route.fulfill({
+          contentType: 'text/html',
+          body: '<h1>BFF logout</h1>',
         });
         case '/missing': return route.fulfill({
           status: 404,
@@ -279,7 +287,7 @@ test('searches nested properties in the tree', async ({ page }) => {
   await expect(page.locator('.match-counter')).toHaveText('1/1');
 });
 
-test('navigates with breadcrumbs, exits the API, and recovers from an API error', async ({ page }) => {
+test('navigates with breadcrumbs and recovers from an API error', async ({ page }) => {
   await openEntryPoint(page);
   await page.getByRole('link', { name: 'customer' }).click();
   await page.getByRole('link', { name: 'entrypoint' }).click();
@@ -292,7 +300,7 @@ test('navigates with breadcrumbs, exits the API, and recovers from an API error'
   await page.getByRole('button', { name: 'Go to entry point' }).click();
   await expect(page.getByText('Demo API', { exact: true })).toBeVisible();
   await page.getByRole('button', { description: 'Exit API' }).click();
-  await expect(page.getByPlaceholder('Enter API entrypoint URL')).toBeVisible();
+  await expect(page).toHaveURL(new URLPattern({ hostname: 'api.test', pathname: '/bff/logout' }));
 });
 
 test('uses configured entry points and disables developer controls', async ({ page }) => {
@@ -311,20 +319,30 @@ test('uses configured entry points and disables developer controls', async ({ pa
   await expect(page.getByRole('radio', { name: 'Raw' })).toBeHidden();
 });
 
-test('redirects to OIDC after a 401 bearer challenge', async ({ page }) => {
-  await page.route('https://identity.test/**', async route => {
-    const path = new URL(route.request().url()).pathname;
-    if (path === '/.well-known/openid-configuration') {
-      return route.fulfill({ contentType: 'application/json', body: JSON.stringify({
-        issuer: 'https://identity.test', authorization_endpoint: 'https://identity.test/authorize', token_endpoint: 'https://identity.test/token', jwks_uri: 'https://identity.test/keys',
-      }) });
-    }
-    if (path === '/authorize') return route.fulfill({ contentType: 'text/html', body: '<h1>Identity provider</h1>' });
-    throw new Error(`Unhandled identity request: ${route.request().url()}`);
-  });
+test('redirects to the BFF login endpoint after an unauthenticated 401', async ({ page }) => {
   await page.goto('/');
   await page.getByPlaceholder('Enter API entrypoint URL').fill(`${api}/protected`);
   await page.getByRole('button', { name: 'Enter API' }).click();
-  await expect(page).toHaveURL(/https:\/\/identity\.test\/authorize/);
-  await expect(page.getByRole('heading', { name: 'Identity provider' })).toBeVisible();
+  await expect(page).toHaveURL(new URLPattern({ hostname: 'api.test', pathname: '/bff/login' }));
+  const loginUrl = new URL(page.url());
+  const search = loginUrl.searchParams.get('redirectUri');
+  expect(search).not.toBeNull();
+  const redirectUrl = URL.parse(search!);
+  expect(redirectUrl).not.toBeNull();
+  expect(redirectUrl!.pathname).toBe("/hui");
+  const apiPath = redirectUrl!.searchParams.get('apiPath');
+  expect(apiPath).not.toBeNull();
+  const apiPathUrl = URL.parse(apiPath!);
+  expect(apiPathUrl).not.toBeNull();
+  expect(apiPathUrl!.pathname).toBe("/protected");
+  await expect(page.getByRole('heading', { name: 'BFF login' })).toBeVisible();
+});
+
+test('logs out through the BFF when exiting an API error from the main page', async ({ page }) => {
+  await page.goto('/');
+  await page.getByPlaceholder('Enter API entrypoint URL').fill(`${api}/forbidden`);
+  await page.getByRole('button', { name: 'Enter API' }).click();
+  await expect(page.getByText('API error', { exact: true })).toBeVisible();
+  await page.getByRole('button', { name: 'Exit API' }).click();
+  await expect(page).toHaveURL(new URLPattern({ hostname: 'api.test', pathname: '/bff/logout' }));
 });

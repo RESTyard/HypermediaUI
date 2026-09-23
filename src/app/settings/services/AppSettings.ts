@@ -42,21 +42,16 @@ export class GeneralSettingsStorageModel {
 }
 
 export class SiteSettingsStorageModel {
-    GlobalSiteSettings: SiteSettingStorageModel = new SiteSettingStorageModel("Global", [], undefined);
+    GlobalSiteSettings: SiteSettingStorageModel = new SiteSettingStorageModel("Global", []);
     SiteSpecificSettings: SiteSettingStorageModel[] = [];
 }
 
 export class SiteSettingStorageModel {
-  constructor(public SiteUrl: string = "", public Headers: HeaderSettingStorageModel[], public AuthConfig: AuthenticationConfigurationStorageModel | undefined) {
+  constructor(public SiteUrl: string = "", public Headers: HeaderSettingStorageModel[]) {
   }
 }
 
 export class HeaderSettingStorageModel {
     constructor(public Key: string = "", public Value: string = "") {
-    }
-}
-
-export class AuthenticationConfigurationStorageModel {
-    constructor(public authority: string, public client_id: string, public redirect_uri: string, public scope: string) {
     }
 }

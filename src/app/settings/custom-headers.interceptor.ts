@@ -26,7 +26,8 @@ export class CustomHeadersInterceptor implements HttpInterceptor {
     }
 
     return next.handle(request.clone({
-      headers: headers
+      headers: headers,
+      withCredentials: URL.canParse(request.url)
     }));
   }
 }

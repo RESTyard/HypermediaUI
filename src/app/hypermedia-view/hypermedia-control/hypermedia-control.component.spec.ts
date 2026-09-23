@@ -4,7 +4,7 @@ import { HypermediaControlComponent } from './hypermedia-control.component';
 import { provideHypermediaClientServiceMock } from 'src/app/test/HypermediaClientServiceMock';
 import { ActivatedRoute } from '@angular/router';
 import { ValueProvider } from '@angular/core';
-import { of } from 'rxjs';
+import { BehaviorSubject, of } from 'rxjs';
 import { importStore } from 'src/app/store/store-module';
 import { AuthService } from '../auth.service';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -13,6 +13,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import {GlobalNavigationEvents} from "../../global-navigation.events";
 
 describe('HypermediaControlComponent', () => {
   let component: HypermediaControlComponent;
@@ -40,7 +41,8 @@ describe('HypermediaControlComponent', () => {
             queryParams: of(),
           },
         } as ValueProvider,
-        { provide: AuthService, useValue: {} },
+        GlobalNavigationEvents,
+        { provide: AuthService, useValue: { userName$: new BehaviorSubject(undefined), isAuthenticated$: new BehaviorSubject(false), redirectToLogoutIfSessionSupported: async () => false } },
       ],
     })
     .compileComponents();
