@@ -1,9 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, distinctUntilChanged, filter, lastValueFrom } from 'rxjs';
+import { BehaviorSubject, lastValueFrom } from 'rxjs';
 import { Result, Success, Failure, isSuccess } from 'fnxt/result';
-import { Store } from '@ngrx/store';
-import { CurrentEntryPoint } from '../store/entrypoint.reducer';
 
 export interface BffSession {
   isAuthenticated: boolean;
@@ -13,18 +11,8 @@ export interface BffSession {
 @Injectable()
 export class AuthService {
   private httpClient = inject(HttpClient);
-  private store = inject<Store<{ currentEntryPoint: CurrentEntryPoint }>>(Store);
 
   readonly userName$ = new BehaviorSubject<string | undefined>(undefined);
-
-  constructor() {
-    this.store.select(state => state.currentEntryPoint.entryPoint)
-      .pipe(
-        filter((entryPoint): entryPoint is string => entryPoint !== undefined),
-        distinctUntilChanged(),
-      )
-      .subscribe(entryPoint => void this.getSession(entryPoint));
-  }
 
   async getSession(entryPoint: string): Promise<Result<BffSession, string>> {
     try {
