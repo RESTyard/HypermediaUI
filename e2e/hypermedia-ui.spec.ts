@@ -319,6 +319,36 @@ test('uses configured entry points and disables developer controls', async ({ pa
   await expect(page.getByRole('radio', { name: 'Raw' })).toBeHidden();
 });
 
+test('reduces UI elements when configured', async ({ page }) => {
+  await page.route('**/app.config.json', route => route.fulfill({
+    contentType: 'application/json',
+    body: JSON.stringify({
+      reduceUiElements: true,
+      relationIconMapping: {}, httpMethodIconMapping: {}, actionPopupWarningConfigurations: [],
+    }),
+  }));
+  await openEntryPoint(page);
+
+  await expect(page.getByText('Embedded summary', { exact: true })).toHaveCount(1);
+  await page.getByRole('link', { name: 'customer' }).click();
+  await expect(page.getByText('activate', { exact: true })).toBeHidden();
+});
+
+test('automatically follows an action result location when configured', async ({ page }) => {
+  await page.route('**/app.config.json', route => route.fulfill({
+    contentType: 'application/json',
+    body: JSON.stringify({
+      autoFollowActionLocationOnSuccess: true,
+      relationIconMapping: {}, httpMethodIconMapping: {}, actionPopupWarningConfigurations: [],
+    }),
+  }));
+  await openEntryPoint(page);
+  await page.getByRole('link', { name: 'customer' }).click();
+
+  await page.getByRole('button', { name: 'Generate report' }).click();
+  await expect(page.locator('app-json-preview')).toContainText('ordinary JSON');
+});
+
 test('redirects to the BFF login endpoint after an unauthenticated 401', async ({ page }) => {
   await page.goto('/');
   await page.getByPlaceholder('Enter API entrypoint URL').fill(`${api}/protected`);
