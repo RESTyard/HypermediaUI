@@ -81,6 +81,9 @@ export class ParameterlessActionViewComponent {
         }
 
         this.actionResultLocation = resultLocation;
+        if (resultLocation && this.generalSettings.autoFollowActionLocationOnSuccess) {
+          setTimeout(() => this.navigateLocation(resultLocation), 1000);
+        }
       });
   }
 

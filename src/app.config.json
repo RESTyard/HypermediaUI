@@ -1,6 +1,7 @@
 {
     "disableDeveloperControls": false,
     "reduceUiElements": false,
+    "autoFollowActionLocationOnSuccess": true,
     "configuredEntryPoints": [],
     "onlyAllowConfiguredEntryPoints": false,
     "relationIconMapping": {},

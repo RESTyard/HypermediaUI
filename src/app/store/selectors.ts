@@ -16,6 +16,7 @@ export const selectEffectiveGeneralSettings = createSelector(
             showEmptyActions: generalSettings.showEmptyActions && !appConfig.disableDeveloperControls,
             showEmbeddedEntityTitles: generalSettings.showEmbeddedEntityTitles && !appConfig.reduceUiElements,
             showActionNames: generalSettings.showActionNames && !appConfig.reduceUiElements,
+            autoFollowActionLocationOnSuccess: generalSettings.autoFollowActionLocationOnSuccess || appConfig.autoFollowActionLocationOnSuccess,
             useEmbeddingPropertyForActionParameters: generalSettings.useEmbeddingPropertyForActionParameters && !appConfig.disableDeveloperControls,
             showHostInformation: generalSettings.showHostInformation && !appConfig.disableDeveloperControls,
             showPropertyTreeControls: generalSettings.showPropertyTreeControls && !appConfig.disableDeveloperControls,

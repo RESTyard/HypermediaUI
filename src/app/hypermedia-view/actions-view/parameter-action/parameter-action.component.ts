@@ -136,6 +136,9 @@ export class ParameterActionComponent implements OnInit {
 
         // todo handle if it has content AND location
         this.actionResultLocation = resultLocation;
+        if (resultLocation && this.generalSettings.autoFollowActionLocationOnSuccess) {
+          setTimeout(() => this.navigateLocation(resultLocation), 1000);
+        }
       },
     );
   }

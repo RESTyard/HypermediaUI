@@ -36,6 +36,8 @@ export class GeneralSettingsStorageModel {
 
     showActionNames: boolean = true;
 
+    autoFollowActionLocationOnSuccess: boolean = false;
+
     useEmbeddingPropertyForActionParameters: boolean = true;
 
     showHostInformation: boolean = true;

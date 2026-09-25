@@ -29,6 +29,7 @@ The UI can be customized by deploying an artifact from [Releases](https://github
 {
   "disableDeveloperControls": true,
   "reduceUiElements": true,
+  "autoFollowActionLocationOnSuccess": true,
   "configuredEntryPoints": [
     {
       "alias": "SomePage",
@@ -104,6 +105,12 @@ default: ``false``
 when set to ``true`` removes the following UI elements for a leaner experience:
 - Titles on embedded entities (since they are already shown in the entity list header)
 - Action names (since the title already defines which action is which)
+
+### ``autoFollowActionLocationOnSuccess``
+
+default: ``false``
+
+when set to ``true`` will automaticalle navigate to the result location of a successful action after a short delay
 
 ### ``onlyAllowConfiguredEntryPoints``
 

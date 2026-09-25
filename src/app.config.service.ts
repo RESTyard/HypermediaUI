@@ -17,6 +17,7 @@ export class AppConfigService implements HypermediaUI.IAppConfig {
 
     public disableDeveloperControls: boolean = false;
     public reduceUiElements: boolean = false;
+    public autoFollowActionLocationOnSuccess: boolean = false;
     public configuredEntryPoints: ConfiguredEntryPoint[] = [];
     public onlyAllowConfiguredEntryPoints: boolean = false;
     public relationIconMapping?: Record<string, string>;
@@ -35,6 +36,7 @@ export class AppConfigService implements HypermediaUI.IAppConfig {
                     const mapped: Partial<AppConfig> & HypermediaUI.IAppConfig = {
                         disableDeveloperControls: this.disableDeveloperControls,
                         reduceUiElements: this.reduceUiElements,
+                        autoFollowActionLocationOnSuccess: this.autoFollowActionLocationOnSuccess,
                         configuredEntryPoints: this.configuredEntryPoints,
                         onlyAllowConfiguredEntryPoints: this.onlyAllowConfiguredEntryPoints,
                         relationIconMapping: this.relationIconMapping,
@@ -52,6 +54,7 @@ export class AppConfigService implements HypermediaUI.IAppConfig {
 export class AppConfig extends ImmutableJsRecord({
     disableDeveloperControls: true,
     reduceUiElements: true,
+    autoFollowActionLocationOnSuccess: false,
     configuredEntryPoints: [] as ConfiguredEntryPoint[],
     onlyAllowConfiguredEntryPoints : false,
     relationIconMapping: undefined as Record<string, string> | undefined,

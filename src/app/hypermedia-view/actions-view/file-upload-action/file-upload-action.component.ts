@@ -132,7 +132,8 @@ export class FileUploadActionComponent {
     this.actionResult= ActionResults.pending;
     this.executed = true;
 
-    this.hypermediaClientService.executeAction(this.action,
+    this.hypermediaClientService.executeAction(
+      this.action,
       (result: ActionResults,
         resultLocation: string | null,
         content: string,
@@ -149,6 +150,9 @@ export class FileUploadActionComponent {
 
         // todo handle if it has content AND location
         this.actionResultLocation = resultLocation;
+        if (resultLocation && this.generalSettings.autoFollowActionLocationOnSuccess) {
+          setTimeout(() => this.navigateLocation(resultLocation), 1000);
+        }
       });
   }
 
