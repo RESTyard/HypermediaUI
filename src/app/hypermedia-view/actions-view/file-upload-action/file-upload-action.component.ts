@@ -7,8 +7,11 @@ import {MatSnackBar} from '@angular/material/snack-bar';
 import { getIconForHttpMethod } from '../../icon-mapping';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmationDialogComponent } from '../../../common/confirmation-dialog/confirmation-dialog.component';
-import { AppConfigService } from 'src/app.config.service';
+import {AppConfig} from 'src/app.config.service';
 import { FileSizePipe } from 'src/app/common/pipes/file-size.pipe';
+import {Store} from "@ngrx/store";
+import {AppSettings, GeneralSettings} from "../../../settings/app-settings";
+import {selectEffectiveGeneralSettings} from "../../../store/selectors";
 
 @Component({
     selector: 'app-file-upload-action',
@@ -20,7 +23,10 @@ export class FileUploadActionComponent {
   private hypermediaClientService = inject(HypermediaClientService);
   private snackBar = inject(MatSnackBar);
   private dialog = inject(MatDialog);
-  private appConfigService = inject(AppConfigService);
+  private store = inject<Store<{
+    appSettings: AppSettings;
+    appConfig: AppConfig;
+  }>>(Store);
 
 
   @Input()
@@ -35,6 +41,25 @@ export class FileUploadActionComponent {
   problemDetailsError: ProblemDetailsError| null = null
 
   private fileSizePipe = new FileSizePipe();
+  generalSettings: GeneralSettings = new GeneralSettings();
+  appConfig: AppConfig = new AppConfig();
+
+  constructor() {
+    this.store
+      .select(selectEffectiveGeneralSettings)
+      .subscribe({
+        next: generalSettings => {
+          this.generalSettings = generalSettings;
+        },
+      });
+    this.store
+      .select(x => x.appConfig)
+      .subscribe({
+        next: appConfig => {
+          this.appConfig = appConfig;
+        }
+      });
+  }
 
   onSelect($event: NgxDropzoneChangeEvent) {
     this.files.push(...$event.addedFiles);
@@ -74,7 +99,7 @@ export class FileUploadActionComponent {
       return;
     }
 
-    const configs = this.action.getConfigurations(this.appConfigService.actionPopupWarningConfigurations);
+    const configs = this.action.getConfigurations(this.appConfig.actionPopupWarningConfigurations);
     this.submitWithConfirmation(configs);
   }
 
@@ -99,7 +124,7 @@ export class FileUploadActionComponent {
   }
 
   public getActionConfigs(): HypermediaUI.IActionClassConfiguration[] {
-    return this.action.getConfigurations(this.appConfigService.actionPopupWarningConfigurations);
+    return this.action.getConfigurations(this.appConfig.actionPopupWarningConfigurations);
   }
 
   private doSubmit() {
@@ -107,7 +132,8 @@ export class FileUploadActionComponent {
     this.actionResult= ActionResults.pending;
     this.executed = true;
 
-    this.hypermediaClientService.executeAction(this.action,
+    this.hypermediaClientService.executeAction(
+      this.action,
       (result: ActionResults,
         resultLocation: string | null,
         content: string,
@@ -124,6 +150,9 @@ export class FileUploadActionComponent {
 
         // todo handle if it has content AND location
         this.actionResultLocation = resultLocation;
+        if (resultLocation && this.generalSettings.autoFollowActionLocationOnSuccess) {
+          setTimeout(() => this.navigateLocation(resultLocation), 1000);
+        }
       });
   }
 

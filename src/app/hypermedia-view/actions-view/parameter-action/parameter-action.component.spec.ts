@@ -10,6 +10,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { AppConfigService } from 'src/app.config.service';
 import { FormlyJsonschema } from '@ngx-formly/core/json-schema';
+import {importStore} from "../../../store/store-module";
 
 describe('ParameterActionComponent', () => {
   let component: ParameterActionComponent;
@@ -21,6 +22,7 @@ describe('ParameterActionComponent', () => {
         ParameterActionComponent
       ],
       imports: [
+        importStore(),
         MatMenu,
         MatExpansionPanel,
         MatExpansionPanelHeader,

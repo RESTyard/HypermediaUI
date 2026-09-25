@@ -1,8 +1,10 @@
 <div class="container">
 
-  <div class="entityTitle">
-    {{title}}
-  </div>
+  @if (showTitle) {
+    <div class="entityTitle">
+      {{title}}
+    </div>
+  }
 
   @if (GeneralSettings.showClasses) {
     <div>Classes: {{classes}}</div>

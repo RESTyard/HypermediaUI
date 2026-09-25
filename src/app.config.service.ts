@@ -16,6 +16,8 @@ export class AppConfigService implements HypermediaUI.IAppConfig {
     private store = inject<Store<{ appConfig: AppConfig }>>(Store);
 
     public disableDeveloperControls: boolean = false;
+    public reduceUiElements: boolean = false;
+    public autoFollowActionLocationOnSuccess: boolean = false;
     public configuredEntryPoints: ConfiguredEntryPoint[] = [];
     public onlyAllowConfiguredEntryPoints: boolean = false;
     public relationIconMapping?: Record<string, string>;
@@ -28,9 +30,13 @@ export class AppConfigService implements HypermediaUI.IAppConfig {
             .pipe(
                 tap(value => {
                     Object.assign(this, value);
+                    this.configuredEntryPoints ??= [];
+                    this.actionPopupWarningConfigurations ??= [];
                     updateMappingsIconMappings(this.relationIconMapping, this.httpMethodIconMapping);
                     const mapped: Partial<AppConfig> & HypermediaUI.IAppConfig = {
                         disableDeveloperControls: this.disableDeveloperControls,
+                        reduceUiElements: this.reduceUiElements,
+                        autoFollowActionLocationOnSuccess: this.autoFollowActionLocationOnSuccess,
                         configuredEntryPoints: this.configuredEntryPoints,
                         onlyAllowConfiguredEntryPoints: this.onlyAllowConfiguredEntryPoints,
                         relationIconMapping: this.relationIconMapping,
@@ -47,11 +53,13 @@ export class AppConfigService implements HypermediaUI.IAppConfig {
 
 export class AppConfig extends ImmutableJsRecord({
     disableDeveloperControls: true,
-    configuredEntryPoints: undefined as ConfiguredEntryPoint[] | undefined,
+    reduceUiElements: true,
+    autoFollowActionLocationOnSuccess: false,
+    configuredEntryPoints: [] as ConfiguredEntryPoint[],
     onlyAllowConfiguredEntryPoints : false,
     relationIconMapping: undefined as Record<string, string> | undefined,
     httpMethodIconMapping: undefined as Record<string, string> | undefined,
-    actionPopupWarningConfigurations: undefined as HypermediaUI.IActionClassConfiguration[] | undefined,
+    actionPopupWarningConfigurations: [] as HypermediaUI.IActionClassConfiguration[],
 }) {}
 
 export class ConfiguredEntryPoint extends ImmutableJsRecord({

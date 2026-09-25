@@ -16,9 +16,11 @@
         <mat-icon class="expand-icon" [class.expanded]="panelHeader.panel.expanded">expand_more</mat-icon>
       </div>
     </mat-panel-title>
-    <mat-panel-description>
-      {{action.name}}
-    </mat-panel-description>
+    @if (generalSettings.showActionNames) {
+      <mat-panel-description>
+        {{action.name}}
+      </mat-panel-description>
+    }
   </mat-expansion-panel-header>
 
   <ng-template matExpansionPanelContent>

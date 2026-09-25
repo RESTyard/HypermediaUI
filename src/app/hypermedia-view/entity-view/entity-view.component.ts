@@ -23,6 +23,7 @@ export class EntityViewComponent implements OnInit, OnChanges {
 
 
   @Input() entity: SirenClientObject = new SirenClientObject();
+  @Input() showTitle: boolean = true;
 
   public title: string = "";
   public embeddedLinkEntities: IEmbeddedLinkEntity[] = [];

@@ -28,6 +28,8 @@ The UI can be customized by deploying an artifact from [Releases](https://github
 ```json
 {
   "disableDeveloperControls": true,
+  "reduceUiElements": true,
+  "autoFollowActionLocationOnSuccess": true,
   "configuredEntryPoints": [
     {
       "alias": "SomePage",
@@ -96,6 +98,20 @@ when set to ``true`` removes the settings button and with it all access to the g
 
 This includes not showing the raw view, classes, any empty views or null properties, and not showing host information.
 
+### ``reduceUiElements``
+
+default: ``false``
+
+when set to ``true`` removes the following UI elements for a leaner experience:
+- Titles on embedded entities (since they are already shown in the entity list header)
+- Action names (since the title already defines which action is which)
+
+### ``autoFollowActionLocationOnSuccess``
+
+default: ``false``
+
+when set to ``true`` will automaticalle navigate to the result location of a successful action after a short delay
+
 ### ``onlyAllowConfiguredEntryPoints``
 
 default: ``false``
@@ -122,6 +138,8 @@ When an API request returns ``401``, the UI requests ``/bff/session`` on that AP
 The BFF must allow credentialed cross-origin requests from the UI origin. This CORS policy must apply to successful responses and error responses, including ``401`` responses. It must return ``Access-Control-Allow-Origin`` with the exact UI origin, rather than ``*``, and ``Access-Control-Allow-Credentials: true``. Its preflight response must allow the HTTP methods and request headers used by the UI. Without these headers, browsers hide the backend response and Angular receives a status ``0`` network error instead of the ``401`` required to start BFF login.
 
 For a cross-site BFF cookie, configure it as ``Secure`` and ``SameSite=None``. Browser privacy settings can still block third-party cookies; hosting the UI and BFF on the same site avoids that restriction.
+
+When implementing BFF with ASP.NET Core, use `X-Forwarded-Prefix` header to ensure link generation includes the proxy prefix. e.g. when the entry point is /api/entrypoint and the client calls /bff/proxy/api/entrypoint to have the cookie changed for the token, set `X-Forwarded-Prefix` to `"/bff/proxy"` such that the `LinkGenerator` will add this prefix and subsequent links are generated correctly
 
 Manually configured global and per-site headers, including an ``Authorization`` header, remain supported.
 

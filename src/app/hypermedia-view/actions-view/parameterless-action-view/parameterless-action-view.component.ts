@@ -5,7 +5,10 @@ import { ProblemDetailsError } from 'src/app/error-dialog/problem-details-error'
 import { getIconForHttpMethod } from '../../icon-mapping';
 import { MatDialog } from '@angular/material/dialog';
 import {doWithConfirmation} from "../../../common/confirmation-dialog/confirmation-dialog.component";
-import { AppConfigService } from 'src/app.config.service';
+import {AppConfig} from 'src/app.config.service';
+import {AppSettings, GeneralSettings} from "../../../settings/app-settings";
+import {selectEffectiveGeneralSettings} from "../../../store/selectors";
+import {Store} from "@ngrx/store";
 
 @Component({
     selector: 'app-parameterless-action-view',
@@ -16,7 +19,10 @@ import { AppConfigService } from 'src/app.config.service';
 export class ParameterlessActionViewComponent {
   private hypermediaClientService = inject(HypermediaClientService);
   private dialog = inject(MatDialog);
-  private appConfigService = inject(AppConfigService);
+  private store = inject<Store<{
+    appSettings: AppSettings;
+    appConfig: AppConfig;
+  }>>(Store);
 
   @Input() action!: HypermediaAction;
 
@@ -27,13 +33,32 @@ export class ParameterlessActionViewComponent {
   actionMessage: string = "";  // TODO: Needs to be updated
   executed: boolean = false; // TODO show multiple executions as list
   problemDetailsError: ProblemDetailsError| null = null;
+  generalSettings: GeneralSettings = new GeneralSettings();
+  appConfig: AppConfig = new AppConfig();
+
+  constructor() {
+    this.store
+      .select(selectEffectiveGeneralSettings)
+      .subscribe({
+        next: generalSettings => {
+          this.generalSettings = generalSettings;
+        },
+      });
+    this.store
+      .select(x => x.appConfig)
+      .subscribe({
+        next: appConfig => {
+          this.appConfig = appConfig;
+        }
+      });
+  }
 
   public executeAction() {
     doWithConfirmation(this.getActionConfigs(), this.dialog, this.doExecuteAction);
   }
 
   public getActionConfigs(): HypermediaUI.IActionClassConfiguration[] {
-    return this.action.getConfigurations(this.appConfigService.actionPopupWarningConfigurations);
+    return this.action.getConfigurations(this.appConfig.actionPopupWarningConfigurations);
   }
 
   private doExecuteAction = () => {
@@ -56,6 +81,9 @@ export class ParameterlessActionViewComponent {
         }
 
         this.actionResultLocation = resultLocation;
+        if (resultLocation && this.generalSettings.autoFollowActionLocationOnSuccess) {
+          setTimeout(() => this.navigateLocation(resultLocation), 1000);
+        }
       });
   }
 
