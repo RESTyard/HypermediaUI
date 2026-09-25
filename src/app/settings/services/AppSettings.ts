@@ -32,6 +32,10 @@ export class GeneralSettingsStorageModel {
 
     showEmptyActions: boolean = false;
 
+    showEmbeddedEntityTitles: boolean = true;
+
+    showActionNames: boolean = true;
+
     useEmbeddingPropertyForActionParameters: boolean = true;
 
     showHostInformation: boolean = true;

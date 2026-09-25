@@ -33,6 +33,8 @@ export class GeneralSettingsPageComponent implements OnInit {
   showNullProperties: FormControl<boolean> = new FormControl<boolean>(false, { nonNullable: true });
   showEmptyLinks: FormControl<boolean> = new FormControl<boolean>(false, { nonNullable: true });
   showEmptyActions: FormControl<boolean> = new FormControl<boolean>(false, { nonNullable: true });
+  showEmbeddedEntityTitles: FormControl<boolean> = new FormControl<boolean>(false, { nonNullable: true });
+  showActionNames: FormControl<boolean> = new FormControl<boolean>(false, { nonNullable: true });
   useEmbeddingPropertyForActionParameters: FormControl<boolean> = new FormControl<boolean>(false, { nonNullable: true });
   showHostInformation: FormControl<boolean> = new FormControl<boolean>(false, { nonNullable: true });
   showPropertyTreeControls: FormControl<boolean> = new FormControl<boolean>(false, { nonNullable: true });
@@ -74,6 +76,12 @@ export class GeneralSettingsPageComponent implements OnInit {
 
     this.showEmptyActions.setValue(this.generalSettings.showEmptyActions);
     this.showEmptyActions.valueChanges.subscribe(v => this.store.dispatch(updateGeneralAppSettings({ newGeneralSettings: this.generalSettings.set("showEmptyActions", v)})));
+
+    this.showEmbeddedEntityTitles.setValue(this.generalSettings.showEmbeddedEntityTitles);
+    this.showEmbeddedEntityTitles.valueChanges.subscribe(v => this.store.dispatch(updateGeneralAppSettings({ newGeneralSettings: this.generalSettings.set("showEmbeddedEntityTitles", v)})));
+
+    this.showActionNames.setValue(this.generalSettings.showActionNames);
+    this.showActionNames.valueChanges.subscribe(v => this.store.dispatch(updateGeneralAppSettings({ newGeneralSettings: this.generalSettings.set("showActionNames", v)})));
 
     this.useEmbeddingPropertyForActionParameters.setValue(this.generalSettings.useEmbeddingPropertyForActionParameters);
     this.useEmbeddingPropertyForActionParameters.valueChanges.subscribe(v => this.store.dispatch(updateGeneralAppSettings({ newGeneralSettings: this.generalSettings.set("useEmbeddingPropertyForActionParameters", v)})));

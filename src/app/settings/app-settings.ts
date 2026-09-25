@@ -10,6 +10,8 @@ export class GeneralSettings extends Record({
     showNullProperties: true,
     showEmptyLinks: false,
     showEmptyActions: false,
+    showEmbeddedEntityTitles: true,
+    showActionNames: true,
     useEmbeddingPropertyForActionParameters: true,
     showHostInformation: true,
     showPropertyTreeControls: true,

@@ -11,7 +11,10 @@ import { FormlyJsonschema } from '@ngx-formly/core/json-schema';
 import { getIconForHttpMethod } from '../../icon-mapping';
 import { MatDialog } from '@angular/material/dialog';
 import {doWithConfirmation} from "../../../common/confirmation-dialog/confirmation-dialog.component";
-import { AppConfigService } from 'src/app.config.service';
+import {AppConfig} from 'src/app.config.service';
+import {Store} from "@ngrx/store";
+import {AppSettings, GeneralSettings} from "../../../settings/app-settings";
+import {selectEffectiveGeneralSettings} from "../../../store/selectors";
 
 @Component({
     selector: 'app-parameter-action',
@@ -23,7 +26,10 @@ export class ParameterActionComponent implements OnInit {
   private hypermediaClientService = inject(HypermediaClientService);
   private formlyJsonschema = inject(FormlyJsonschema);
   private dialog = inject(MatDialog);
-  private appConfigService = inject(AppConfigService);
+  private store = inject<Store<{
+    appSettings: AppSettings;
+    appConfig: AppConfig;
+  }>>(Store);
 
   @Input()
   action!: HypermediaAction;
@@ -39,6 +45,25 @@ export class ParameterActionComponent implements OnInit {
   formlyFields: FormlyFieldConfig[] = [];
   form: FormGroup = new FormGroup({});
   model: object | undefined;
+  generalSettings: GeneralSettings = new GeneralSettings();
+  appConfig: AppConfig = new AppConfig();
+
+  constructor() {
+    this.store
+      .select(selectEffectiveGeneralSettings)
+      .subscribe({
+        next: generalSettings => {
+          this.generalSettings = generalSettings;
+        },
+      });
+    this.store
+      .select(x => x.appConfig)
+      .subscribe({
+        next: appConfig => {
+          this.appConfig = appConfig;
+        },
+      });
+  }
 
   ngOnInit() {
     this.action.waheActionParameterJsonSchema?.subscribe((jsonSchema) => {
@@ -84,7 +109,7 @@ export class ParameterActionComponent implements OnInit {
   }
 
   public getActionConfigs(): HypermediaUI.IActionClassConfiguration[] {
-    return this.action.getConfigurations(this.appConfigService.actionPopupWarningConfigurations);
+    return this.action.getConfigurations(this.appConfig.actionPopupWarningConfigurations);
   }
 
   private doActionSubmitted = () => {
