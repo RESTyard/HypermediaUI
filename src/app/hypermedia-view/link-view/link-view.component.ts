@@ -6,6 +6,10 @@ import { getIconForMimeType } from '../mime-type-icon-mapping';
 import { ClipboardService } from 'ngx-clipboard';
 import {MediaTypes} from "../MediaTypes";
 import { ApiPath } from '../api-path';
+import {Store} from "@ngrx/store";
+import {AppSettings, GeneralSettings} from "../../settings/app-settings";
+import {AppConfig} from "../../../app.config.service";
+import {selectEffectiveGeneralSettings} from "../../store/selectors";
 
 @Component({
     selector: 'app-link-view',
@@ -16,11 +20,26 @@ import { ApiPath } from '../api-path';
 export class LinkViewComponent {
   private hypermediaClient = inject(HypermediaClientService);
   private clipboardService = inject(ClipboardService);
-
+  private store = inject<Store<{
+    appSettings: AppSettings;
+    appConfig: AppConfig;
+  }>>(Store);
 
   @Input() links: HypermediaLink[] = [];
   protected readonly getIconForMimeType = getIconForMimeType;
   protected readonly MediaTypes = MediaTypes;
+
+  generalSettings: GeneralSettings = new GeneralSettings();
+
+  constructor() {
+    this.store
+      .select(selectEffectiveGeneralSettings)
+      .subscribe({
+        next: generalSettings => {
+          this.generalSettings = generalSettings;
+        },
+      })
+  }
 
   getBrowserUrl(hypermediaLink: HypermediaLink) {
     const apiPath = this.hypermediaClient.currentApiPath;
