@@ -38,6 +38,8 @@ export class GeneralSettingsStorageModel {
 
     showLinkDropdown: boolean = true;
 
+    showActionsBeforeProperties: boolean = true;
+
     autoFollowActionLocationOnSuccess: boolean = false;
 
     useEmbeddingPropertyForActionParameters: boolean = true;

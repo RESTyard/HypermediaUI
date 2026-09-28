@@ -13,6 +13,7 @@ export class GeneralSettings extends Record({
     showEmbeddedEntityTitles: true,
     showActionNames: true,
     showLinkDropdown: true,
+    showActionsBeforeProperties: false,
     autoFollowActionLocationOnSuccess: false,
     useEmbeddingPropertyForActionParameters: true,
     showHostInformation: true,
