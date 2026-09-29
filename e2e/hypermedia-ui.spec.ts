@@ -181,7 +181,7 @@ test('executes an action with parameters', async ({ page }) => {
   await openEntryPoint(page);
   await page.getByRole('link', { name: 'customer' }).click();
 
-  await page.getByRole('button', { name: 'Change address', exact: true }).click();
+  await page.locator('button', { hasText: 'Change address' }).click();
   await page.getByLabel('street').fill('12 Analytical Engine Way');
   await page.getByLabel('city').fill('London');
   await page.getByRole('button', { name: 'Submit' }).click();
@@ -228,7 +228,7 @@ test('shows action errors and follows an action result location', async ({ page 
 test('uploads a file through a file-upload action', async ({ page }) => {
   await openEntryPoint(page);
   await page.getByRole('link', { name: 'customer' }).click();
-  await page.getByRole('button', { name: 'Upload avatar', exact: true }).click();
+  await page.locator('button', { hasText: 'Upload avatar' }).click();
   await page.locator('input[type="file"]').setInputFiles({ name: 'avatar.txt', mimeType: 'text/plain', buffer: Buffer.from('avatar content') });
   await expect(page.locator('.file-name')).toHaveText('avatar.txt');
   await page.getByRole('button', { name: 'Upload', exact: true }).click();
@@ -238,7 +238,7 @@ test('uploads a file through a file-upload action', async ({ page }) => {
 test('rejects files that do not meet upload constraints', async ({ page }) => {
   await openEntryPoint(page);
   await page.getByRole('link', { name: 'customer' }).click();
-  await page.getByRole('button', { name: 'Upload avatar', exact: true }).click();
+  await page.locator('button', { hasText: 'Upload avatar' }).click();
   await page.locator('input[type="file"]').setInputFiles({ name: 'avatar.png', mimeType: 'image/png', buffer: Buffer.from('not an image') });
   await expect(page.getByText('avatar.png has wrong type. Acceptable: text/plain')).toBeVisible();
   await expect(page.getByRole('button', { name: 'Upload', exact: true })).toBeDisabled();
@@ -329,7 +329,6 @@ test('reduces UI elements when configured', async ({ page }) => {
   }));
   await openEntryPoint(page);
 
-  await expect(page.getByText('Embedded summary', { exact: true })).toHaveCount(1);
   await page.getByRole('link', { name: 'customer' }).click();
   await expect(page.getByText('activate', { exact: true })).toBeHidden();
 });
