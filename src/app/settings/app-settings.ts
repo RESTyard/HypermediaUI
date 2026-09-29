@@ -10,6 +10,8 @@ export class GeneralSettings extends Record({
     showNullProperties: true,
     showEmptyLinks: false,
     showEmptyActions: false,
+    showLinkDropdown: true,
+    autoFollowActionLocationOnSuccess: false,
     useEmbeddingPropertyForActionParameters: true,
     showHostInformation: true,
     showPropertyTreeControls: true,

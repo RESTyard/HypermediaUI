@@ -1,6 +1,7 @@
 import { Component, Input, inject } from '@angular/core';
 import { EmbeddedLinkEntity } from '../siren-parser/embedded-link-entity';
 import { EmbeddedEntity } from '../siren-parser/embedded-entity';
+import { getDisplayTextForRelation } from '../display-text-mapping';
 import { getIconForRelation } from '../icon-mapping';
 import { HypermediaClientService } from '../hypermedia-client.service';
 import { ClipboardService } from 'ngx-clipboard';
@@ -42,6 +43,10 @@ export class EmbeddedEntityViewComponent {
 
   copyToClipBoard(href: string) {
     this.clipboardService.copyFromContent(href);
+  }
+
+  getRelationDisplayText(rel: string): string {
+    return getDisplayTextForRelation(rel);
   }
 
   getRelationIcon(rel: string): string | undefined {

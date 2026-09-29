@@ -33,6 +33,7 @@ export class GeneralSettingsPageComponent implements OnInit {
   showNullProperties: FormControl<boolean> = new FormControl<boolean>(false, { nonNullable: true });
   showEmptyLinks: FormControl<boolean> = new FormControl<boolean>(false, { nonNullable: true });
   showEmptyActions: FormControl<boolean> = new FormControl<boolean>(false, { nonNullable: true });
+  autoFollowActionLocationOnSuccess: FormControl<boolean> = new FormControl<boolean>(false, { nonNullable: true });
   useEmbeddingPropertyForActionParameters: FormControl<boolean> = new FormControl<boolean>(false, { nonNullable: true });
   showHostInformation: FormControl<boolean> = new FormControl<boolean>(false, { nonNullable: true });
   showPropertyTreeControls: FormControl<boolean> = new FormControl<boolean>(false, { nonNullable: true });
@@ -74,6 +75,9 @@ export class GeneralSettingsPageComponent implements OnInit {
 
     this.showEmptyActions.setValue(this.generalSettings.showEmptyActions);
     this.showEmptyActions.valueChanges.subscribe(v => this.store.dispatch(updateGeneralAppSettings({ newGeneralSettings: this.generalSettings.set("showEmptyActions", v)})));
+
+    this.autoFollowActionLocationOnSuccess.setValue(this.generalSettings.autoFollowActionLocationOnSuccess);
+    this.autoFollowActionLocationOnSuccess.valueChanges.subscribe(v => this.store.dispatch(updateGeneralAppSettings({ newGeneralSettings: this.generalSettings.set("autoFollowActionLocationOnSuccess", v)})));
 
     this.useEmbeddingPropertyForActionParameters.setValue(this.generalSettings.useEmbeddingPropertyForActionParameters);
     this.useEmbeddingPropertyForActionParameters.valueChanges.subscribe(v => this.store.dispatch(updateGeneralAppSettings({ newGeneralSettings: this.generalSettings.set("useEmbeddingPropertyForActionParameters", v)})));

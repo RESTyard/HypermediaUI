@@ -7,6 +7,7 @@ import { Record as ImmutableJsRecord } from "immutable";
 import { updateMappingsIconMappings } from "./app/hypermedia-view/icon-mapping";
 import IConfiguredEntryPointsItem = HypermediaUI.IConfiguredEntryPointsItem;
 import {Unit} from "./app/utils/unit";
+import {updateMappingsDisplayTextMappings} from "./app/hypermedia-view/display-text-mapping";
 
 @Injectable({
     providedIn: 'root'
@@ -16,8 +17,12 @@ export class AppConfigService implements HypermediaUI.IAppConfig {
     private store = inject<Store<{ appConfig: AppConfig }>>(Store);
 
     public disableDeveloperControls: boolean = false;
+    public reduceUiElements: boolean = false;
+    public showActionsBeforeProperties: boolean = false;
+    public autoFollowActionLocationOnSuccess: boolean = false;
     public configuredEntryPoints: ConfiguredEntryPoint[] = [];
     public onlyAllowConfiguredEntryPoints: boolean = false;
+    public relationDisplayTextMapping?: Record<string, string>;
     public relationIconMapping?: Record<string, string>;
     public httpMethodIconMapping?: Record<string, string>;
     public actionPopupWarningConfigurations: HypermediaUI.IActionClassConfiguration[] = [];
@@ -28,11 +33,18 @@ export class AppConfigService implements HypermediaUI.IAppConfig {
             .pipe(
                 tap(value => {
                     Object.assign(this, value);
+                    this.configuredEntryPoints ??= [];
+                    this.actionPopupWarningConfigurations ??= [];
+                    updateMappingsDisplayTextMappings(this.relationDisplayTextMapping);
                     updateMappingsIconMappings(this.relationIconMapping, this.httpMethodIconMapping);
                     const mapped: Partial<AppConfig> & HypermediaUI.IAppConfig = {
                         disableDeveloperControls: this.disableDeveloperControls,
+                        reduceUiElements: this.reduceUiElements,
+                        showActionsBeforeProperties: this.showActionsBeforeProperties,
+                        autoFollowActionLocationOnSuccess: this.autoFollowActionLocationOnSuccess,
                         configuredEntryPoints: this.configuredEntryPoints,
                         onlyAllowConfiguredEntryPoints: this.onlyAllowConfiguredEntryPoints,
+                        relationDisplayTextMapping: this.relationDisplayTextMapping,
                         relationIconMapping: this.relationIconMapping,
                         httpMethodIconMapping: this.httpMethodIconMapping,
                         actionPopupWarningConfigurations: this.actionPopupWarningConfigurations,
@@ -47,11 +59,15 @@ export class AppConfigService implements HypermediaUI.IAppConfig {
 
 export class AppConfig extends ImmutableJsRecord({
     disableDeveloperControls: true,
-    configuredEntryPoints: undefined as ConfiguredEntryPoint[] | undefined,
+    reduceUiElements: true,
+    showActionsBeforeProperties: false,
+    autoFollowActionLocationOnSuccess: false,
+    configuredEntryPoints: [] as ConfiguredEntryPoint[],
     onlyAllowConfiguredEntryPoints : false,
+    relationDisplayTextMapping: undefined as Record<string, string> | undefined,
     relationIconMapping: undefined as Record<string, string> | undefined,
     httpMethodIconMapping: undefined as Record<string, string> | undefined,
-    actionPopupWarningConfigurations: undefined as HypermediaUI.IActionClassConfiguration[] | undefined,
+    actionPopupWarningConfigurations: [] as HypermediaUI.IActionClassConfiguration[],
 }) {}
 
 export class ConfiguredEntryPoint extends ImmutableJsRecord({

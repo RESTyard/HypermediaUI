@@ -15,7 +15,7 @@
                 @if (getRelationIcon(rel)) {
                   <mat-icon matChipAvatar>{{getRelationIcon(rel)}}</mat-icon>
                 }
-                {{rel}}
+                {{getRelationDisplayText(rel)}}
               </mat-chip>
             }
           </mat-chip-set>
@@ -30,7 +30,7 @@
         }
       </mat-expansion-panel-header>
       <ng-template matExpansionPanelContent>
-        <app-entity-view [entity]="embeddedEntity"></app-entity-view>
+        <app-entity-view [entity]="embeddedEntity" [showTitle]="false"></app-entity-view>
       </ng-template>
     </mat-expansion-panel>
   }
@@ -45,7 +45,7 @@
               @if (getRelationIcon(rel)) {
                 <mat-icon matChipAvatar>{{getRelationIcon(rel)}}</mat-icon>
               }
-              {{rel}}
+              {{getRelationDisplayText(rel)}}
             </mat-chip>
           }
         </mat-chip-set>

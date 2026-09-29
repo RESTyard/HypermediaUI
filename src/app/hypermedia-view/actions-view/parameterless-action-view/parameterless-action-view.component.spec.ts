@@ -10,6 +10,7 @@ import { HypermediaAction } from '../../siren-parser/hypermedia-action';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { AppConfigService } from 'src/app.config.service';
+import {importStore} from "../../../store/store-module";
 
 describe('ParameterlessActionViewComponent', () => {
   let component: ParameterlessActionViewComponent;
@@ -21,6 +22,7 @@ describe('ParameterlessActionViewComponent', () => {
         ParameterlessActionViewComponent
       ],
       imports: [
+        importStore(),
         MatCard,
         MatIcon,
         MatMenu,

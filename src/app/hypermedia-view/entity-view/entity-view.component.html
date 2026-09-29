@@ -1,8 +1,10 @@
 <div class="container">
 
-  <div class="entityTitle">
-    {{title}}
-  </div>
+  @if (showTitle) {
+    <div class="entityTitle">
+      {{title}}
+    </div>
+  }
 
   @if (GeneralSettings.showClasses) {
     <div>Classes: {{classes}}</div>
@@ -14,11 +16,11 @@
     <app-link-view [links]="links"></app-link-view>
   }
 
-  @if (GeneralSettings.showEmptyEntities || embeddedEntities.length > 0 || embeddedLinkEntities.length > 0) {
-    <app-embedded-entity-view [embeddedEntities]="embeddedEntities" [embeddedLinkEntities]="embeddedLinkEntities"></app-embedded-entity-view>
-  }
-
   @if (GeneralSettings.showEmptyActions || actions.length > 0) {
     <app-actions-view [actions]="actions"></app-actions-view>
+  }
+
+  @if (GeneralSettings.showEmptyEntities || embeddedEntities.length > 0 || embeddedLinkEntities.length > 0) {
+    <app-embedded-entity-view [embeddedEntities]="embeddedEntities" [embeddedLinkEntities]="embeddedLinkEntities"></app-embedded-entity-view>
   }
 </div>

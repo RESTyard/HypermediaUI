@@ -14,14 +14,16 @@
           <mat-icon class="link-icon">link</mat-icon>
         }
         <span class="link-text">
-          {{link.relations.join(', ')}}
+          {{getRelationDisplayText(link.relations).join(', ')}}
         </span>
       </a>
-      <button mat-flat-button class="dropdown-button"
-              [class.download-link]="!isSirenLink(link)"
-              [matMenuTriggerFor]="dropdownMenuOne">
-        <mat-icon>arrow_drop_down</mat-icon>
-      </button>
+      @if (this.generalSettings.showLinkDropdown) {
+        <button mat-flat-button class="dropdown-button"
+                [class.download-link]="!isSirenLink(link)"
+                [matMenuTriggerFor]="dropdownMenuOne">
+          <mat-icon>arrow_drop_down</mat-icon>
+        </button>
+      }
 
       <mat-menu #dropdownMenuOne="matMenu">
         <div class="menu-url-container" (click)="$event.stopPropagation()">
