@@ -1,7 +1,6 @@
 {
     "disableDeveloperControls": false,
     "reduceUiElements": false,
-    "showActionsBeforeProperties": false,
     "autoFollowActionLocationOnSuccess": true,
     "configuredEntryPoints": [],
     "onlyAllowConfiguredEntryPoints": false,

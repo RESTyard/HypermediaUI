@@ -32,13 +32,7 @@ export class GeneralSettingsStorageModel {
 
     showEmptyActions: boolean = false;
 
-    showEmbeddedEntityTitles: boolean = true;
-
-    showActionNames: boolean = true;
-
     showLinkDropdown: boolean = true;
-
-    showActionsBeforeProperties: boolean = true;
 
     autoFollowActionLocationOnSuccess: boolean = false;
 
