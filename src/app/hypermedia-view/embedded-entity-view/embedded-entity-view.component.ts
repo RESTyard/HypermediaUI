@@ -52,6 +52,4 @@ export class EmbeddedEntityViewComponent {
   getRelationIcon(rel: string): string | undefined {
     return getIconForRelation(rel);
   }
-
-  protected readonly getDisplayTextForRelation = getDisplayTextForRelation;
 }

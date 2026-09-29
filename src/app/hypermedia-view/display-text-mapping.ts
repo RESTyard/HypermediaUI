@@ -1,6 +1,4 @@
-﻿import {httpMethodIconMapping} from "./icon-mapping";
-
-export let relationDisplayTextMapping: Record<string, string> = {}
+﻿export let relationDisplayTextMapping: Record<string, string> = {}
 
 export function getDisplayTextForRelation(relation: string): string {
   const mapping = relationDisplayTextMapping[relation.toLowerCase()];

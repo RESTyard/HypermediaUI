@@ -9,6 +9,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDividerModule } from '@angular/material/divider';
 import {HypermediaLink} from "../siren-parser/hypermedia-link";
+import {importStore} from "../../store/store-module";
 
 describe('LinkViewComponent', () => {
   let component: LinkViewComponent;
@@ -20,7 +21,13 @@ describe('LinkViewComponent', () => {
       declarations: [
         LinkViewComponent
       ],
-      imports: [MatButtonModule, MatIconModule, MatMenuModule, MatTooltipModule, MatDividerModule],
+      imports: [
+        importStore(),
+        MatButtonModule,
+        MatIconModule,
+        MatMenuModule,
+        MatTooltipModule,
+        MatDividerModule],
       providers: [
         provideHypermediaClientServiceMock(),
       ],

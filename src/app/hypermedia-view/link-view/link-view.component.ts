@@ -39,7 +39,7 @@ export class LinkViewComponent {
         next: generalSettings => {
           this.generalSettings = generalSettings;
         },
-      })
+      });
   }
 
   getBrowserUrl(hypermediaLink: HypermediaLink) {
