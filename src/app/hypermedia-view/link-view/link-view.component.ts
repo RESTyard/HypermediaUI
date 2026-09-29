@@ -1,6 +1,7 @@
 import { HypermediaClientService } from '../hypermedia-client.service';
 import { Component, Input, inject } from '@angular/core';
 import { HypermediaLink } from '../siren-parser/hypermedia-link';
+import { getDisplayTextForRelation } from '../display-text-mapping';
 import { getIconForRelation } from '../icon-mapping';
 import { getIconForMimeType } from '../mime-type-icon-mapping';
 import { ClipboardService } from 'ngx-clipboard';
@@ -52,6 +53,10 @@ export class LinkViewComponent {
 
   navigateLink(hypermediaLink: HypermediaLink) {
     this.hypermediaClient.Navigate(hypermediaLink.url, { acceptType: hypermediaLink.type });
+  }
+
+  getRelationDisplayText(rel: string[]): string[] {
+    return rel.map(getDisplayTextForRelation);
   }
 
   getRelationIcon(rels: string[]): string | undefined {

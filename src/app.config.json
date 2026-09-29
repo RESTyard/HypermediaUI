@@ -5,6 +5,7 @@
     "autoFollowActionLocationOnSuccess": true,
     "configuredEntryPoints": [],
     "onlyAllowConfiguredEntryPoints": false,
+    "relationDisplayTextMapping": {},
     "relationIconMapping": {},
     "httpMethodIconMapping": {},
     "actionPopupWarningConfigurations": [

@@ -14,7 +14,7 @@
           <mat-icon class="link-icon">link</mat-icon>
         }
         <span class="link-text">
-          {{link.relations.join(', ')}}
+          {{getRelationDisplayText(link.relations).join(', ')}}
         </span>
       </a>
       @if (this.generalSettings.showLinkDropdown) {

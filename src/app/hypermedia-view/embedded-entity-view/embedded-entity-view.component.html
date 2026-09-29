@@ -15,7 +15,7 @@
                 @if (getRelationIcon(rel)) {
                   <mat-icon matChipAvatar>{{getRelationIcon(rel)}}</mat-icon>
                 }
-                {{rel}}
+                {{getRelationDisplayText(rel)}}
               </mat-chip>
             }
           </mat-chip-set>
@@ -45,7 +45,7 @@
               @if (getRelationIcon(rel)) {
                 <mat-icon matChipAvatar>{{getRelationIcon(rel)}}</mat-icon>
               }
-              {{rel}}
+              {{getRelationDisplayText(rel)}}
             </mat-chip>
           }
         </mat-chip-set>
