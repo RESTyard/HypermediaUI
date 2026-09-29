@@ -16,7 +16,9 @@
     <app-link-view [links]="links"></app-link-view>
   }
 
-  @if (GeneralSettings.showActionsBeforeProperties && (GeneralSettings.showEmptyActions || actions.length > 0)) {
+  @let showActions = GeneralSettings.showEmptyActions || actions.length > 0;
+
+  @if (GeneralSettings.showActionsBeforeProperties && showActions) {
     <app-actions-view [actions]="actions"></app-actions-view>
   }
 
@@ -24,7 +26,7 @@
     <app-embedded-entity-view [embeddedEntities]="embeddedEntities" [embeddedLinkEntities]="embeddedLinkEntities"></app-embedded-entity-view>
   }
 
-  @if (!GeneralSettings.showActionsBeforeProperties && (GeneralSettings.showEmptyActions || actions.length > 0)) {
+  @if (!GeneralSettings.showActionsBeforeProperties && showActions) {
     <app-actions-view [actions]="actions"></app-actions-view>
   }
 </div>
