@@ -375,3 +375,26 @@ test('logs out through the BFF when exiting an API error from the main page', as
   await page.getByRole('button', { name: 'Exit API' }).click();
   await expect(page).toHaveURL(new URLPattern({ hostname: 'api.test', pathname: '/bff/logout' }));
 });
+
+test('loads an API without BFF that allows any origin', async ({ page }) => {
+  const plainApi = 'https://plain.test';
+  const anyOrigin = { 'access-control-allow-origin': '*' };
+  await page.route(`${plainApi}/**`, route => {
+    if (new URL(route.request().url()).pathname === '/entrypoint') {
+      return route.fulfill({ headers: anyOrigin, contentType: siren, body: JSON.stringify({ ...entryPoint, title: 'Plain API' }) });
+    }
+    return route.fulfill({ status: 404, headers: anyOrigin });
+  });
+
+  await page.goto('/');
+  await page.getByPlaceholder('Enter API entrypoint URL').fill(`${plainApi}/entrypoint`);
+  await page.getByRole('button', { name: 'Enter API' }).click();
+  await expect(page.getByText('Plain API', { exact: true })).toBeVisible();
+});
+
+test('sends credentials to an API backed by a BFF', async ({ page, context }) => {
+  await context.addCookies([{ name: 'bff-session', value: 'session-cookie', domain: 'api.test', path: '/', secure: true, sameSite: 'None' }]);
+  const entryPointRequest = page.waitForRequest(`${api}/entrypoint`);
+  await openEntryPoint(page);
+  expect(await (await entryPointRequest).headerValue('cookie')).toContain('bff-session=session-cookie');
+});

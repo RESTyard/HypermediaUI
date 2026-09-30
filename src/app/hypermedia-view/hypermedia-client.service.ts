@@ -171,6 +171,7 @@ export class HypermediaClientService implements IHypermediaClientService {
     const headers = new HttpHeaders().set('Accept', acceptHeader);
 
     this.AddBusyRequest();
+    await this.authService.probeSessionOnce(url);
     let response: HttpResponse<any>;
     try {
       response = await lastValueFrom(this.httpClient
@@ -189,7 +190,7 @@ export class HypermediaClientService implements IHypermediaClientService {
       return;
     }
 
-    void this.authService.getSession(this.apiPath.firstSegment);
+    this.authService.refreshSession(this.apiPath.firstSegment);
     const contentTypeHeader = response.headers.get('Content-Type');
     const contentType = contentTypeHeader ? contentTypeHeader.split(';')[0].trim() : MediaTypes.Siren;
     this.currentContentType$.next(contentType);

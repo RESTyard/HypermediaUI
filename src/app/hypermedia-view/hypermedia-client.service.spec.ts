@@ -27,7 +27,7 @@ describe('HypermediaClientService', () => {
         SirenDeserializer,
         SchemaSimplifier,
         GlobalNavigationEvents,
-        { provide: AuthService, useValue: {} },
+        { provide: AuthService, useValue: { probeSessionOnce: async () => undefined, refreshSession: () => undefined } },
         { provide: ProblemDetailsErrorService, useValue: {} },
       ]
     });
