@@ -15,6 +15,14 @@
   </mat-expansion-panel-header>
 
   <ng-template matExpansionPanelContent>
+    @if (action.waheActionParameterJsonSchema) {
+      <form [formGroup]="form">
+        <div class="form-content">
+          <formly-form [fields]="formlyFields" [form]="form" [model]="model"></formly-form>
+        </div>
+      </form>
+    }
+
     <ngx-dropzone class="dropzone-container"
       [multiple]="action.FileUploadConfiguration.AllowMultiple"
       [maxFileSize]="action.FileUploadConfiguration.MaxFileSizeBytes > -1 ? action.FileUploadConfiguration.MaxFileSizeBytes : 0"
