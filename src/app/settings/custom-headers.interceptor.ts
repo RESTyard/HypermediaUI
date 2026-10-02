@@ -2,10 +2,12 @@ import { Injectable, inject } from '@angular/core';
 import { HttpRequest, HttpHandler, HttpEvent, HttpInterceptor } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import {SettingsService} from './services/settings.service';
+import {BffOriginsService} from '../hypermedia-view/bff-origins.service';
 
 @Injectable()
 export class CustomHeadersInterceptor implements HttpInterceptor {
   private settingsService = inject(SettingsService);
+  private bffOrigins = inject(BffOriginsService);
 
 
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
@@ -27,7 +29,7 @@ export class CustomHeadersInterceptor implements HttpInterceptor {
 
     return next.handle(request.clone({
       headers: headers,
-      withCredentials: URL.canParse(request.url)
+      withCredentials: request.withCredentials || this.bffOrigins.has(request.url)
     }));
   }
 }

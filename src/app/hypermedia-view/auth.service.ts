@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, lastValueFrom } from 'rxjs';
 import { Result, Success, Failure, isSuccess } from 'fnxt/result';
+import { BffOriginsService } from './bff-origins.service';
 
 export interface BffSession {
   isAuthenticated: boolean;
@@ -11,6 +12,8 @@ export interface BffSession {
 @Injectable()
 export class AuthService {
   private httpClient = inject(HttpClient);
+  private bffOrigins = inject(BffOriginsService);
+  private readonly sessionProbes = new Map<string, Promise<Result<BffSession, string>>>();
 
   readonly userName$ = new BehaviorSubject<string | undefined>(undefined);
 
@@ -24,10 +27,30 @@ export class AuthService {
         return Failure('The BFF session endpoint returned an invalid response.');
       }
 
+      this.bffOrigins.add(entryPoint);
       this.userName$.next(session.isAuthenticated ? session.name : undefined);
       return Success(session);
     } catch {
       return Failure('The backend does not support the BFF session endpoint.');
+    }
+  }
+
+  /** Probes the BFF session endpoint once per origin, so later requests know whether to send credentials. */
+  async probeSessionOnce(url: string): Promise<void> {
+    if (!URL.canParse(url)) {
+      return;
+    }
+
+    const origin = new URL(url).origin;
+    if (!this.sessionProbes.has(origin)) {
+      this.sessionProbes.set(origin, this.getSession(url));
+    }
+    await this.sessionProbes.get(origin);
+  }
+
+  async refreshSession(entryPoint: string): Promise<void> {
+    if (this.bffOrigins.has(entryPoint)) {
+      await this.getSession(entryPoint);
     }
   }
 
