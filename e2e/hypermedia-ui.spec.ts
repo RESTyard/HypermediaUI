@@ -352,6 +352,25 @@ test('leaves nested embedded entities alone when expanding or collapsing a level
   await expect(collapseAll).toHaveCount(1);
 });
 
+test('expands and collapses all top level embedded entities with + and -', async ({ page }) => {
+  await openEntryPoint(page);
+  const summaryHeader = page.locator('mat-expansion-panel-header', { hasText: 'Embedded summary' });
+  const nestedHeader = page.locator('mat-expansion-panel-header', { hasText: 'Nested detail' });
+
+  await page.keyboard.press('+');
+  await expect(summaryHeader).toHaveAttribute('aria-expanded', 'true');
+  await expect(nestedHeader).toHaveAttribute('aria-expanded', 'false');
+
+  // + needs Shift on a US layout
+  await page.keyboard.press('-');
+  await expect(summaryHeader).toHaveAttribute('aria-expanded', 'false');
+  await page.keyboard.press('Shift++');
+  await expect(summaryHeader).toHaveAttribute('aria-expanded', 'true');
+
+  await page.getByRole('button', { name: 'Expand all embedded entities' }).first().hover();
+  await expect(page.locator('.mat-mdc-tooltip')).toHaveText('Expand all embedded entities (+)');
+});
+
 test('previews JSON, text, and image link content', async ({ page }) => {
   await openEntryPoint(page);
   await page.getByRole('link', { name: 'plain-json' }).click();

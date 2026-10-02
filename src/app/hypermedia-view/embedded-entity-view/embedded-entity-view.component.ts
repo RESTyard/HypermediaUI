@@ -61,6 +61,14 @@ export class EmbeddedEntityViewComponent {
           if (this.isTopLevel) this.panels()[index]?.toggle();
         });
 
+      this.navigation.expandAllRequests
+        .pipe(takeUntilDestroyed())
+        .subscribe(expand => {
+          if (!this.isTopLevel) return;
+          if (expand) this.expandAll();
+          else this.collapseAll();
+        });
+
       // Only ever opens panels: collapsing is left to the user, also when the search is cleared
       effect(() => {
         this.panels().forEach((panel, index) => {

@@ -12,6 +12,8 @@ export class EmbeddedNavigationService {
   readonly currentIndex = signal(-1);
   /** Index of the item whose panel should be expanded or collapsed. */
   readonly toggleRequests = new Subject<number>();
+  /** true expands, false collapses all top level embedded entities. */
+  readonly expandAllRequests = new Subject<boolean>();
 
   /** Keeps the current item, unless it no longer exists. */
   setItemCount(itemCount: number) {
@@ -29,6 +31,14 @@ export class EmbeddedNavigationService {
 
   toggleCurrent() {
     if (this.currentIndex() >= 0) this.toggleRequests.next(this.currentIndex());
+  }
+
+  expandAll() {
+    this.expandAllRequests.next(true);
+  }
+
+  collapseAll() {
+    this.expandAllRequests.next(false);
   }
 
   canGoPrevious(): boolean {

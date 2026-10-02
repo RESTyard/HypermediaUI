@@ -39,10 +39,19 @@ export class PageNavigationComponent {
   @HostListener('document:keydown', ['$event'])
   onKeydown(event: KeyboardEvent) {
     if (this.navigation.itemCount() === 0) return;
-    if (event.defaultPrevented || event.ctrlKey || event.altKey || event.metaKey || event.shiftKey) return;
+    if (event.defaultPrevented || event.ctrlKey || event.altKey || event.metaKey) return;
     if (event.target instanceof Element && event.target.closest(keyHandlingElements)) return;
 
+    // + needs Shift on some layouts, e.g. US, so only the other keys require no Shift
+    if (event.shiftKey && event.key !== '+') return;
+
     switch (event.key) {
+      case '+':
+        this.navigation.expandAll();
+        break;
+      case '-':
+        this.navigation.collapseAll();
+        break;
       case 'Home':
         this.navigation.toTop();
         break;
