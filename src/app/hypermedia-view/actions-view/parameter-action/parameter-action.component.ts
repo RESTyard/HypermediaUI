@@ -6,7 +6,7 @@ import {
 } from '../../hypermedia-client.service';
 import { HypermediaAction } from '../../siren-parser/hypermedia-action';
 import { FormlyFieldConfig } from '@ngx-formly/core';
-import { AbstractControl, FormGroup } from '@angular/forms';
+import { FormGroup } from '@angular/forms';
 import { FormlyJsonschema } from '@ngx-formly/core/json-schema';
 import { getIconForHttpMethod } from '../../icon-mapping';
 import { MatDialog } from '@angular/material/dialog';
@@ -15,6 +15,7 @@ import {AppConfig} from 'src/app.config.service';
 import {Store} from "@ngrx/store";
 import {AppSettings, GeneralSettings} from "../../../settings/app-settings";
 import {selectEffectiveGeneralSettings} from "../../../store/selectors";
+import {createActionFormlyFields} from '../../formly-extensions';
 
 @Component({
     selector: 'app-parameter-action',
@@ -67,40 +68,15 @@ export class ParameterActionComponent implements OnInit {
 
   ngOnInit() {
     this.action.waheActionParameterJsonSchema?.subscribe((jsonSchema) => {
-      this.formlyFields = [
-        this.formlyJsonschema.toFieldConfig(jsonSchema, {
-          map: (mappedField, mapSource) => {
-            if (mappedField.key && mappedField.props) {
-              mappedField.props.label = mappedField.key + '';
-            }
-            const types = mapSource.type === undefined ? [] : mapSource.type instanceof Array ? mapSource.type : [mapSource.type];
-            if (types.includes('string') && mapSource.format === 'date') {
-              mappedField.type = 'date';
-              mappedField.parsers = [
-                v => (v instanceof Date ? this.formatDate(v) : v),
-              ];
-              mappedField.validators = {
-                required: (control: AbstractControl) => (types.includes('null') || (control.value !== null && control.value !== undefined)),
-              };
-            }
-            return mappedField;
-          },
-        }),
-      ];
+      this.formlyFields = createActionFormlyFields(this.formlyJsonschema, jsonSchema);
       this.model = this.action.defaultValues;
     });
   }
 
-  private formatDate(date: Date) {
-    const year = date.getFullYear();
-    const month = date.getMonth() + 1;
-    const day = date.getDate();
-    const padLeft = (num: number) => `${num < 10 ? '0' + num : num}`;
-    return `${year}-${padLeft(month)}-${padLeft(day)}`;
-  }
+  canSubmit = () => this.form.valid;
 
   public onActionSubmitted() {
-    if (!this.form.valid) {
+    if (!this.canSubmit()) {
       console.log('not valid');
       return;
     }

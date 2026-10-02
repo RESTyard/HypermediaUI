@@ -49,9 +49,9 @@
 
     <div class="button-row">
       <!--place tooltip in parent because it does not work when button is disabled-->
-      <span matTooltip="Please select a file." [matTooltipDisabled]="this.hasFiles()">
+      <span matTooltip="Please select a file and complete all required fields." [matTooltipDisabled]="this.canSubmit()">
         <button (click)="onSubmit()"
-          [disabled]="!this.hasFiles()"
+          [disabled]="!this.canSubmit()"
           mat-flat-button
           class="submit-button"
           color="primary">
