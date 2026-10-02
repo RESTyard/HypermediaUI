@@ -227,6 +227,14 @@ export class HypermediaControlComponent implements OnInit, OnDestroy {
     this.hypermediaClient.Navigate(url);
   }
 
+  /**
+   * A clicked toggle would keep the focus and handle the arrow keys itself, so the page shortcuts
+   * would not work until the user clicks into the page. Toggles used by keyboard (detail 0) keep it.
+   */
+  public releaseToggleFocus(event: MouseEvent) {
+    if (event.detail > 0 && document.activeElement instanceof HTMLElement) document.activeElement.blur();
+  }
+
   public setShowRaw(showRaw: boolean) {
     this.showRaw = showRaw;
     this.updateSearchMode();

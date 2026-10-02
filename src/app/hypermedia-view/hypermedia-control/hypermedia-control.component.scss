@@ -102,8 +102,10 @@ rawContent{
     align-items: center;
     background-color: transparent !important;
 
+    // the active view looks pressed in, instead of the default check mark
     &.mat-button-toggle-checked {
-      background-color: rgba(0, 0, 0, 0.05) !important;
+      background-color: rgba(0, 0, 0, 0.1) !important;
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.25);
     }
 
     ::ng-deep .mat-button-toggle-label-content {
@@ -195,3 +197,4 @@ rawContent{
     text-transform: uppercase;
   }
 }
+

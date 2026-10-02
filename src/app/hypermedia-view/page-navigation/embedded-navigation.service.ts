@@ -12,7 +12,7 @@ export class EmbeddedNavigationService {
   readonly currentIndex = signal(-1);
   /** Index of the item whose panel should be expanded or collapsed. */
   readonly toggleRequests = new Subject<number>();
-  /** true expands, false collapses all top level embedded entities. */
+  /** true expands, false collapses all top level embedded entities, or the whole raw view. */
   readonly expandAllRequests = new Subject<boolean>();
 
   /** Keeps the current item, unless it no longer exists. */

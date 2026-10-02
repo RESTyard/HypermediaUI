@@ -437,6 +437,35 @@ test('remembers search options after a reload', async ({ page }) => {
   await expect(page.getByRole('switch', { name: 'Actions' })).toBeChecked();
 });
 
+test('opens the raw view 2 levels deep and expands or collapses it with buttons and keys', async ({ page }) => {
+  await openEntryPoint(page);
+  await page.getByRole('radio', { name: 'Raw' }).check();
+  const rawView = page.locator('app-raw-view');
+  // an opened node lists "key: value"; a collapsed one only shows a JSON preview of its content
+  const rootProperty = 'welcome: "Navigate using hypermedia"';
+  const embeddedProperty = 'status: "ready"';
+  await expect(rawView).toContainText(rootProperty);
+  await expect(rawView).not.toContainText(embeddedProperty);
+
+  // a clicked view toggle releases the focus, so the shortcuts work right away
+  await page.keyboard.press('+');
+  await expect(rawView).toContainText(embeddedProperty);
+  await page.keyboard.press('-');
+  await expect(rawView).not.toContainText(rootProperty);
+  await page.getByRole('button', { name: 'Expand 2 levels' }).click();
+  await expect(rawView).toContainText(rootProperty);
+  await expect(rawView).not.toContainText(embeddedProperty);
+  await page.getByRole('button', { name: 'Expand all' }).click();
+  await expect(rawView).toContainText(embeddedProperty);
+  await page.getByRole('button', { name: 'Collapse all' }).hover();
+  await expect(page.locator('.mat-mdc-tooltip')).toHaveText('Collapse all (-)');
+
+  const navigation = page.getByRole('navigation', { name: 'Page navigation' });
+  await expect(navigation.getByRole('button')).toHaveCount(2);
+  await expect(navigation.getByRole('button', { name: 'Back to top' })).toBeAttached();
+  await expect(navigation.getByRole('button', { name: 'To bottom' })).toBeAttached();
+});
+
 test('searches the raw view as plain text', async ({ page }) => {
   await openEntryPoint(page);
   await page.getByRole('radio', { name: 'Raw' }).check();

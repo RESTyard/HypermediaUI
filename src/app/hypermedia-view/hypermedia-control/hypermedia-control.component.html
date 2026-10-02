@@ -122,7 +122,7 @@
   }
 
   @if (GeneralSettings.showRawTab) {
-    <mat-button-toggle-group class="view-toggle" [ngModel]="showRaw" (ngModelChange)="setShowRaw($event)" aria-label="View Mode">
+    <mat-button-toggle-group class="view-toggle" [ngModel]="showRaw" (ngModelChange)="setShowRaw($event)" (click)="releaseToggleFocus($event)" hideSingleSelectionIndicator aria-label="View Mode">
       <mat-button-toggle [value]="false">
         <mat-icon>grid_view</mat-icon>
         <span>UI</span>
@@ -143,4 +143,4 @@
   <app-entity-view [entity]="hto"></app-entity-view>
 }
 
-<app-page-navigation></app-page-navigation>
+<app-page-navigation [scrollOnly]="GeneralSettings.showRawTab && showRaw"></app-page-navigation>

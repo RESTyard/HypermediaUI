@@ -1,4 +1,4 @@
-import { Component, HostListener, inject } from '@angular/core';
+import { Component, HostListener, Input, inject } from '@angular/core';
 import { EmbeddedNavigationService } from './embedded-navigation.service';
 
 // keys are left to elements that use them themselves, e.g. text fields, toggles and the property tree
@@ -20,6 +20,9 @@ const enterHandlingElements = 'button, a, [role="button"], mat-expansion-panel-h
 export class PageNavigationComponent {
   protected navigation = inject(EmbeddedNavigationService);
 
+  /** Shows only "Back to top" and "To bottom", e.g. for the raw view, which has no embedded items to step through. */
+  @Input() scrollOnly = false;
+
   /**
    * A clicked button would keep the focus, so Enter would press it again instead of toggling the
    * current item. Buttons activated by keyboard (detail 0) keep the focus.
@@ -38,12 +41,14 @@ export class PageNavigationComponent {
 
   @HostListener('document:keydown', ['$event'])
   onKeydown(event: KeyboardEvent) {
-    if (this.navigation.itemCount() === 0) return;
+    if (!this.scrollOnly && this.navigation.itemCount() === 0) return;
     if (event.defaultPrevented || event.ctrlKey || event.altKey || event.metaKey) return;
     if (event.target instanceof Element && event.target.closest(keyHandlingElements)) return;
 
     // + needs Shift on some layouts, e.g. US, so only the other keys require no Shift
     if (event.shiftKey && event.key !== '+') return;
+    // the browser scrolls with the other keys itself
+    if (this.scrollOnly && event.key !== '+' && event.key !== '-') return;
 
     switch (event.key) {
       case '+':
