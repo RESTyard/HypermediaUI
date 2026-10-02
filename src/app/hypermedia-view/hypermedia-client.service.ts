@@ -190,7 +190,7 @@ export class HypermediaClientService implements IHypermediaClientService {
       return;
     }
 
-    this.authService.refreshSession(this.apiPath.firstSegment);
+    void this.authService.refreshSession(this.apiPath.firstSegment);
     const contentTypeHeader = response.headers.get('Content-Type');
     const contentType = contentTypeHeader ? contentTypeHeader.split(';')[0].trim() : MediaTypes.Siren;
     this.currentContentType$.next(contentType);

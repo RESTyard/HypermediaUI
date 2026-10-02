@@ -48,9 +48,9 @@ export class AuthService {
     await this.sessionProbes.get(origin);
   }
 
-  refreshSession(entryPoint: string): void {
+  async refreshSession(entryPoint: string): Promise<void> {
     if (this.bffOrigins.has(entryPoint)) {
-      void this.getSession(entryPoint);
+      await this.getSession(entryPoint);
     }
   }
 
