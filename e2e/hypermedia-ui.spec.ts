@@ -24,6 +24,14 @@ const entryPoint = {
       class: ['Summary'],
       title: 'Embedded summary',
       properties: { status: 'ready' },
+      entities: [
+        {
+          rel: ['detail'],
+          class: ['Detail'],
+          title: 'Nested detail',
+          properties: { depth: 'nested-value' },
+        },
+      ],
     },
     {
       rel: ['customer-reference'],
@@ -253,6 +261,35 @@ test('shows raw Siren data and embedded entities', async ({ page }) => {
   await expect(page.getByText('ready', { exact: true })).toBeVisible();
   await page.locator('app-embedded-entity-view .entityLinkButton').click();
   await expect(page.getByText('Customer 42', { exact: true })).toBeVisible();
+});
+
+test('expands and collapses all embedded entities of a level', async ({ page }) => {
+  await openEntryPoint(page);
+  const status = page.getByText('ready', { exact: true });
+  await page.getByRole('button', { name: 'Expand all embedded entities' }).click();
+  await expect(status).toBeVisible();
+  await page.getByRole('button', { name: 'Collapse all embedded entities' }).first().click();
+  await expect(status).toBeHidden();
+});
+
+test('leaves nested embedded entities alone when expanding or collapsing a level', async ({ page }) => {
+  await openEntryPoint(page);
+  const expandAll = page.getByRole('button', { name: 'Expand all embedded entities' });
+  const collapseAll = page.getByRole('button', { name: 'Collapse all embedded entities' });
+  const summaryHeader = page.locator('mat-expansion-panel-header', { hasText: 'Embedded summary' });
+  const nestedHeader = page.locator('mat-expansion-panel-header', { hasText: 'Nested detail' });
+
+  await expandAll.click();
+  await expect(summaryHeader).toHaveAttribute('aria-expanded', 'true');
+  await expect(nestedHeader).toHaveAttribute('aria-expanded', 'false');
+
+  await expandAll.last().click();
+  await expect(nestedHeader).toHaveAttribute('aria-expanded', 'true');
+
+  await collapseAll.first().click();
+  await expect(summaryHeader).toHaveAttribute('aria-expanded', 'false');
+  await expect(nestedHeader).toHaveAttribute('aria-expanded', 'true');
+  await expect(collapseAll).toHaveCount(1);
 });
 
 test('previews JSON, text, and image link content', async ({ page }) => {

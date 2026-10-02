@@ -1,6 +1,13 @@
 <div class="container">
   <div class="itemsHeader">
-    <span class="spacer"></span>
+    @if (embeddedEntities?.length) {
+      <button mat-icon-button class="panelControl" (click)="expandAll()" matTooltip="Expand all embedded entities" aria-label="Expand all embedded entities">
+        <mat-icon>unfold_more</mat-icon>
+      </button>
+      <button mat-icon-button class="panelControl" (click)="collapseAll()" matTooltip="Collapse all embedded entities" aria-label="Collapse all embedded entities">
+        <mat-icon>unfold_less</mat-icon>
+      </button>
+    }
     <span class="itemsLabel">{{embeddedEntities?.length + embeddedLinkEntities?.length}} items</span>
   </div>
 

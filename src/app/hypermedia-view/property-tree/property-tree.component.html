@@ -2,11 +2,11 @@
 @if (showHeader && hasExpandableItems) {
   <div class="tree-header-toolbar">
     <div class="controls-container">
-      <button mat-button (click)="expandAll()">
-        <mat-icon>unfold_more</mat-icon> EXPAND
+      <button mat-icon-button (click)="expandAll()" matTooltip="Expand all properties" aria-label="Expand all properties">
+        <mat-icon>unfold_more</mat-icon>
       </button>
-      <button mat-button (click)="collapseAll()">
-        <mat-icon>unfold_less</mat-icon> COLLAPSE
+      <button mat-icon-button (click)="collapseAll()" matTooltip="Collapse all properties" aria-label="Collapse all properties">
+        <mat-icon>unfold_less</mat-icon>
       </button>
     </div>
   </div>

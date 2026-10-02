@@ -19,25 +19,6 @@ $highlight-ancestor: #fffde7;
     width: 100%;
     box-sizing: border-box;
 
-    button {
-      flex-shrink: 0;
-      font-size: 11px;
-      height: 32px;
-      padding: 0 8px;
-      min-width: 40px;
-
-      mat-icon {
-        font-size: 18px;
-        width: 18px;
-        height: 18px;
-        margin: 0;
-      }
-
-      span {
-        margin-left: 4px;
-        @media (max-width: 1300px) { display: none; }
-      }
-    }
   }
 
   .header-label {

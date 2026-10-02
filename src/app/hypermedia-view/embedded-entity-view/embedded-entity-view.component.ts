@@ -62,6 +62,14 @@ export class EmbeddedEntityViewComponent {
       });
     }
 
+  expandAll() {
+    this.panels().forEach(panel => panel.open());
+  }
+
+  collapseAll() {
+    this.panels().forEach(panel => panel.close());
+  }
+
   navigateHref(href: string) {
     this.hypermediaClient.Navigate(href);
   }
