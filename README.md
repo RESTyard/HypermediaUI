@@ -106,6 +106,12 @@ when set to ``true`` removes the following UI elements for a leaner experience:
 - Titles on embedded entities (since they are already shown in the entity list header)
 - Action names (since the title already defines which action is which)
 
+### ``showSearch``
+
+default: ``true``
+
+when set to ``false`` removes the search box from the toolbar above the entity view, regardless of the user's general settings.
+
 ### ``autoFollowActionLocationOnSuccess``
 
 default: ``false``

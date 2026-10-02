@@ -61,6 +61,7 @@ import {MatNativeDateModule} from '@angular/material/core';
 import {FileSizePipe} from '../common/pipes/file-size.pipe';
 import {allowEmptyArrayExtension} from "./formly-extensions";
 import {PropertyTreeComponent} from "./property-tree/property-tree.component";
+import {SearchHighlightComponent} from "./search/search-highlight.component";
 import {MatTree, MatTreeNode, MatTreeNodeDef, MatTreeNodePadding, MatTreeNodeToggle} from "@angular/material/tree";
 import {MatChipsModule} from '@angular/material/chips';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
@@ -70,6 +71,7 @@ import {MatSlideToggleModule} from '@angular/material/slide-toggle';
   declarations: [
     HypermediaControlComponent,
     PropertyTreeComponent,
+    SearchHighlightComponent,
     LinkViewComponent,
     EmbeddedEntityViewComponent,
     EntityViewComponent,

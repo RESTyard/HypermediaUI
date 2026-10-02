@@ -27,5 +27,10 @@
 
     </div>
 
-    <ngx-json-viewer class="jsonTree" [json]="rawObject" [expanded]="expand"></ngx-json-viewer>
+    @if (search.rawSegments(); as segments) {
+        <!-- plain text search: the json tree cannot mark text inside its nodes -->
+        <pre class="rawSearchText">@for (segment of segments; track $index) {@if (segment.target) {<mark class="search-mark" [attr.data-search-target]="segment.target" [class.current]="search.isCurrentTarget(segment.target)">{{segment.text}}</mark>} @else {<ng-container>{{segment.text}}</ng-container>}}</pre>
+    } @else {
+        <ngx-json-viewer class="jsonTree" [json]="rawObject" [expanded]="expand"></ngx-json-viewer>
+    }
 </div>

@@ -279,12 +279,65 @@ test('downloads non-Siren content', async ({ page }) => {
 
 test('searches nested properties in the tree', async ({ page }) => {
   await openEntryPoint(page);
-  await page.getByRole('switch').check();
   const search = page.getByPlaceholder('Search ...');
   await search.fill('needle-value');
   await expect(page.getByText('searchableProperty:', { exact: true })).toBeVisible();
   await expect(page.getByText('needle-value', { exact: true })).toBeVisible();
   await expect(page.locator('.match-counter')).toHaveText('1/1');
+});
+
+test('expands an embedded entity that contains a search hit', async ({ page }) => {
+  await openEntryPoint(page);
+  await page.getByPlaceholder('Search ...').fill('ready');
+  await expect(page.locator('mark', { hasText: 'ready' })).toBeVisible();
+  await expect(page.locator('.match-counter')).toHaveText('1/1');
+});
+
+test('steps through link relation hits with Enter and Shift+Enter', async ({ page }) => {
+  await openEntryPoint(page);
+  await page.getByRole('button', { name: 'Search options' }).click();
+  await page.getByRole('switch', { name: 'Link relations' }).check();
+  await page.keyboard.press('Escape');
+
+  const search = page.getByPlaceholder('Search ...');
+  await search.fill('plain');
+  await expect(page.locator('.match-counter')).toHaveText('1/2');
+  await search.press('Enter');
+  await expect(page.locator('.match-counter')).toHaveText('2/2');
+  await search.press('Shift+Enter');
+  await expect(page.locator('.match-counter')).toHaveText('1/2');
+  await expect(page.locator('.link-group.search-current')).toContainText('plain-json');
+});
+
+test('remembers search options after a reload', async ({ page }) => {
+  await openEntryPoint(page);
+  await page.getByRole('button', { name: 'Search options' }).click();
+  await page.getByRole('switch', { name: 'Actions' }).check();
+  await page.keyboard.press('Escape');
+
+  await page.reload();
+  await expect(page.getByText('Demo API', { exact: true })).toBeVisible();
+  await page.getByRole('button', { name: 'Search options' }).click();
+  await expect(page.getByRole('switch', { name: 'Actions' })).toBeChecked();
+});
+
+test('searches the raw view as plain text', async ({ page }) => {
+  await openEntryPoint(page);
+  await page.getByRole('radio', { name: 'Raw' }).check();
+  await page.getByPlaceholder('Search ...').fill('"class"');
+  await expect(page.locator('app-raw-view mark').first()).toHaveText('"class"');
+});
+
+test('hides the search when configured', async ({ page }) => {
+  await page.route('**/app.config.json', route => route.fulfill({
+    contentType: 'application/json',
+    body: JSON.stringify({
+      showSearch: false,
+      relationIconMapping: {}, httpMethodIconMapping: {}, actionPopupWarningConfigurations: [],
+    }),
+  }));
+  await openEntryPoint(page);
+  await expect(page.getByPlaceholder('Search ...')).toBeHidden();
 });
 
 test('navigates with breadcrumbs and recovers from an API error', async ({ page }) => {

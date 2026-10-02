@@ -1,15 +1,18 @@
 <div class="container">
-  @for (action of actions; track action) {
-    <div class="actionContainer">
+  @for (action of actions; track action; let idx = $index) {
+    <div class="actionContainer"
+         [attr.data-search-target]="actionTarget(entityKey, idx)"
+         [class.search-hit]="search.isHitTarget(actionTarget(entityKey, idx))"
+         [class.search-current]="search.isCurrentTarget(actionTarget(entityKey, idx))">
       @switch (action.actionType) {
         @case (ActionType.NoParameters) {
-          <app-parameterless-action-view [action]=action></app-parameterless-action-view>
+          <app-parameterless-action-view [action]=action [searchTarget]="actionTarget(entityKey, idx)"></app-parameterless-action-view>
         }
         @case ( ActionType.JsonObjectParameters) {
-          <app-parameter-action [action]=action></app-parameter-action>
+          <app-parameter-action [action]=action [searchTarget]="actionTarget(entityKey, idx)"></app-parameter-action>
         }
         @case (ActionType.FileUpload) {
-          <app-file-upload-action [action]=action></app-file-upload-action>
+          <app-file-upload-action [action]=action [searchTarget]="actionTarget(entityKey, idx)"></app-file-upload-action>
         }
       }
     </div>

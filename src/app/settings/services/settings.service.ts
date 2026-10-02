@@ -68,6 +68,8 @@ export class SettingsService {
       useEmbeddingPropertyForActionParameters: storageModel.useEmbeddingPropertyForActionParameters,
       showHostInformation: storageModel.showHostInformation,
       showPropertyTreeControls: storageModel.showPropertyTreeControls,
+      showSearch: storageModel.showSearch,
+      searchOptions: storageModel.searchOptions,
       actionExecutionTimeoutMs: storageModel.actionExecutionTimeoutMs,
     });
   }
@@ -107,6 +109,8 @@ export class SettingsService {
       useEmbeddingPropertyForActionParameters: appModel.useEmbeddingPropertyForActionParameters,
       showHostInformation: appModel.showHostInformation,
       showPropertyTreeControls: appModel.showPropertyTreeControls,
+      showSearch: appModel.showSearch,
+      searchOptions: appModel.searchOptions,
       actionExecutionTimeoutMs: appModel.actionExecutionTimeoutMs,
     };
   }

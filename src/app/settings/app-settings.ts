@@ -1,4 +1,5 @@
 import { Record, Map } from 'immutable'
+import { defaultSearchOptions, SearchOptions } from '../hypermedia-view/search/entity-search';
 
 export class Test extends Record({num: 1, other: false}) {}
 
@@ -15,6 +16,8 @@ export class GeneralSettings extends Record({
     useEmbeddingPropertyForActionParameters: true,
     showHostInformation: true,
     showPropertyTreeControls: true,
+    showSearch: true,
+    searchOptions: defaultSearchOptions as SearchOptions,
     actionExecutionTimeoutMs: 60000
 }) {}
 

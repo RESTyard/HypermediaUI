@@ -25,6 +25,7 @@ export class ParameterlessActionViewComponent {
   }>>(Store);
 
   @Input() action!: HypermediaAction;
+  @Input() searchTarget: string = '';
 
   ActionResultsEnum = ActionResults;
 

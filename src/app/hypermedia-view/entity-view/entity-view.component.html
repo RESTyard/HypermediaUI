@@ -1,26 +1,26 @@
 <div class="container">
 
   @if (showTitle) {
-    <div class="entityTitle">
-      {{title}}
+    <div class="entityTitle" [attr.data-search-target]="entityTitleTarget(entityKey)">
+      <app-search-highlight [text]="title" [target]="entityTitleTarget(entityKey)" field="title"></app-search-highlight>
     </div>
   }
 
   @if (GeneralSettings.showClasses) {
-    <div>Classes: {{classes}}</div>
+    <div [attr.data-search-target]="entityClassesTarget(entityKey)">Classes: <app-search-highlight [text]="classes" [target]="entityClassesTarget(entityKey)" field="classes"></app-search-highlight></div>
   }
 
-  <app-property-tree [propertyContainer]="properties" [showHeader]="GeneralSettings.showPropertyTreeControls"></app-property-tree>
+  <app-property-tree [propertyContainer]="properties" [showHeader]="GeneralSettings.showPropertyTreeControls" [entityKey]="entityKey"></app-property-tree>
 
   @if (GeneralSettings.showEmptyLinks || links.length > 0) {
-    <app-link-view [links]="links"></app-link-view>
+    <app-link-view [links]="links" [entityKey]="entityKey"></app-link-view>
   }
 
   @if (GeneralSettings.showEmptyActions || actions.length > 0) {
-    <app-actions-view [actions]="actions"></app-actions-view>
+    <app-actions-view [actions]="actions" [entityKey]="entityKey"></app-actions-view>
   }
 
   @if (GeneralSettings.showEmptyEntities || embeddedEntities.length > 0 || embeddedLinkEntities.length > 0) {
-    <app-embedded-entity-view [embeddedEntities]="embeddedEntities" [embeddedLinkEntities]="embeddedLinkEntities"></app-embedded-entity-view>
+    <app-embedded-entity-view [embeddedEntities]="embeddedEntities" [embeddedLinkEntities]="embeddedLinkEntities" [entityKey]="entityKey"></app-embedded-entity-view>
   }
 </div>

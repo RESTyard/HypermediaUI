@@ -52,19 +52,77 @@
 
   <span class="spacer"></span>
 
-  @if (GeneralSettings.showRawTab && !showRaw) {
-    <mat-slide-toggle
-      class="property-toggle"
-      [ngModel]="showPropertyTreeControls"
-      (change)="togglePropertyTreeControls($event.checked)"
-      color="primary"
-      matTooltip="Show property tree controls">
-      <mat-icon>tune</mat-icon>
-    </mat-slide-toggle>
+  @if (isSearchAvailable) {
+    <div class="search-box" [class.invalid]="search.queryError()">
+      <mat-icon class="search-icon">search</mat-icon>
+      <input type="text"
+             aria-label="Search"
+             placeholder="Search ..."
+             [value]="search.inputText()"
+             (input)="search.setInputText($any($event.target).value)"
+             (keydown.enter)="search.next()"
+             (keydown.shift.enter)="search.previous()"
+             [matTooltip]="search.queryError() ? 'Invalid regular expression: ' + search.queryError() : ''">
+
+      @if (search.inputText()) {
+        <span class="match-counter" [class.no-matches]="search.hits().length === 0">
+          {{ search.hits().length > 0 ? (search.currentIndex() + 1) + '/' + search.hits().length : '0' }}
+        </span>
+        <button mat-icon-button class="search-button" aria-label="Clear search" matTooltip="Clear search" (click)="search.clear()">
+          <mat-icon>close</mat-icon>
+        </button>
+      }
+
+      <button mat-icon-button
+              class="search-button"
+              [disabled]="search.hits().length === 0"
+              (click)="search.previous()"
+              aria-label="Previous hit"
+              matTooltip="Previous hit (Shift+Enter)">
+        <mat-icon>keyboard_arrow_up</mat-icon>
+      </button>
+      <button mat-icon-button
+              class="search-button"
+              [disabled]="search.hits().length === 0"
+              (click)="search.next()"
+              aria-label="Next hit"
+              matTooltip="Next hit (Enter)">
+        <mat-icon>keyboard_arrow_down</mat-icon>
+      </button>
+      <button mat-icon-button
+              class="search-button"
+              [matMenuTriggerFor]="searchOptionsMenu"
+              aria-label="Search options"
+              matTooltip="Search options">
+        <mat-icon>filter_list</mat-icon>
+      </button>
+    </div>
+
+    <mat-menu #searchOptionsMenu="matMenu">
+      <div class="search-options" tabindex="-1" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
+        <span class="search-options-title">Search in</span>
+        @for (option of searchScopeOptions; track option.key) {
+          <mat-slide-toggle color="primary"
+                            [checked]="search.options()[option.key]"
+                            [disabled]="option.entityOnly && search.rawMode()"
+                            (change)="setSearchOption(option.key, $event.checked)">
+            {{option.label}}
+          </mat-slide-toggle>
+        }
+        <mat-divider></mat-divider>
+        @for (option of searchModifierOptions; track option.key) {
+          <mat-slide-toggle color="primary"
+                            [checked]="search.options()[option.key]"
+                            (change)="setSearchOption(option.key, $event.checked)">
+            {{option.label}}
+          </mat-slide-toggle>
+        }
+      </div>
+    </mat-menu>
   }
 
   @if (GeneralSettings.showRawTab) {
-    <mat-button-toggle-group class="view-toggle" [(ngModel)]="showRaw" aria-label="View Mode">
+    <mat-button-toggle-group class="view-toggle" [ngModel]="showRaw" (ngModelChange)="setShowRaw($event)" aria-label="View Mode">
       <mat-button-toggle [value]="false">
         <mat-icon>grid_view</mat-icon>
         <span>UI</span>

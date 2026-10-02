@@ -1,5 +1,6 @@
 import { Component, Input, inject } from '@angular/core';
 import { ClipboardService } from 'ngx-clipboard';
+import { EntitySearchService } from '../search/entity-search.service';
 
 @Component({
     selector: 'app-raw-view',
@@ -9,6 +10,7 @@ import { ClipboardService } from 'ngx-clipboard';
 })
 export class RawViewComponent {
   private clipboardService = inject(ClipboardService);
+  protected search = inject(EntitySearchService);
 
   @Input() rawObject: any;
 

@@ -1,3 +1,5 @@
+import { defaultSearchOptions, SearchOptions } from '../../hypermedia-view/search/entity-search';
+
 export class AppSettingsStorageModel {
     GeneralSettings: GeneralSettingsStorageModel = new GeneralSettingsStorageModel();
     SiteSettings: SiteSettingsStorageModel = new SiteSettingsStorageModel();
@@ -14,6 +16,11 @@ export class AppSettingsStorageModel {
         if (this.GeneralSettings.showPropertyTreeControls === undefined) {
             this.GeneralSettings.showPropertyTreeControls = true;
         }
+        if (this.GeneralSettings.showSearch === undefined) {
+            this.GeneralSettings.showSearch = true;
+        }
+        // options added later keep their default
+        this.GeneralSettings.searchOptions = { ...defaultSearchOptions, ...this.GeneralSettings.searchOptions };
     }
 }
 
@@ -41,6 +48,10 @@ export class GeneralSettingsStorageModel {
     showHostInformation: boolean = true;
 
     showPropertyTreeControls: boolean = true;
+
+    showSearch: boolean = true;
+
+    searchOptions: SearchOptions = defaultSearchOptions;
 
     actionExecutionTimeoutMs: number = 60000;
 }
