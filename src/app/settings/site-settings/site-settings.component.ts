@@ -1,9 +1,12 @@
-import { Component, EventEmitter, Input, OnInit, Output, inject } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
+import { Component, ElementRef, EventEmitter, Input, OnInit, Output, inject, viewChild } from '@angular/core';
+import { MatExpansionPanel } from '@angular/material/expansion';
+import { AbstractControl, FormBuilder, FormControl, FormGroup } from '@angular/forms';
+import { ErrorStateMatcher } from '@angular/material/core';
 import { AppSettings, SiteSetting } from '../app-settings';
 import { Store } from '@ngrx/store';
 import { addHeader, removeHeader, updateHeader, updateSiteUrl } from 'src/app/store/appsettings.actions';
 import {Unit} from "../../utils/unit";
+import { siteHostValidator } from './site-host.validator';
 
 @Component({
     selector: 'app-site-settings',
@@ -21,24 +24,34 @@ export class SiteSettingsComponent implements OnInit {
   @Input() urlEditable: boolean = true;
   @Input() canBeDeleted: boolean = true;
   @Input() headline: string = "";
+  @Input() isGlobal: boolean = false;
+  /** Hosts of all site specific settings, to reject duplicates. */
+  @Input() siteUrls: string[] = [];
 
   @Output() deleteRequested: EventEmitter<Unit> = new EventEmitter<Unit>();
   @Output() siteUrlChanging = new EventEmitter<{ previousSiteUrl: string, newSiteUrl: string }>();
   public urlFormControl: FormControl = new FormControl();
   headerFormGroups: FormGroup[] = [];
+  private panel = viewChild.required(MatExpansionPanel);
+  private hostInput = viewChild<ElementRef<HTMLInputElement>>('hostInput');
+  /** Shows host errors while typing, not only after leaving the field. */
+  readonly hostErrorStateMatcher: ErrorStateMatcher = {
+    isErrorState: (control: AbstractControl | null) => !!control && control.invalid && (control.dirty || control.touched),
+  };
 
   ngOnInit(): void {
     if (!this.siteSetting) {
       this.siteSetting = new SiteSetting();
     }
 
-    this.urlFormControl = new FormControl(this.siteSetting!.siteUrl, { updateOn: 'blur' });
-
-    this.urlFormControl.valueChanges.subscribe(v => {
-      v = v.trim();
-      this.siteUrlChanging.emit({ previousSiteUrl: this.siteSetting!.siteUrl, newSiteUrl: v });
-      this.store.dispatch(updateSiteUrl({ previousSiteUrl: this.siteSetting!.siteUrl, newSiteUrl: v}));
+    this.urlFormControl = new FormControl(this.siteSetting!.siteUrl, {
+      validators: siteHostValidator(() => this.siteUrls.filter(url => url !== this.siteSetting!.siteUrl)),
     });
+    // show problems of stored hosts right away, except for a site that was just added
+    if (this.siteSetting.siteUrl !== "" && this.urlFormControl.invalid) {
+      this.urlFormControl.markAsTouched();
+    }
+
 
     const headers = this.siteSetting.headers;
     this.headerFormGroups = Array
@@ -53,9 +66,9 @@ export class SiteSettingsComponent implements OnInit {
     keyControl.valueChanges.subscribe(v => {
       v = (v ?? "").trim();
       if (key === "") {
-        this.store.dispatch(addHeader({ siteUrl: this.siteSetting!.siteUrl, key: v, value: value }));
+        this.store.dispatch(addHeader({ siteUrl: this.storeSiteUrl, key: v, value: value }));
       } else {
-        this.store.dispatch(updateHeader({ siteUrl: this.siteSetting!.siteUrl, previousKey: key, newKey: v, newValue: value }));
+        this.store.dispatch(updateHeader({ siteUrl: this.storeSiteUrl, previousKey: key, newKey: v, newValue: value }));
       }
       key = v;
     });
@@ -64,7 +77,7 @@ export class SiteSettingsComponent implements OnInit {
     valueControl.valueChanges.subscribe(v => {
       v = (v ?? "").trim();
       if (key !== "") {
-        this.store.dispatch(updateHeader({ siteUrl: this.siteSetting!.siteUrl, previousKey: key, newKey: key, newValue: v }));
+        this.store.dispatch(updateHeader({ siteUrl: this.storeSiteUrl, previousKey: key, newKey: key, newValue: v }));
       }
       value = v;
     });
@@ -76,6 +89,25 @@ export class SiteSettingsComponent implements OnInit {
     return result;
   }
 
+  focusHost() {
+    this.panel().open();
+    // the input can only take the focus once the opened panel shows it
+    setTimeout(() => this.hostInput()?.nativeElement.focus());
+  }
+
+  /** Stores the host when leaving the field. An invalid host is not stored, the previous one stays in effect. */
+  commitHost() {
+    if (this.urlFormControl.invalid) return;
+    const host = (this.urlFormControl.value as string).trim();
+    if (host === this.siteSetting!.siteUrl) return;
+    this.siteUrlChanging.emit({ previousSiteUrl: this.siteSetting!.siteUrl, newSiteUrl: host });
+    this.store.dispatch(updateSiteUrl({ previousSiteUrl: this.siteSetting!.siteUrl, newSiteUrl: host }));
+  }
+
+  private get storeSiteUrl(): string | null {
+    return this.isGlobal ? null : this.siteSetting!.siteUrl;
+  }
+
   addHeader() {
     this.headerFormGroups.push(this.AddHeaderFormControl(["", ""]));
   }
@@ -84,7 +116,7 @@ export class SiteSettingsComponent implements OnInit {
   removeHeader(index: number) {
     const key = ((this.headerFormGroups[index]?.value.key as string | null) ?? "").trim();
     if (key !== "" && this.siteSetting!.headers.has(key)) {
-      this.store.dispatch(removeHeader({ siteUrl: this.siteSetting!.siteUrl, key }));
+      this.store.dispatch(removeHeader({ siteUrl: this.storeSiteUrl, key }));
     }
     this.headerFormGroups.splice(index, 1);
   }

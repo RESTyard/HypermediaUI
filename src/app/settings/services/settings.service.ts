@@ -138,7 +138,7 @@ export class SettingsService {
   }
 
   getHeadersForSite(requestSiteHost: string): HeaderSettingStorageModel[] {
-    const specificSettings = this.CurrentSettings.SiteSettings.SiteSpecificSettings.filter(site => site.SiteUrl.trim() != '' && site.SiteUrl === requestSiteHost);
+    const specificSettings = this.CurrentSettings.SiteSettings.SiteSpecificSettings.filter(site => site.SiteUrl.trim() != '' && site.SiteUrl.trim().toLowerCase() === requestSiteHost);
     // we should only find one site
     if (specificSettings.length > 1) {
       throw new ProblemDetailsError({

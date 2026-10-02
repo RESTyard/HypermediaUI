@@ -1,4 +1,5 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, viewChildren } from '@angular/core';
+import { SiteSettingsComponent } from '../site-settings/site-settings.component';
 import {FormControl} from '@angular/forms';
 import { AppSettings, SiteSetting, SiteSettings } from '../app-settings';
 import { Store } from '@ngrx/store';
@@ -24,6 +25,8 @@ export class SiteSettingsPageComponent {
    * Sorting by id keeps a renamed site in place.
    */
   sites: { id: number, setting: SiteSetting }[] = [];
+  siteUrls: string[] = [];
+  private siteComponents = viewChildren(SiteSettingsComponent);
   private siteIds = new Map<string, number>();
   private nextSiteId = 0;
 
@@ -40,8 +43,17 @@ export class SiteSettingsPageComponent {
       })
    }
 
+  // sites are keyed by host, so there can be only one new site without a host; it is opened for entering the host
   addSite(): void {
-    this.store.dispatch(addSite({ siteUrl: "" }));
+    if (!this.findNewSite()) {
+      this.store.dispatch(addSite({ siteUrl: "" }));
+    }
+    // the panel of a just added site is rendered with the next change detection
+    setTimeout(() => this.findNewSite()?.focusHost());
+  }
+
+  private findNewSite(): SiteSettingsComponent | undefined {
+    return this.siteComponents().find(c => !c.isGlobal && c.siteSetting?.siteUrl === "");
   }
 
   removeSite(siteUrl: string): void {
@@ -58,7 +70,8 @@ export class SiteSettingsPageComponent {
 
   private updateSites() {
     const settings = Array.from(this.siteSettings.siteSpecificSettings.values());
-    const urls = new Set(settings.map(s => s.siteUrl));
+    this.siteUrls = settings.map(s => s.siteUrl);
+    const urls = new Set(this.siteUrls);
     for (const url of Array.from(this.siteIds.keys())) {
       if (!urls.has(url)) this.siteIds.delete(url);
     }

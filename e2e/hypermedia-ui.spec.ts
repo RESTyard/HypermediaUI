@@ -557,7 +557,7 @@ test('keeps a site settings panel open and the focus while editing it', async ({
 
   const site = page.locator('app-site-settings').nth(1);
   const header = site.locator('mat-expansion-panel-header');
-  await header.click();
+  await expect(header).toHaveAttribute('aria-expanded', 'true');
   await site.getByRole('textbox', { name: 'Host' }).fill('api.test');
   await site.locator('#headersTitle').click();
   await expect(header).toHaveAttribute('aria-expanded', 'true');
@@ -575,4 +575,92 @@ test('keeps a site settings panel open and the focus while editing it', async ({
 
   await site.locator('.deleteHeader').click();
   await expect(site.getByRole('textbox', { name: 'Key' })).toHaveCount(0);
+});
+
+async function openSiteSettings(page: import('@playwright/test').Page) {
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Settings' }).click();
+  await page.getByRole('tab', { name: 'Sites' }).click();
+}
+
+async function addHeaderSetting(site: import('@playwright/test').Locator, key: string, value: string) {
+  await site.locator('#addHeaderButton').click();
+  await site.getByRole('textbox', { name: 'Key' }).last().fill(key);
+  await site.getByRole('textbox', { name: 'Value' }).last().fill(value);
+  await site.locator('#headersTitle').click();
+}
+
+test('sends global and site specific headers', async ({ page }) => {
+  await openSiteSettings(page);
+  const global = page.locator('app-site-settings').first();
+  await global.locator('mat-expansion-panel-header').click();
+  await addHeaderSetting(global, 'X-Global', 'g1');
+
+  await page.getByRole('button', { name: 'Add site' }).click();
+  const site = page.locator('app-site-settings').nth(1);
+  await expect(site.locator('mat-expansion-panel-header')).toHaveAttribute('aria-expanded', 'true');
+  await site.getByRole('textbox', { name: 'Host' }).fill('API.test');
+  await addHeaderSetting(site, 'X-Site', 's1');
+  await expect(page.locator('app-error-dialog')).toHaveCount(0);
+  await page.keyboard.press('Escape');
+
+  await expect(page.getByText('Settings saved.')).toBeVisible();
+  const request = page.waitForRequest(`${api}/entrypoint`);
+  await openEntryPoint(page);
+  const headers = (await request).headers();
+  expect(headers['x-global']).toBe('g1');
+  expect(headers['x-site']).toBe('s1');
+});
+
+test('accepts only a host for site specific settings', async ({ page }) => {
+  await openSiteSettings(page);
+  await page.getByRole('button', { name: 'Add site' }).click();
+  const site = page.locator('app-site-settings').nth(1);
+  const header = site.locator('mat-expansion-panel-header');
+  await expect(header).toHaveAttribute('aria-expanded', 'true');
+  const host = site.getByRole('textbox', { name: 'Host' });
+
+  await expect(host).toHaveAttribute('placeholder', 'Host or IP, optional port');
+  await host.pressSequentially('https://api.test/entrypoint');
+  // validated while typing
+  await expect(site.locator('mat-error')).toHaveText('Enter the host without scheme: api.test');
+  await site.locator('#headersTitle').click();
+  await expect(header).not.toContainText('api.test');
+
+  await host.fill('api.test/entrypoint');
+  await site.locator('#headersTitle').click();
+  await expect(site.locator('mat-error')).toHaveText('Enter the host without path, query or fragment: api.test');
+
+  await host.fill('api.test:8080');
+  await site.locator('#headersTitle').click();
+  await expect(site.locator('mat-error')).toHaveCount(0);
+  await expect(header).toContainText('api.test:8080');
+
+  // an invalid host is never stored, closing the settings discards it
+  await host.fill('https://other.test');
+  await site.locator('#headersTitle').click();
+  await page.keyboard.press('Escape');
+  await expect(page.getByText('Settings saved.')).toBeVisible();
+  expect(await page.evaluate(() => localStorage.getItem('appSettings'))).not.toContain('other.test');
+  await page.getByRole('button', { name: 'Settings' }).click();
+  await page.getByRole('tab', { name: 'Sites' }).click();
+  await page.locator('app-site-settings').nth(1).locator('mat-expansion-panel-header').click();
+  await expect(page.locator('app-site-settings').nth(1).getByRole('textbox', { name: 'Host' })).toHaveValue('api.test:8080');
+});
+
+test('opens a new site for entering its host and does not add a second one without host', async ({ page }) => {
+  await openSiteSettings(page);
+  await page.getByRole('button', { name: 'Add site' }).click();
+  const newSite = page.locator('app-site-settings').nth(1);
+  await expect(newSite.locator('mat-expansion-panel-header')).toHaveAttribute('aria-expanded', 'true');
+  await expect(newSite.getByRole('textbox', { name: 'Host' })).toBeFocused();
+
+  await newSite.locator('mat-expansion-panel-header').click();
+  await page.getByRole('button', { name: 'Add site' }).click();
+
+  await expect(page.locator('app-site-settings')).toHaveCount(2);
+  await expect(page.locator('app-error-dialog')).toHaveCount(0);
+  const site = page.locator('app-site-settings').nth(1);
+  await expect(site.locator('mat-expansion-panel-header')).toHaveAttribute('aria-expanded', 'true');
+  await expect(site.getByRole('textbox', { name: 'Host' })).toBeFocused();
 });

@@ -29,7 +29,7 @@ export const appSettingsReducer = createReducer(
         return setSiteSettings(state, newMap);
     }),
     on(updateHeader, (state, props) => {
-        const existingSiteSpecificEntry = state.siteSettings.siteSpecificSettings.get(props.siteUrl);
+        const existingSiteSpecificEntry = getSite(state, props.siteUrl);
         if (existingSiteSpecificEntry === undefined) {
             throw new Error("site url not present");
         }
@@ -41,7 +41,7 @@ export const appSettingsReducer = createReducer(
         return setHeaders(state, props.siteUrl, updatedMap);
     }),
     on(addHeader, (state, props) => {
-        const existingSiteSpecificEntry = state.siteSettings.siteSpecificSettings.get(props.siteUrl);
+        const existingSiteSpecificEntry = getSite(state, props.siteUrl);
         if (existingSiteSpecificEntry === undefined) {
             throw new Error("site url not present");
         }
@@ -53,7 +53,7 @@ export const appSettingsReducer = createReducer(
         return setHeaders(state, props.siteUrl, updatedMap);
     }),
     on(removeHeader, (state, props) => {
-        const existingSiteSpecificEntry = state.siteSettings.siteSpecificSettings.get(props.siteUrl);
+        const existingSiteSpecificEntry = getSite(state, props.siteUrl);
         if (existingSiteSpecificEntry === undefined) {
             throw new Error("site url not present");
         }
@@ -76,8 +76,14 @@ export const appSettingsReducer = createReducer(
     })
 );
 
-const setHeaders = (state: AppSettings, siteUrl: string, headers: Map<string, string>): AppSettings => {
-  const updatedEntry = state.siteSettings.siteSpecificSettings.get(siteUrl)!.set("headers", headers);
+const getSite = (state: AppSettings, siteUrl: string | null): SiteSetting | undefined =>
+  siteUrl === null ? state.siteSettings.globalSiteSettings : state.siteSettings.siteSpecificSettings.get(siteUrl);
+
+const setHeaders = (state: AppSettings, siteUrl: string | null, headers: Map<string, string>): AppSettings => {
+  const updatedEntry = getSite(state, siteUrl)!.set("headers", headers);
+  if (siteUrl === null) {
+    return state.set("siteSettings", state.siteSettings.set("globalSiteSettings", updatedEntry));
+  }
   return setSite(state, siteUrl, updatedEntry);
 }
 

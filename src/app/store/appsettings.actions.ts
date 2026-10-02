@@ -17,17 +17,18 @@ export const updateSiteUrl = createAction(
     '[AppSettings]->[SiteSettings] UpdateSiteUrl',
     props<{ previousSiteUrl: string, newSiteUrl: string }>());
 
+/** In the header actions, siteUrl null addresses the global site settings. */
 export const updateHeader = createAction(
     '[AppSettings]->[SiteSettings] UpdateHeader',
-    props<{ siteUrl: string, previousKey: string, newKey: string, newValue: string}>());
+    props<{ siteUrl: string | null, previousKey: string, newKey: string, newValue: string}>());
 
 export const addHeader = createAction(
     '[AppSettings]->[SiteSettings] AddHeader',
-    props<{ siteUrl: string, key: string, value: string }>());
+    props<{ siteUrl: string | null, key: string, value: string }>());
 
 export const removeHeader = createAction(
     '[AppSettings]->[SiteSettings] RemoveHeader',
-    props<{ siteUrl: string, key: string }>());
+    props<{ siteUrl: string | null, key: string }>());
 
 export const addSite = createAction(
     '[AppSettings]->[SiteSettings] AddSite',

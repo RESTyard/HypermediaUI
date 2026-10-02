@@ -14,10 +14,10 @@
   @if (urlEditable) {
     <mat-expansion-panel-header>
       <mat-panel-title>
-        @if (!this.urlFormControl.value) {
+        @if (!siteSetting?.siteUrl) {
           <span class="hostTitle newHostInfo">Host</span>
         }
-        <span class="hostTitle">{{this.urlFormControl.value}}</span>
+        <span class="hostTitle">{{siteSetting?.siteUrl}}</span>
         <span class="spacer"></span>
         @if (canBeDeleted) {
           <mat-icon matTooltip="Delete site specific settings" fontSet="material-icons-outlined" id="deleteSiteButton" (click)="removeSite()">delete</mat-icon>
@@ -32,7 +32,11 @@
         <mat-label>
           Host
         </mat-label>
-        <input type="text" matInput [formControl]="this.urlFormControl">
+        <input #hostInput type="text" matInput [formControl]="this.urlFormControl" [errorStateMatcher]="hostErrorStateMatcher"
+               (blur)="commitHost()" placeholder="Host or IP, optional port">
+        @if (urlFormControl.hasError('siteHost')) {
+          <mat-error>{{urlFormControl.getError('siteHost')}}</mat-error>
+        }
       </mat-form-field>
     }
     <span class="flexSpacer"></span>
