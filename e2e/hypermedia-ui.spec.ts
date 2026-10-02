@@ -263,6 +263,66 @@ test('shows raw Siren data and embedded entities', async ({ page }) => {
   await expect(page.getByText('Customer 42', { exact: true })).toBeVisible();
 });
 
+test('navigates between top level embedded entities with keys, buttons and clicks', async ({ page }) => {
+  await openEntryPoint(page);
+  const navigation = page.getByRole('navigation', { name: 'Page navigation' });
+  const summary = page.locator('mat-expansion-panel', { hasText: 'Embedded summary' });
+  const linkedCustomer = page.locator('mat-card', { hasText: 'Linked customer' });
+  const current = page.locator('.embedded-nav-current');
+  await page.evaluate(() => (document.activeElement as HTMLElement | null)?.blur());
+
+  await expect(current).toHaveCount(0);
+  // collapsed to a handle until hovered
+  const buttonsWidth = async () => (await navigation.locator('.buttons').boundingBox())?.width ?? 0;
+  await expect.poll(buttonsWidth).toBe(0);
+  await navigation.hover();
+  await expect.poll(buttonsWidth).toBe(4 * 40 + 3 * 4);
+  const buttonsBox = await navigation.locator('.buttons').boundingBox();
+  const bottomButtonBox = await navigation.getByRole('button', { name: 'To bottom' }).boundingBox();
+  expect(bottomButtonBox!.x + bottomButtonBox!.width).toBeLessThanOrEqual(buttonsBox!.x + buttonsBox!.width + 0.5);
+  await page.mouse.move(0, 0);
+  await page.keyboard.press('ArrowDown');
+  await expect(summary).toHaveClass(/embedded-nav-current/);
+  const summaryHeader = summary.locator('mat-expansion-panel-header').first();
+  await page.keyboard.press('Enter');
+  await expect(summaryHeader).toHaveAttribute('aria-expanded', 'true');
+  await page.keyboard.press('Enter');
+  await expect(summaryHeader).toHaveAttribute('aria-expanded', 'false');
+  await summaryHeader.hover();
+  await expect(page.locator('.mat-mdc-tooltip')).toHaveText('Expand / collapse (Enter while selected)');
+  await page.mouse.move(0, 0);
+  await page.keyboard.press('ArrowDown');
+  await expect(linkedCustomer).toHaveClass(/embedded-nav-current/);
+  await expect(navigation.getByRole('button', { name: 'Next embedded entity' })).toBeDisabled();
+
+  await navigation.hover();
+  await navigation.getByRole('button', { name: 'Previous embedded entity' }).click();
+  await expect(summary).toHaveClass(/embedded-nav-current/);
+  // Enter toggles the current item instead of pressing the clicked footer button again
+  await page.keyboard.press('Enter');
+  await expect(summaryHeader).toHaveAttribute('aria-expanded', 'true');
+  await expect(summary).toHaveClass(/embedded-nav-current/);
+  await page.keyboard.press('Enter');
+  await expect(summaryHeader).toHaveAttribute('aria-expanded', 'false');
+
+  await linkedCustomer.getByText('Linked customer', { exact: true }).click();
+  await expect(linkedCustomer).toHaveClass(/embedded-nav-current/);
+  await expect(current).toHaveCount(1);
+
+  await page.getByText('welcome:', { exact: true }).click();
+  await expect(current).toHaveCount(0);
+
+  await navigation.hover();
+  await navigation.getByRole('button', { name: 'To bottom' }).click();
+  await expect(linkedCustomer).toHaveClass(/embedded-nav-current/);
+  await page.keyboard.press('Home');
+  await expect(summary).toHaveClass(/embedded-nav-current/);
+
+  await page.getByRole('link', { name: 'customer', exact: true }).click();
+  await expect(page.getByText('Customer 42', { exact: true })).toBeVisible();
+  await expect(navigation).toHaveCount(0);
+});
+
 test('expands and collapses all embedded entities of a level', async ({ page }) => {
   await openEntryPoint(page);
   const status = page.getByText('ready', { exact: true });

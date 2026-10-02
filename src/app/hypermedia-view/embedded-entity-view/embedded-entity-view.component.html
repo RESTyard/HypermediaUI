@@ -12,8 +12,14 @@
   </div>
 
   @for (embeddedEntity of embeddedEntities; track embeddedEntity; let idx = $index) {
-    <mat-expansion-panel  class="entityExpander" >
+    <mat-expansion-panel class="entityExpander"
+                         [attr.data-embedded-nav-index]="isTopLevel ? idx : null"
+                         [class.embedded-nav-current]="isTopLevel && navigation.currentIndex() === idx"
+                         (pointerdown)="selectForNavigation(idx)"
+                         (focusin)="selectForNavigation(idx)">
       <mat-expansion-panel-header
+        [matTooltip]="isTopLevel ? 'Expand / collapse (Enter while selected)' : ''"
+        matTooltipShowDelay="500"
         [attr.data-search-target]="embeddedHeaderTarget(embeddedEntityKey(entityKey, idx))"
         [class.search-hit]="search.isHitTarget(embeddedHeaderTarget(embeddedEntityKey(entityKey, idx)))"
         [class.search-current]="search.isCurrentTarget(embeddedHeaderTarget(embeddedEntityKey(entityKey, idx)))">
@@ -47,6 +53,10 @@
 
   @for (embeddedLinkEntity of embeddedLinkEntities; track embeddedLinkEntity; let idx = $index) {
     <mat-card appearance="outlined" class="embeddedLinkEntityCard"
+              [attr.data-embedded-nav-index]="isTopLevel ? idx + embeddedEntities.length : null"
+              [class.embedded-nav-current]="isTopLevel && navigation.currentIndex() === idx + embeddedEntities.length"
+              (pointerdown)="selectForNavigation(idx + embeddedEntities.length)"
+              (focusin)="selectForNavigation(idx + embeddedEntities.length)"
               [attr.data-search-target]="embeddedLinkEntityTarget(entityKey, idx)"
               [class.search-hit]="search.isHitTarget(embeddedLinkEntityTarget(entityKey, idx))"
               [class.search-current]="search.isCurrentTarget(embeddedLinkEntityTarget(entityKey, idx))">

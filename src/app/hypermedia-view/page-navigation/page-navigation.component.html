@@ -1,0 +1,30 @@
+@if (navigation.itemCount() > 0) {
+  <!-- room below the last content, so the floating buttons do not cover it -->
+  <div class="bottom-space"></div>
+  <nav class="page-navigation" aria-label="Page navigation">
+    <!-- collapsed state; the buttons expand on hover or when focused -->
+    <mat-icon class="handle" aria-hidden="true">swap_vert</mat-icon>
+    <div class="buttons">
+      <button mat-icon-button
+              [disabled]="!navigation.canGoPrevious()"
+              (click)="navigation.previous(); releaseFocus($event)"
+              aria-label="Previous embedded entity"
+              matTooltip="Previous embedded entity (Arrow up)">
+        <mat-icon>keyboard_arrow_up</mat-icon>
+      </button>
+      <button mat-icon-button
+              [disabled]="!navigation.canGoNext()"
+              (click)="navigation.next(); releaseFocus($event)"
+              aria-label="Next embedded entity"
+              matTooltip="Next embedded entity (Arrow down)">
+        <mat-icon>keyboard_arrow_down</mat-icon>
+      </button>
+      <button mat-icon-button (click)="navigation.toTop(); releaseFocus($event)" aria-label="Back to top" matTooltip="Back to top (Home)">
+        <mat-icon>arrow_upward</mat-icon>
+      </button>
+      <button mat-icon-button (click)="navigation.toBottom(); releaseFocus($event)" aria-label="To bottom" matTooltip="To bottom (End)">
+        <mat-icon>arrow_downward</mat-icon>
+      </button>
+    </div>
+  </nav>
+}

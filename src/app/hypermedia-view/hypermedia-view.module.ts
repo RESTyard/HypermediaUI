@@ -62,6 +62,7 @@ import {FileSizePipe} from '../common/pipes/file-size.pipe';
 import {allowEmptyArrayExtension} from "./formly-extensions";
 import {PropertyTreeComponent} from "./property-tree/property-tree.component";
 import {SearchHighlightComponent} from "./search/search-highlight.component";
+import {PageNavigationComponent} from "./page-navigation/page-navigation.component";
 import {MatTree, MatTreeNode, MatTreeNodeDef, MatTreeNodePadding, MatTreeNodeToggle} from "@angular/material/tree";
 import {MatChipsModule} from '@angular/material/chips';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
@@ -72,6 +73,7 @@ import {MatSlideToggleModule} from '@angular/material/slide-toggle';
     HypermediaControlComponent,
     PropertyTreeComponent,
     SearchHighlightComponent,
+    PageNavigationComponent,
     LinkViewComponent,
     EmbeddedEntityViewComponent,
     EntityViewComponent,

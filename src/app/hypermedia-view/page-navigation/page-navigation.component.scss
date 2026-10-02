@@ -1,0 +1,60 @@
+$size: 40px;
+$gap: 4px;
+
+.bottom-space {
+  height: 72px;
+}
+
+.page-navigation {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  min-width: $size;
+  min-height: $size;
+  padding: 4px;
+  box-sizing: border-box;
+  border-radius: 24px;
+  background: #fff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+  opacity: 0.75;
+  transition: opacity 0.2s ease;
+
+  .handle {
+    margin: 0 4px;
+    color: #666;
+  }
+
+  .buttons {
+    display: flex;
+    gap: $gap;
+    max-width: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: max-width 0.2s ease, opacity 0.2s ease;
+
+    // fixed size, so the expanded width below fits exactly (icon buttons default to 48px)
+    button {
+      width: $size;
+      height: $size;
+      padding: 8px;
+      flex-shrink: 0;
+    }
+  }
+
+  &:hover,
+  &:focus-within {
+    opacity: 1;
+
+    .handle {
+      display: none;
+    }
+
+    .buttons {
+      max-width: 4 * $size + 3 * $gap;
+      opacity: 1;
+    }
+  }
+}

@@ -16,6 +16,7 @@ import {GlobalNavigationEvents} from "../../global-navigation.events";
 import {EntitySearchService} from "../search/entity-search.service";
 import {SearchOptions} from "../search/entity-search";
 import {SettingsService} from "../../settings/services/settings.service";
+import {EmbeddedNavigationService} from "../page-navigation/embedded-navigation.service";
 
 interface SearchOptionDefinition {
   key: keyof SearchOptions;
@@ -37,6 +38,7 @@ export class HypermediaControlComponent implements OnInit, OnDestroy {
   private authService = inject(AuthService);
   protected search = inject(EntitySearchService);
   private settingsService = inject(SettingsService);
+  private embeddedNavigation = inject(EmbeddedNavigationService);
   private store = inject<Store<{
     appSettings: AppSettings;
     appConfig: AppConfig;
@@ -89,6 +91,7 @@ export class HypermediaControlComponent implements OnInit, OnDestroy {
           this.search.showClasses.set(generalSettings.showClasses);
           this.search.setOptions(generalSettings.searchOptions);
           this.updateSearchMode();
+          this.updateEmbeddedNavigation();
         },
       });
     store
@@ -142,6 +145,8 @@ export class HypermediaControlComponent implements OnInit, OnDestroy {
     this.hypermediaClient.getHypermediaObjectStream().subscribe((hto) => {
       this.hto = hto;
       this.search.setEntity(hto);
+      this.embeddedNavigation.reset();
+      this.updateEmbeddedNavigation();
     });
 
     this.hypermediaClient.getHypermediaObjectRawStream().subscribe((rawResponse) => {
@@ -151,6 +156,7 @@ export class HypermediaControlComponent implements OnInit, OnDestroy {
 
     this.hypermediaClient.getContentTypeStream().subscribe((contentType) => {
       this.contentType = contentType;
+      this.updateEmbeddedNavigation();
     });
 
     this.hypermediaClient.getNavPathsStream().subscribe((navPaths) => {
@@ -224,6 +230,16 @@ export class HypermediaControlComponent implements OnInit, OnDestroy {
   public setShowRaw(showRaw: boolean) {
     this.showRaw = showRaw;
     this.updateSearchMode();
+    this.updateEmbeddedNavigation();
+  }
+
+  private updateEmbeddedNavigation() {
+    const isEntityViewShown = !(this.GeneralSettings.showRawTab && this.showRaw)
+      && (!this.contentType || this.contentType.toLowerCase() === MediaTypes.Siren.toLowerCase());
+    const itemCount = isEntityViewShown
+      ? this.hto.embeddedEntities.length + this.hto.embeddedLinkEntities.length
+      : 0;
+    this.embeddedNavigation.setItemCount(itemCount);
   }
 
   private updateSearchMode() {

@@ -110,3 +110,13 @@
 ::ng-deep div.mat-expansion-panel-body {
   padding: defaults.$spacing;
 }
+
+// the item the page navigation points at
+.embedded-nav-current {
+  outline: 2px solid #90caf9;
+  outline-offset: 2px;
+}
+
+[data-embedded-nav-index] {
+  scroll-margin-top: 8px;
+}
