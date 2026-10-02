@@ -15,6 +15,14 @@
   </mat-expansion-panel-header>
 
   <ng-template matExpansionPanelContent>
+    @if (action.waheActionParameterJsonSchema) {
+      <form [formGroup]="form">
+        <div class="form-content">
+          <formly-form [fields]="formlyFields" [form]="form" [model]="model"></formly-form>
+        </div>
+      </form>
+    }
+
     <ngx-dropzone class="dropzone-container"
       [multiple]="action.FileUploadConfiguration.AllowMultiple"
       [maxFileSize]="action.FileUploadConfiguration.MaxFileSizeBytes > -1 ? action.FileUploadConfiguration.MaxFileSizeBytes : 0"
@@ -41,9 +49,9 @@
 
     <div class="button-row">
       <!--place tooltip in parent because it does not work when button is disabled-->
-      <span matTooltip="Please select a file." [matTooltipDisabled]="this.hasFiles()">
+      <span matTooltip="Please select a file and complete all required fields." [matTooltipDisabled]="this.canSubmit()">
         <button (click)="onSubmit()"
-          [disabled]="!this.hasFiles()"
+          [disabled]="!this.canSubmit()"
           mat-flat-button
           class="submit-button"
           color="primary">

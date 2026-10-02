@@ -230,6 +230,11 @@ export class SirenDeserializer {
       throw new Error(`no property fields of type array found, which is required. [action ${action.name}]`);
     }
 
+    if (action.type === MediaTypes.FormData) {
+      this.parseMultipartFormDataParameters(action, hypermediaAction);
+      return;
+    }
+
     if (action.fields.length !== 1) {
       throw new Error(`Action field may only contain one entry. [action ${action.name}]`);
     }
@@ -258,6 +263,39 @@ export class SirenDeserializer {
 
   }
 
+  private parseMultipartFormDataParameters(action: any, hypermediaAction: HypermediaAction) {
+    const fileFields = action.fields.filter((field: any) => field.type === SirenDeserializer.httpInputTypeFile);
+    const jsonFields = action.fields.filter((field: any) => field.type === MediaTypes.Json);
+
+    if (fileFields.length !== 1 || jsonFields.length > 1 || fileFields.length + jsonFields.length !== action.fields.length) {
+      throw new Error(`Multipart action must contain one file field and at most one JSON field. [action ${action.name}]`);
+    }
+
+    const fileField = fileFields[0];
+    if (!fileField.name) {
+      throw new Error(`Action field must contain a name. [action ${action.name}]`);
+    }
+
+    hypermediaAction.fileParameterName = fileField.name;
+    hypermediaAction.fieldType = fileField.type;
+    this.FillFileUploadInformation(hypermediaAction, action, fileField);
+
+    if (jsonFields.length === 0) {
+      return;
+    }
+
+    const jsonField = jsonFields[0];
+    if (!jsonField.name) {
+      throw new Error(`Action field must contain a name. [action ${action.name}]`);
+    }
+
+    hypermediaAction.waheActionParameterName = jsonField.name;
+    if (jsonField.class) {
+      hypermediaAction.waheActionParameterClasses = [...jsonField.class];
+    }
+    this.FillJsonParameterInformation(hypermediaAction, action, jsonField, false);
+  }
+
   private FillFileUploadInformation(hypermediaAction: HypermediaAction, action: any, actionField: any) {
     hypermediaAction.actionType = ActionType.FileUpload;
 
@@ -274,8 +312,10 @@ export class SirenDeserializer {
     }
   }
 
-  private FillJsonParameterInformation(hypermediaAction: HypermediaAction, action: any, actionField: any) {
-    hypermediaAction.actionType = ActionType.JsonObjectParameters;
+  private FillJsonParameterInformation(hypermediaAction: HypermediaAction, action: any, actionField: any, setActionType = true) {
+    if (setActionType) {
+      hypermediaAction.actionType = ActionType.JsonObjectParameters;
+    }
 
     if (hypermediaAction.waheActionParameterClasses?.length !== 1) {
       throw new Error(`Action field must contain one class. [action ${action.name}]`);

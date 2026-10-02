@@ -24,10 +24,12 @@
         <formly-form [fields]="formlyFields" [form]="form" [model]="model"></formly-form>
       </div>
       <div class="button-row">
-        <button mat-flat-button type="submit" class="submit-button" color="primary">
-          <mat-icon>send</mat-icon>
-          Submit
-        </button>
+        <span matTooltip="Please complete all required fields." [matTooltipDisabled]="this.canSubmit()">
+          <button mat-flat-button type="submit" class="submit-button" color="primary" [disabled]="!this.canSubmit()">
+            <mat-icon>send</mat-icon>
+            Submit
+          </button>
+        </span>
 
         <div class="result-container">
           @if (executed) {

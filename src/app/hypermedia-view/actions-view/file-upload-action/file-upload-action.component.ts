@@ -1,4 +1,4 @@
-import { Component, Input, inject } from '@angular/core';
+import { Component, Input, OnInit, inject } from '@angular/core';
 import {HypermediaAction} from '../../siren-parser/hypermedia-action';
 import {NgxDropzoneChangeEvent} from 'ngx-dropzone';
 import {ActionResults, HypermediaClientService} from '../../hypermedia-client.service';
@@ -12,6 +12,10 @@ import { FileSizePipe } from 'src/app/common/pipes/file-size.pipe';
 import {Store} from "@ngrx/store";
 import {AppSettings, GeneralSettings} from "../../../settings/app-settings";
 import {selectEffectiveGeneralSettings} from "../../../store/selectors";
+import { FormGroup } from '@angular/forms';
+import { FormlyFieldConfig } from '@ngx-formly/core';
+import { FormlyJsonschema } from '@ngx-formly/core/json-schema';
+import {createActionFormlyFields} from '../../formly-extensions';
 
 @Component({
     selector: 'app-file-upload-action',
@@ -19,8 +23,9 @@ import {selectEffectiveGeneralSettings} from "../../../store/selectors";
     styleUrls: ['./file-upload-action.component.scss'],
     standalone: false
 })
-export class FileUploadActionComponent {
+export class FileUploadActionComponent implements OnInit {
   private hypermediaClientService = inject(HypermediaClientService);
+  private formlyJsonschema = inject(FormlyJsonschema);
   private snackBar = inject(MatSnackBar);
   private dialog = inject(MatDialog);
   private store = inject<Store<{
@@ -32,6 +37,9 @@ export class FileUploadActionComponent {
   @Input()
   action!: HypermediaAction;
   files: File[] = [];
+  formlyFields: FormlyFieldConfig[] = [];
+  form = new FormGroup({});
+  model: object | undefined;
 
   ActionResultsEnum = ActionResults;
   actionResult: ActionResults = ActionResults.undefined;
@@ -61,6 +69,13 @@ export class FileUploadActionComponent {
       });
   }
 
+  ngOnInit() {
+    this.action.waheActionParameterJsonSchema?.subscribe((jsonSchema) => {
+      this.formlyFields = createActionFormlyFields(this.formlyJsonschema, jsonSchema);
+      this.model = this.action.defaultValues;
+    });
+  }
+
   onSelect($event: NgxDropzoneChangeEvent) {
     this.files.push(...$event.addedFiles);
 
@@ -86,16 +101,18 @@ export class FileUploadActionComponent {
     }
   }
 
-  hasFiles():boolean {
-    return this.files.length >0
+  hasFiles(): boolean {
+    return this.files.length > 0
   }
 
   onRemove($event:File) {
     this.files.splice(this.files.indexOf($event), 1);
   }
 
+  canSubmit = () => this.hasFiles() && this.form.valid;
+
   onSubmit() {
-    if (this.files.length < 1) {
+    if (!this.canSubmit()) {
       return;
     }
 
@@ -129,6 +146,9 @@ export class FileUploadActionComponent {
 
   private doSubmit() {
     this.action.files = this.files;
+    if (this.action.waheActionParameterName) {
+      this.action.parameters = this.form.value;
+    }
     this.actionResult= ActionResults.pending;
     this.executed = true;
 

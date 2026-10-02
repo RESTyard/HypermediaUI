@@ -454,8 +454,11 @@ export class HypermediaClientService implements IHypermediaClientService {
       case MediaTypes.FormData:
         const formData = new FormData();
         action.files.forEach((file) => {
-          formData.append('files', file);
+          formData.append(action.fileParameterName ?? 'files', file);
         });
+        if (action.waheActionParameterName && action.parameters !== undefined) {
+          formData.append(action.waheActionParameterName, JSON.stringify(action.parameters));
+        }
         return formData;
       case MediaTypes.OctetStream:
         if (action.files.length > 1) {
