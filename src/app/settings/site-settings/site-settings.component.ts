@@ -23,6 +23,7 @@ export class SiteSettingsComponent implements OnInit {
   @Input() headline: string = "";
 
   @Output() deleteRequested: EventEmitter<Unit> = new EventEmitter<Unit>();
+  @Output() siteUrlChanging = new EventEmitter<{ previousSiteUrl: string, newSiteUrl: string }>();
   public urlFormControl: FormControl = new FormControl();
   headerFormGroups: FormGroup[] = [];
 
@@ -35,6 +36,7 @@ export class SiteSettingsComponent implements OnInit {
 
     this.urlFormControl.valueChanges.subscribe(v => {
       v = v.trim();
+      this.siteUrlChanging.emit({ previousSiteUrl: this.siteSetting!.siteUrl, newSiteUrl: v });
       this.store.dispatch(updateSiteUrl({ previousSiteUrl: this.siteSetting!.siteUrl, newSiteUrl: v}));
     });
 
@@ -78,13 +80,13 @@ export class SiteSettingsComponent implements OnInit {
     this.headerFormGroups.push(this.AddHeaderFormControl(["", ""]));
   }
 
+  // the panel outlives store updates, so the row is removed here; renamed keys move in the store's map, so look up by key
   removeHeader(index: number) {
-    const header = Array.from(this.siteSetting!.headers.entries())[index];
-    if (header) {
-      this.store.dispatch(removeHeader({ siteUrl: this.siteSetting!.siteUrl, key: header[0]}));
-    } else {
-      this.headerFormGroups.splice(index, 1);
+    const key = ((this.headerFormGroups[index]?.value.key as string | null) ?? "").trim();
+    if (key !== "" && this.siteSetting!.headers.has(key)) {
+      this.store.dispatch(removeHeader({ siteUrl: this.siteSetting!.siteUrl, key }));
     }
+    this.headerFormGroups.splice(index, 1);
   }
 
   removeSite() {

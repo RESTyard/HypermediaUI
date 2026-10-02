@@ -548,3 +548,31 @@ test('sends credentials to an API backed by a BFF', async ({ page, context }) =>
   await openEntryPoint(page);
   expect(await (await entryPointRequest).headerValue('cookie')).toContain('bff-session=session-cookie');
 });
+
+test('keeps a site settings panel open and the focus while editing it', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Settings' }).click();
+  await page.getByRole('tab', { name: 'Sites' }).click();
+  await page.getByRole('button', { name: 'Add site' }).click();
+
+  const site = page.locator('app-site-settings').nth(1);
+  const header = site.locator('mat-expansion-panel-header');
+  await header.click();
+  await site.getByRole('textbox', { name: 'Host' }).fill('api.test');
+  await site.locator('#headersTitle').click();
+  await expect(header).toHaveAttribute('aria-expanded', 'true');
+  await expect(header).toContainText('api.test');
+
+  await site.locator('#addHeaderButton').click();
+  await site.getByRole('textbox', { name: 'Key' }).fill('X-Tenant');
+  await page.keyboard.press('Tab');
+  await expect(site.getByRole('textbox', { name: 'Value' })).toBeFocused();
+  await page.keyboard.type('blue');
+  await site.locator('#headersTitle').click();
+  await expect(header).toHaveAttribute('aria-expanded', 'true');
+  await expect(site.getByRole('textbox', { name: 'Key' })).toHaveValue('X-Tenant');
+  await expect(site.getByRole('textbox', { name: 'Value' })).toHaveValue('blue');
+
+  await site.locator('.deleteHeader').click();
+  await expect(site.getByRole('textbox', { name: 'Key' })).toHaveCount(0);
+});
