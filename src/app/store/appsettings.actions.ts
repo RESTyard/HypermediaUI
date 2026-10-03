@@ -33,7 +33,11 @@ export const updateHeader = createAction(
 
 export const addHeader = createAction(
     '[AppSettings]->[SiteSettings] AddHeader',
-    props<{ target: HeaderTarget, key: string, value: string }>());
+    props<{ target: HeaderTarget, key: string, value: string, hidden: boolean }>());
+
+export const setHeaderHidden = createAction(
+    '[AppSettings]->[SiteSettings] SetHeaderHidden',
+    props<{ target: HeaderTarget, key: string, hidden: boolean }>());
 
 export const removeHeader = createAction(
     '[AppSettings]->[SiteSettings] RemoveHeader',

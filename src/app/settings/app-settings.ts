@@ -21,9 +21,15 @@ export class GeneralSettings extends Record({
     actionExecutionTimeoutMs: 60000
 }) {}
 
+/** hidden masks the value in the settings, e.g. while screen sharing; it is no protection of the stored value */
+export class HeaderSetting extends Record({
+    value: "",
+    hidden: false,
+}) {}
+
 export class SiteSetting extends Record({
     siteUrl: "",
-    headers: Map<string, string>(),
+    headers: Map<string, HeaderSetting>(),
 }) {}
 
 export class SiteSettings extends Record({

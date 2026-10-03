@@ -6,7 +6,7 @@
         <span class="hostTitle">{{headline}}</span>
       </mat-panel-title>
       <mat-panel-description>
-        Applies to all http calls. Overrriden by site specific settings.
+        Applies to all http calls. Overridden by site specific settings.
       </mat-panel-description>
     </mat-expansion-panel-header>
   }
@@ -57,8 +57,15 @@
       <span class="spacer"></span>
       <mat-form-field class="headerValueField">
         <mat-label>Value</mat-label>
-        <input type="text" matInput formControlName="value">
+        <!-- masked by CSS rather than type="password", so browsers do not offer to save it as a password -->
+        <input type="text" matInput formControlName="value" autocomplete="off" [class.maskedValue]="headerFormGroup.value.hidden">
       </mat-form-field>
+      <button type="button" class="hideHeaderToggle"
+              aria-label="Hide value" [attr.aria-pressed]="!!headerFormGroup.value.hidden"
+              [matTooltip]="headerFormGroup.value.hidden ? 'Show value' : 'Hide value, e.g. while screen sharing. It is still stored as plain text.'"
+              (click)="toggleHidden(headerFormGroup)">
+        <mat-icon fontSet="material-icons-outlined">{{headerFormGroup.value.hidden ? 'visibility_off' : 'visibility'}}</mat-icon>
+      </button>
       <mat-icon class="deleteHeader" fontSet="material-icons-outlined" (click)="removeHeader(i)">delete</mat-icon>
       <span class="flexSpacer"></span>
     </div>

@@ -2,13 +2,14 @@ import { Component, ElementRef, EventEmitter, Input, OnInit, Output, inject, vie
 import { MatExpansionPanel } from '@angular/material/expansion';
 import { AbstractControl, FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { ErrorStateMatcher } from '@angular/material/core';
-import { AppSettings, SiteSetting } from '../app-settings';
+import { AppSettings, HeaderSetting, SiteSetting } from '../app-settings';
 import { Store } from '@ngrx/store';
 import {
   addHeader,
   globalHeaderTarget,
   HeaderTarget,
   removeHeader,
+  setHeaderHidden,
   siteHeaderTarget,
   updateHeader,
   updateSiteUrl,
@@ -64,17 +65,18 @@ export class SiteSettingsComponent implements OnInit {
     const headers = this.siteSetting.headers;
     this.headerFormGroups = Array
       .from(headers.entries())
-      .map(h => this.AddHeaderFormControl(h));
+      .map(([key, header]) => this.AddHeaderFormControl(key, header));
   }
 
-  private AddHeaderFormControl(headerSetting: [string, string]): FormGroup {
-    let key = headerSetting[0];
-    let value = headerSetting[1];
+  private AddHeaderFormControl(initialKey: string, header: HeaderSetting): FormGroup {
+    let key = initialKey;
+    let value = header.value;
+    let hidden = header.hidden;
     const keyControl = new FormControl(key, {updateOn: 'blur'});
     keyControl.valueChanges.subscribe(v => {
       v = (v ?? "").trim();
       if (key === "") {
-        this.store.dispatch(addHeader({ target: this.headerTarget, key: v, value: value }));
+        this.store.dispatch(addHeader({ target: this.headerTarget, key: v, value: value, hidden: hidden }));
       } else {
         this.store.dispatch(updateHeader({ target: this.headerTarget, previousKey: key, newKey: v, newValue: value }));
       }
@@ -90,9 +92,18 @@ export class SiteSettingsComponent implements OnInit {
       value = v;
     });
 
+    const hiddenControl = new FormControl(hidden);
+    hiddenControl.valueChanges.subscribe(v => {
+      hidden = !!v;
+      if (key !== "") {
+        this.store.dispatch(setHeaderHidden({ target: this.headerTarget, key, hidden }));
+      }
+    });
+
     const result = this.formBuilder.group({
       key: keyControl,
-      value: valueControl
+      value: valueControl,
+      hidden: hiddenControl,
     });
     return result;
   }
@@ -116,8 +127,13 @@ export class SiteSettingsComponent implements OnInit {
     return this.isGlobal ? globalHeaderTarget : siteHeaderTarget(this.siteSetting!.siteUrl);
   }
 
+  toggleHidden(headerFormGroup: FormGroup) {
+    const hidden = headerFormGroup.controls['hidden'];
+    hidden.setValue(!hidden.value);
+  }
+
   addHeader() {
-    this.headerFormGroups.push(this.AddHeaderFormControl(["", ""]));
+    this.headerFormGroups.push(this.AddHeaderFormControl("", new HeaderSetting()));
   }
 
   // the panel outlives store updates, so the row is removed here; renamed keys move in the store's map, so look up by key

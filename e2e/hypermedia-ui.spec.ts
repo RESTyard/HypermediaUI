@@ -712,3 +712,50 @@ test('opens a new site for entering its host and does not add a second one witho
   await expect(site.locator('mat-expansion-panel-header')).toHaveAttribute('aria-expanded', 'true');
   await expect(site.getByRole('textbox', { name: 'Host' })).toBeFocused();
 });
+
+test('keeps using headers stored before values could be hidden', async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem('appSettings', JSON.stringify({
+    SiteSettings: {
+      GlobalSiteSettings: { SiteUrl: 'Global', Headers: [{ Key: 'X-Global', Value: 'g1' }] },
+      SiteSpecificSettings: [{ SiteUrl: 'api.test', Headers: [{ Key: 'X-Site', Value: 's1' }] }],
+    },
+  })));
+
+  const request = page.waitForRequest(`${api}/entrypoint`);
+  await openEntryPoint(page);
+  const headers = (await request).headers();
+  expect(headers['x-global']).toBe('g1');
+  expect(headers['x-site']).toBe('s1');
+
+  await page.getByRole('button', { name: 'Settings' }).click();
+  await page.getByRole('tab', { name: 'Sites' }).click();
+  const site = page.locator('app-site-settings').nth(1);
+  await site.locator('mat-expansion-panel-header').click();
+  await expect(site.getByRole('button', { name: 'Hide value' })).toHaveAttribute('aria-pressed', 'false');
+  await expect(site.getByRole('textbox', { name: 'Value' })).not.toHaveClass(/maskedValue/);
+});
+
+test('hides a header value, also after renaming the header and reopening the settings', async ({ page }) => {
+  await openSiteSettings(page);
+  const global = page.locator('app-site-settings').first();
+  await global.locator('mat-expansion-panel-header').click();
+  await addHeaderSetting(global, 'X-Secret', 'token');
+  const value = global.getByRole('textbox', { name: 'Value' });
+  await expect(value).not.toHaveClass(/maskedValue/);
+
+  await global.getByRole('button', { name: 'Hide value' }).click();
+  await expect(value).toHaveClass(/maskedValue/);
+  await global.getByRole('textbox', { name: 'Key' }).fill('X-Renamed');
+  await global.locator('#headersTitle').click();
+  await page.keyboard.press('Escape');
+  await expect(page.getByText('Settings saved.')).toBeVisible();
+  expect(await page.evaluate(() => localStorage.getItem('appSettings')))
+    .toContain('{"Key":"X-Renamed","Value":"token","Hidden":true}');
+
+  await page.getByRole('button', { name: 'Settings' }).click();
+  await page.getByRole('tab', { name: 'Sites' }).click();
+  await global.locator('mat-expansion-panel-header').click();
+  await expect(global.getByRole('button', { name: 'Hide value' })).toHaveAttribute('aria-pressed', 'true');
+  await expect(value).toHaveClass(/maskedValue/);
+  await expect(value).toHaveValue('token');
+});

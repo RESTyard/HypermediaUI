@@ -67,6 +67,7 @@ export class SiteSettingStorageModel {
 }
 
 export class HeaderSettingStorageModel {
-    constructor(public Key: string = "", public Value: string = "") {
+    // Hidden is missing in settings stored by earlier versions
+    constructor(public Key: string = "", public Value: string = "", public Hidden?: boolean) {
     }
 }
