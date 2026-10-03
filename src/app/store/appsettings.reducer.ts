@@ -2,6 +2,7 @@ import { createReducer, on } from "@ngrx/store";
 import {
   addHeader,
   addSite,
+  HeaderTarget,
   removeHeader,
   removeSite,
   updateAppSettings,
@@ -29,7 +30,7 @@ export const appSettingsReducer = createReducer(
         return setSiteSettings(state, newMap);
     }),
     on(updateHeader, (state, props) => {
-        const existingSiteSpecificEntry = getSite(state, props.siteUrl);
+        const existingSiteSpecificEntry = getSite(state, props.target);
         if (existingSiteSpecificEntry === undefined) {
             throw new Error("site url not present");
         }
@@ -38,10 +39,10 @@ export const appSettingsReducer = createReducer(
             throw new Error("header not present");
         }
         const updatedMap = existingSiteSpecificEntry.headers.remove(props.previousKey).set(props.newKey, props.newValue);
-        return setHeaders(state, props.siteUrl, updatedMap);
+        return setHeaders(state, props.target, updatedMap);
     }),
     on(addHeader, (state, props) => {
-        const existingSiteSpecificEntry = getSite(state, props.siteUrl);
+        const existingSiteSpecificEntry = getSite(state, props.target);
         if (existingSiteSpecificEntry === undefined) {
             throw new Error("site url not present");
         }
@@ -50,15 +51,15 @@ export const appSettingsReducer = createReducer(
             throw new Error("header already present");
         }
         const updatedMap = existingSiteSpecificEntry.headers.set(props.key, props.value);
-        return setHeaders(state, props.siteUrl, updatedMap);
+        return setHeaders(state, props.target, updatedMap);
     }),
     on(removeHeader, (state, props) => {
-        const existingSiteSpecificEntry = getSite(state, props.siteUrl);
+        const existingSiteSpecificEntry = getSite(state, props.target);
         if (existingSiteSpecificEntry === undefined) {
             throw new Error("site url not present");
         }
         const updatedMap = existingSiteSpecificEntry.headers.remove(props.key);
-        return setHeaders(state, props.siteUrl, updatedMap);
+        return setHeaders(state, props.target, updatedMap);
     }),
     on(addSite, (state, props) => {
         const existingSite = state.siteSettings.siteSpecificSettings.get(props.siteUrl);
@@ -76,15 +77,17 @@ export const appSettingsReducer = createReducer(
     })
 );
 
-const getSite = (state: AppSettings, siteUrl: string | null): SiteSetting | undefined =>
-  siteUrl === null ? state.siteSettings.globalSiteSettings : state.siteSettings.siteSpecificSettings.get(siteUrl);
+const getSite = (state: AppSettings, target: HeaderTarget): SiteSetting | undefined =>
+  target.kind === 'global'
+    ? state.siteSettings.globalSiteSettings
+    : state.siteSettings.siteSpecificSettings.get(target.siteUrl);
 
-const setHeaders = (state: AppSettings, siteUrl: string | null, headers: Map<string, string>): AppSettings => {
-  const updatedEntry = getSite(state, siteUrl)!.set("headers", headers);
-  if (siteUrl === null) {
+const setHeaders = (state: AppSettings, target: HeaderTarget, headers: Map<string, string>): AppSettings => {
+  const updatedEntry = getSite(state, target)!.set("headers", headers);
+  if (target.kind === 'global') {
     return state.set("siteSettings", state.siteSettings.set("globalSiteSettings", updatedEntry));
   }
-  return setSite(state, siteUrl, updatedEntry);
+  return setSite(state, target.siteUrl, updatedEntry);
 }
 
 const setSite = (state: AppSettings, siteUrl: string, siteSpecificSettings: SiteSetting): AppSettings => {

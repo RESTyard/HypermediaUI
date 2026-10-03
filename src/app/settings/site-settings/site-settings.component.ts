@@ -4,7 +4,15 @@ import { AbstractControl, FormBuilder, FormControl, FormGroup } from '@angular/f
 import { ErrorStateMatcher } from '@angular/material/core';
 import { AppSettings, SiteSetting } from '../app-settings';
 import { Store } from '@ngrx/store';
-import { addHeader, removeHeader, updateHeader, updateSiteUrl } from 'src/app/store/appsettings.actions';
+import {
+  addHeader,
+  globalHeaderTarget,
+  HeaderTarget,
+  removeHeader,
+  siteHeaderTarget,
+  updateHeader,
+  updateSiteUrl,
+} from 'src/app/store/appsettings.actions';
 import {Unit} from "../../utils/unit";
 import { siteHostValidator } from './site-host.validator';
 
@@ -66,9 +74,9 @@ export class SiteSettingsComponent implements OnInit {
     keyControl.valueChanges.subscribe(v => {
       v = (v ?? "").trim();
       if (key === "") {
-        this.store.dispatch(addHeader({ siteUrl: this.storeSiteUrl, key: v, value: value }));
+        this.store.dispatch(addHeader({ target: this.headerTarget, key: v, value: value }));
       } else {
-        this.store.dispatch(updateHeader({ siteUrl: this.storeSiteUrl, previousKey: key, newKey: v, newValue: value }));
+        this.store.dispatch(updateHeader({ target: this.headerTarget, previousKey: key, newKey: v, newValue: value }));
       }
       key = v;
     });
@@ -77,7 +85,7 @@ export class SiteSettingsComponent implements OnInit {
     valueControl.valueChanges.subscribe(v => {
       v = (v ?? "").trim();
       if (key !== "") {
-        this.store.dispatch(updateHeader({ siteUrl: this.storeSiteUrl, previousKey: key, newKey: key, newValue: v }));
+        this.store.dispatch(updateHeader({ target: this.headerTarget, previousKey: key, newKey: key, newValue: v }));
       }
       value = v;
     });
@@ -104,8 +112,8 @@ export class SiteSettingsComponent implements OnInit {
     this.store.dispatch(updateSiteUrl({ previousSiteUrl: this.siteSetting!.siteUrl, newSiteUrl: host }));
   }
 
-  private get storeSiteUrl(): string | null {
-    return this.isGlobal ? null : this.siteSetting!.siteUrl;
+  private get headerTarget(): HeaderTarget {
+    return this.isGlobal ? globalHeaderTarget : siteHeaderTarget(this.siteSetting!.siteUrl);
   }
 
   addHeader() {
@@ -116,7 +124,7 @@ export class SiteSettingsComponent implements OnInit {
   removeHeader(index: number) {
     const key = ((this.headerFormGroups[index]?.value.key as string | null) ?? "").trim();
     if (key !== "" && this.siteSetting!.headers.has(key)) {
-      this.store.dispatch(removeHeader({ siteUrl: this.storeSiteUrl, key }));
+      this.store.dispatch(removeHeader({ target: this.headerTarget, key }));
     }
     this.headerFormGroups.splice(index, 1);
   }
