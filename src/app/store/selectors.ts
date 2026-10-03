@@ -19,6 +19,8 @@ export const selectEffectiveGeneralSettings = createSelector(
             useEmbeddingPropertyForActionParameters: generalSettings.useEmbeddingPropertyForActionParameters && !appConfig.disableDeveloperControls,
             showHostInformation: generalSettings.showHostInformation && !appConfig.disableDeveloperControls,
             showPropertyTreeControls: generalSettings.showPropertyTreeControls && !appConfig.disableDeveloperControls,
+            showSearch: generalSettings.showSearch && appConfig.showSearch,
+            searchOptions: generalSettings.searchOptions,
             actionExecutionTimeoutMs: generalSettings.actionExecutionTimeoutMs
         });
     }

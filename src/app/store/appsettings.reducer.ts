@@ -2,15 +2,17 @@ import { createReducer, on } from "@ngrx/store";
 import {
   addHeader,
   addSite,
+  HeaderTarget,
   removeHeader,
   removeSite,
+  setHeaderHidden,
   updateAppSettings,
   updateGeneralAppSettings,
   updateHeader,
   updateSiteSettings,
   updateSiteUrl
 } from "./appsettings.actions";
-import { AppSettings, SiteSetting } from "../settings/app-settings";
+import { AppSettings, HeaderSetting, SiteSetting } from "../settings/app-settings";
 import { Map } from 'immutable';
 
 export const initialState: AppSettings = new AppSettings();
@@ -29,7 +31,7 @@ export const appSettingsReducer = createReducer(
         return setSiteSettings(state, newMap);
     }),
     on(updateHeader, (state, props) => {
-        const existingSiteSpecificEntry = state.siteSettings.siteSpecificSettings.get(props.siteUrl);
+        const existingSiteSpecificEntry = getSite(state, props.target);
         if (existingSiteSpecificEntry === undefined) {
             throw new Error("site url not present");
         }
@@ -37,11 +39,14 @@ export const appSettingsReducer = createReducer(
         if (existingHeader === undefined) {
             throw new Error("header not present");
         }
-        const updatedMap = existingSiteSpecificEntry.headers.remove(props.previousKey).set(props.newKey, props.newValue);
-        return setHeaders(state, props.siteUrl, updatedMap);
+        // the header keeps its hidden state when renamed
+        const updatedMap = existingSiteSpecificEntry.headers
+          .remove(props.previousKey)
+          .set(props.newKey, existingHeader.set("value", props.newValue));
+        return setHeaders(state, props.target, updatedMap);
     }),
     on(addHeader, (state, props) => {
-        const existingSiteSpecificEntry = state.siteSettings.siteSpecificSettings.get(props.siteUrl);
+        const existingSiteSpecificEntry = getSite(state, props.target);
         if (existingSiteSpecificEntry === undefined) {
             throw new Error("site url not present");
         }
@@ -49,16 +54,28 @@ export const appSettingsReducer = createReducer(
         if (existingHeader !== undefined) {
             throw new Error("header already present");
         }
-        const updatedMap = existingSiteSpecificEntry.headers.set(props.key, props.value);
-        return setHeaders(state, props.siteUrl, updatedMap);
+        const updatedMap = existingSiteSpecificEntry.headers.set(props.key, new HeaderSetting({ value: props.value, hidden: props.hidden }));
+        return setHeaders(state, props.target, updatedMap);
+    }),
+    on(setHeaderHidden, (state, props) => {
+        const existingSiteSpecificEntry = getSite(state, props.target);
+        if (existingSiteSpecificEntry === undefined) {
+            throw new Error("site url not present");
+        }
+        const existingHeader = existingSiteSpecificEntry.headers.get(props.key);
+        if (existingHeader === undefined) {
+            throw new Error("header not present");
+        }
+        const updatedMap = existingSiteSpecificEntry.headers.set(props.key, existingHeader.set("hidden", props.hidden));
+        return setHeaders(state, props.target, updatedMap);
     }),
     on(removeHeader, (state, props) => {
-        const existingSiteSpecificEntry = state.siteSettings.siteSpecificSettings.get(props.siteUrl);
+        const existingSiteSpecificEntry = getSite(state, props.target);
         if (existingSiteSpecificEntry === undefined) {
             throw new Error("site url not present");
         }
         const updatedMap = existingSiteSpecificEntry.headers.remove(props.key);
-        return setHeaders(state, props.siteUrl, updatedMap);
+        return setHeaders(state, props.target, updatedMap);
     }),
     on(addSite, (state, props) => {
         const existingSite = state.siteSettings.siteSpecificSettings.get(props.siteUrl);
@@ -76,9 +93,17 @@ export const appSettingsReducer = createReducer(
     })
 );
 
-const setHeaders = (state: AppSettings, siteUrl: string, headers: Map<string, string>): AppSettings => {
-  const updatedEntry = state.siteSettings.siteSpecificSettings.get(siteUrl)!.set("headers", headers);
-  return setSite(state, siteUrl, updatedEntry);
+const getSite = (state: AppSettings, target: HeaderTarget): SiteSetting | undefined =>
+  target.kind === 'global'
+    ? state.siteSettings.globalSiteSettings
+    : state.siteSettings.siteSpecificSettings.get(target.siteUrl);
+
+const setHeaders = (state: AppSettings, target: HeaderTarget, headers: Map<string, HeaderSetting>): AppSettings => {
+  const updatedEntry = getSite(state, target)!.set("headers", headers);
+  if (target.kind === 'global') {
+    return state.set("siteSettings", state.siteSettings.set("globalSiteSettings", updatedEntry));
+  }
+  return setSite(state, target.siteUrl, updatedEntry);
 }
 
 const setSite = (state: AppSettings, siteUrl: string, siteSpecificSettings: SiteSetting): AppSettings => {

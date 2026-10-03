@@ -1,34 +1,50 @@
+import { TestBed } from '@angular/core/testing';
 import { PropertyTreeComponent } from './property-tree.component';
 import { PropertyInfo, PropertyTypes } from '../siren-parser/property-info';
+import { EntitySearchService } from '../search/entity-search.service';
+import { SirenClientObject } from '../siren-parser/siren-client-object';
 
 describe('PropertyTreeComponent', () => {
+  const properties = [
+    new PropertyInfo('customer', { name: 'Ada Lovelace', address: { city: 'London' } }, PropertyTypes.object),
+  ];
+
   function createComponent() {
-    const component = new PropertyTreeComponent();
-    component.propertyContainer = [
-      new PropertyInfo('customer', { name: 'Ada Lovelace', address: { city: 'London' } }, PropertyTypes.object),
-    ];
+    const search = TestBed.inject(EntitySearchService);
+    const entity = new SirenClientObject();
+    entity.properties = properties;
+    search.setEntity(entity);
+
+    const component = TestBed.runInInjectionContext(() => new PropertyTreeComponent());
+    component.propertyContainer = properties;
     component.ngOnChanges({ propertyContainer: {} as any });
-    return component;
+    return { component, search };
   }
 
-  it('reveals a matching nested property and marks its ancestor', () => {
-    const component = createComponent();
-    component.applyFilter({ target: { value: 'london' } } as unknown as Event);
+  function nodeNamed(component: PropertyTreeComponent, name: string) {
+    return component.treeControl.dataNodes.find(node => node.name === name)!;
+  }
 
-    expect(component.matchCount).toBe(1);
-    expect(component.currentMatchIndex).toBe(0);
-    expect(component.treeControl.isExpanded(component.treeControl.dataNodes[0])).toBeTrue();
+  it('expands the ancestors of a matching nested property', () => {
+    const { component, search } = createComponent();
+
+    search.query.set('london');
+    TestBed.tick();
+
+    expect(search.isHitTarget(nodeNamed(component, 'city').searchTarget)).toBeTrue();
+    expect(component.treeControl.isExpanded(nodeNamed(component, 'customer'))).toBeTrue();
+    expect(component.treeControl.isExpanded(nodeNamed(component, 'address'))).toBeTrue();
   });
 
-  it('clears match state when the search is cleared', () => {
-    const component = createComponent();
-    component.applyFilter({ target: { value: 'ada' } } as unknown as Event);
-    component.clearSearch();
+  it('keeps expanded nodes open when the search is cleared', () => {
+    const { component, search } = createComponent();
+    search.query.set('london');
+    TestBed.tick();
 
-    expect(component.searchQuery).toBe('');
-    expect(component.matchCount).toBe(0);
-    expect(component.currentMatchIndex).toBe(-1);
-    expect(component.directMatches.size).toBe(0);
-    expect(component.ancestorMatches.size).toBe(0);
+    search.clear();
+    TestBed.tick();
+
+    expect(component.ancestorMatches().size).toBe(0);
+    expect(component.treeControl.isExpanded(nodeNamed(component, 'customer'))).toBeTrue();
   });
 });

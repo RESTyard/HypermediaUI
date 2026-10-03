@@ -13,7 +13,10 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatDividerModule } from '@angular/material/divider';
 import {GlobalNavigationEvents} from "../../global-navigation.events";
+import { SettingsService } from 'src/app/settings/services/settings.service';
 
 describe('HypermediaControlComponent', () => {
   let component: HypermediaControlComponent;
@@ -32,9 +35,12 @@ describe('HypermediaControlComponent', () => {
         MatButtonToggleModule,
         MatSlideToggleModule,
         MatTooltipModule,
+        MatMenuModule,
+        MatDividerModule,
       ],
       providers: [
         provideHypermediaClientServiceMock(),
+        SettingsService,
         {
           provide: ActivatedRoute,
           useValue: {

@@ -8,6 +8,7 @@ import { AppSettings, GeneralSettings } from 'src/app/settings/app-settings';
 import { Store } from '@ngrx/store';
 import { selectEffectiveGeneralSettings } from 'src/app/store/selectors';
 import { AppConfig } from 'src/app.config.service';
+import { entityClassesTarget, entityTitleTarget, rootEntityKey } from '../search/entity-search';
 
 @Component({
     selector: 'app-entity-view',
@@ -24,6 +25,7 @@ export class EntityViewComponent implements OnInit, OnChanges {
 
   @Input() entity: SirenClientObject = new SirenClientObject();
   @Input() showTitle: boolean = true;
+  @Input() entityKey: string = rootEntityKey;
 
   public title: string = "";
   public embeddedLinkEntities: IEmbeddedLinkEntity[] = [];
@@ -33,6 +35,8 @@ export class EntityViewComponent implements OnInit, OnChanges {
   public properties: PropertyInfo[] = new Array<PropertyInfo>();
   public actions: HypermediaAction[] = new Array<HypermediaAction>();
   GeneralSettings: GeneralSettings = new GeneralSettings();
+  protected readonly entityTitleTarget = entityTitleTarget;
+  protected readonly entityClassesTarget = entityClassesTarget;
 
   constructor() {
     const store = this.store;

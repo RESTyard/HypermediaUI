@@ -3,8 +3,18 @@
 
         <button mat-icon-button
                 class="IconButton"
+                (click)="onDefaultDepth()"
+                matTooltip="Expand 2 levels"
+                aria-label="Expand 2 levels"
+                color="primary">
+            <mat-icon>filter_2</mat-icon>
+        </button>
+
+        <button mat-icon-button
+                class="IconButton"
                 (click)="onExpand()"
-                matTooltip="Expand all"
+                matTooltip="Expand all (+)"
+                aria-label="Expand all"
                 color="primary">
             <mat-icon>unfold_more</mat-icon>
         </button>
@@ -12,7 +22,8 @@
         <button mat-icon-button
                 class="IconButton"
                 (click)="onCollapse()"
-                matTooltip="Collaps all"
+                matTooltip="Collapse all (-)"
+                aria-label="Collapse all"
                 color="primary">
             <mat-icon>unfold_less</mat-icon>
         </button>
@@ -27,5 +38,10 @@
 
     </div>
 
-    <ngx-json-viewer class="jsonTree" [json]="rawObject" [expanded]="expand"></ngx-json-viewer>
+    @if (search.rawSegments(); as segments) {
+        <!-- plain text search: the json tree cannot mark text inside its nodes -->
+        <pre class="rawSearchText">@for (segment of segments; track $index) {@if (segment.target) {<mark class="search-mark" [attr.data-search-target]="segment.target" [class.current]="search.isCurrentTarget(segment.target)">{{segment.text}}</mark>} @else {<ng-container>{{segment.text}}</ng-container>}}</pre>
+    } @else {
+        <ngx-json-viewer class="jsonTree" [json]="rawObject" [expanded]="expand" [depth]="depth"></ngx-json-viewer>
+    }
 </div>

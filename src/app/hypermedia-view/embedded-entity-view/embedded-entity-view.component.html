@@ -1,12 +1,29 @@
 <div class="container">
   <div class="itemsHeader">
-    <span class="spacer"></span>
+    @if (embeddedEntities?.length) {
+      <button mat-icon-button class="panelControl" (click)="expandAll()" [matTooltip]="isTopLevel ? 'Expand all embedded entities (+)' : 'Expand all embedded entities'" aria-label="Expand all embedded entities">
+        <mat-icon>unfold_more</mat-icon>
+      </button>
+      <button mat-icon-button class="panelControl" (click)="collapseAll()" [matTooltip]="isTopLevel ? 'Collapse all embedded entities (-)' : 'Collapse all embedded entities'" aria-label="Collapse all embedded entities">
+        <mat-icon>unfold_less</mat-icon>
+      </button>
+    }
     <span class="itemsLabel">{{embeddedEntities?.length + embeddedLinkEntities?.length}} items</span>
   </div>
 
   @for (embeddedEntity of embeddedEntities; track embeddedEntity; let idx = $index) {
-    <mat-expansion-panel  class="entityExpander" >
-      <mat-expansion-panel-header>
+    <mat-expansion-panel class="entityExpander"
+                         togglePosition="before"
+                         [attr.data-embedded-nav-index]="isTopLevel ? idx : null"
+                         [class.embedded-nav-current]="isTopLevel && navigation.currentIndex() === idx"
+                         (pointerdown)="selectForNavigation(idx)"
+                         (focusin)="selectForNavigation(idx)">
+      <mat-expansion-panel-header
+        [matTooltip]="isTopLevel ? 'Expand / collapse (Enter while selected)' : ''"
+        matTooltipShowDelay="500"
+        [attr.data-search-target]="embeddedHeaderTarget(embeddedEntityKey(entityKey, idx))"
+        [class.search-hit]="search.isHitTarget(embeddedHeaderTarget(embeddedEntityKey(entityKey, idx)))"
+        [class.search-current]="search.isCurrentTarget(embeddedHeaderTarget(embeddedEntityKey(entityKey, idx)))">
         <mat-panel-title>
           <span class="entity-index-badge">{{idx + 1}}</span>
           <mat-chip-set class="relation-chips">
@@ -15,28 +32,35 @@
                 @if (getRelationIcon(rel)) {
                   <mat-icon matChipAvatar>{{getRelationIcon(rel)}}</mat-icon>
                 }
-                {{getRelationDisplayText(rel)}}
+                <app-search-highlight [text]="getRelationDisplayText(rel)" [target]="embeddedHeaderTarget(embeddedEntityKey(entityKey, idx))" field="rel"></app-search-highlight>
               </mat-chip>
             }
           </mat-chip-set>
           @if(embeddedEntity.title){
-            <span class="entity-title">{{embeddedEntity.title}}</span>
+            <span class="entity-title"><app-search-highlight [text]="embeddedEntity.title" [target]="embeddedHeaderTarget(embeddedEntityKey(entityKey, idx))" field="title"></app-search-highlight></span>
           }
         </mat-panel-title>
         @if (generalSettings.showClasses) {
           <mat-panel-description>
-            Classes: {{embeddedEntity.classes.join(",")}}
+            Classes: <app-search-highlight [text]="embeddedEntity.classes.join(',')" [target]="embeddedHeaderTarget(embeddedEntityKey(entityKey, idx))" field="classes"></app-search-highlight>
           </mat-panel-description>
         }
       </mat-expansion-panel-header>
       <ng-template matExpansionPanelContent>
-        <app-entity-view [entity]="embeddedEntity" [showTitle]="false"></app-entity-view>
+        <app-entity-view [entity]="embeddedEntity" [showTitle]="false" [entityKey]="embeddedEntityKey(entityKey, idx)"></app-entity-view>
       </ng-template>
     </mat-expansion-panel>
   }
 
   @for (embeddedLinkEntity of embeddedLinkEntities; track embeddedLinkEntity; let idx = $index) {
-    <mat-card appearance="outlined" class="embeddedLinkEntityCard">
+    <mat-card appearance="outlined" class="embeddedLinkEntityCard"
+              [attr.data-embedded-nav-index]="isTopLevel ? idx + embeddedEntities.length : null"
+              [class.embedded-nav-current]="isTopLevel && navigation.currentIndex() === idx + embeddedEntities.length"
+              (pointerdown)="selectForNavigation(idx + embeddedEntities.length)"
+              (focusin)="selectForNavigation(idx + embeddedEntities.length)"
+              [attr.data-search-target]="embeddedLinkEntityTarget(entityKey, idx)"
+              [class.search-hit]="search.isHitTarget(embeddedLinkEntityTarget(entityKey, idx))"
+              [class.search-current]="search.isCurrentTarget(embeddedLinkEntityTarget(entityKey, idx))">
       <div class="link-entity-header">
         <span class="entity-index-badge">{{idx + 1 + embeddedEntities?.length}}</span>
         <mat-chip-set class="relation-chips">
@@ -45,18 +69,18 @@
               @if (getRelationIcon(rel)) {
                 <mat-icon matChipAvatar>{{getRelationIcon(rel)}}</mat-icon>
               }
-              {{getRelationDisplayText(rel)}}
+              <app-search-highlight [text]="getRelationDisplayText(rel)" [target]="embeddedLinkEntityTarget(entityKey, idx)" field="rel"></app-search-highlight>
             </mat-chip>
           }
         </mat-chip-set>
         @if(embeddedLinkEntity.title){
-          <span class="entity-title">{{embeddedLinkEntity.title}}</span>
+          <span class="entity-title"><app-search-highlight [text]="embeddedLinkEntity.title" [target]="embeddedLinkEntityTarget(entityKey, idx)" field="title"></app-search-highlight></span>
         }
       </div>
 
       <div class="link-entity-classes">
         @if (generalSettings.showClasses) {
-          <span>Classes: {{embeddedLinkEntity.classes.join(",")}}</span>
+          <span>Classes: <app-search-highlight [text]="embeddedLinkEntity.classes.join(',')" [target]="embeddedLinkEntityTarget(entityKey, idx)" field="classes"></app-search-highlight></span>
         }
       </div>
 

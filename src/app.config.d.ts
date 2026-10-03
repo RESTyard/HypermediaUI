@@ -2,6 +2,7 @@ declare namespace HypermediaUI {
     export interface IAppConfig {
         disableDeveloperControls: boolean;
         reduceUiElements: boolean;
+        showSearch?: boolean;
         configuredEntryPoints: IConfiguredEntryPointsItem[];
         onlyAllowConfiguredEntryPoints: boolean;
         relationIconMapping?: Record<string, string>;

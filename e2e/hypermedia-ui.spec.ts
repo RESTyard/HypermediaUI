@@ -24,6 +24,14 @@ const entryPoint = {
       class: ['Summary'],
       title: 'Embedded summary',
       properties: { status: 'ready' },
+      entities: [
+        {
+          rel: ['detail'],
+          class: ['Detail'],
+          title: 'Nested detail',
+          properties: { depth: 'nested-value' },
+        },
+      ],
     },
     {
       rel: ['customer-reference'],
@@ -255,6 +263,114 @@ test('shows raw Siren data and embedded entities', async ({ page }) => {
   await expect(page.getByText('Customer 42', { exact: true })).toBeVisible();
 });
 
+test('navigates between top level embedded entities with keys, buttons and clicks', async ({ page }) => {
+  await openEntryPoint(page);
+  const navigation = page.getByRole('navigation', { name: 'Page navigation' });
+  const summary = page.locator('mat-expansion-panel', { hasText: 'Embedded summary' });
+  const linkedCustomer = page.locator('mat-card', { hasText: 'Linked customer' });
+  const current = page.locator('.embedded-nav-current');
+  await page.evaluate(() => (document.activeElement as HTMLElement | null)?.blur());
+
+  await expect(current).toHaveCount(0);
+  // collapsed to a handle until hovered
+  const buttonsWidth = async () => (await navigation.locator('.buttons').boundingBox())?.width ?? 0;
+  await expect.poll(buttonsWidth).toBe(0);
+  await navigation.hover();
+  await expect.poll(buttonsWidth).toBe(4 * 40 + 3 * 4);
+  const buttonsBox = await navigation.locator('.buttons').boundingBox();
+  const bottomButtonBox = await navigation.getByRole('button', { name: 'To bottom' }).boundingBox();
+  expect(bottomButtonBox!.x + bottomButtonBox!.width).toBeLessThanOrEqual(buttonsBox!.x + buttonsBox!.width + 0.5);
+  await page.mouse.move(0, 0);
+  await page.keyboard.press('ArrowDown');
+  await expect(summary).toHaveClass(/embedded-nav-current/);
+  const summaryHeader = summary.locator('mat-expansion-panel-header').first();
+  await page.keyboard.press('Enter');
+  await expect(summaryHeader).toHaveAttribute('aria-expanded', 'true');
+  await page.keyboard.press('Enter');
+  await expect(summaryHeader).toHaveAttribute('aria-expanded', 'false');
+  await summaryHeader.hover();
+  await expect(page.locator('.mat-mdc-tooltip')).toHaveText('Expand / collapse (Enter while selected)');
+  await page.mouse.move(0, 0);
+  await page.keyboard.press('ArrowDown');
+  await expect(linkedCustomer).toHaveClass(/embedded-nav-current/);
+  await expect(navigation.getByRole('button', { name: 'Next embedded entity' })).toBeDisabled();
+
+  await navigation.hover();
+  await navigation.getByRole('button', { name: 'Previous embedded entity' }).click();
+  await expect(summary).toHaveClass(/embedded-nav-current/);
+  // Enter toggles the current item instead of pressing the clicked footer button again
+  await page.keyboard.press('Enter');
+  await expect(summaryHeader).toHaveAttribute('aria-expanded', 'true');
+  await expect(summary).toHaveClass(/embedded-nav-current/);
+  await page.keyboard.press('Enter');
+  await expect(summaryHeader).toHaveAttribute('aria-expanded', 'false');
+
+  await linkedCustomer.getByText('Linked customer', { exact: true }).click();
+  await expect(linkedCustomer).toHaveClass(/embedded-nav-current/);
+  await expect(current).toHaveCount(1);
+
+  await page.getByText('welcome:', { exact: true }).click();
+  await expect(current).toHaveCount(0);
+
+  await navigation.hover();
+  await navigation.getByRole('button', { name: 'To bottom' }).click();
+  await expect(linkedCustomer).toHaveClass(/embedded-nav-current/);
+  await page.keyboard.press('Home');
+  await expect(summary).toHaveClass(/embedded-nav-current/);
+
+  await page.getByRole('link', { name: 'customer', exact: true }).click();
+  await expect(page.getByText('Customer 42', { exact: true })).toBeVisible();
+  await expect(navigation).toHaveCount(0);
+});
+
+test('expands and collapses all embedded entities of a level', async ({ page }) => {
+  await openEntryPoint(page);
+  const status = page.getByText('ready', { exact: true });
+  await page.getByRole('button', { name: 'Expand all embedded entities' }).click();
+  await expect(status).toBeVisible();
+  await page.getByRole('button', { name: 'Collapse all embedded entities' }).first().click();
+  await expect(status).toBeHidden();
+});
+
+test('leaves nested embedded entities alone when expanding or collapsing a level', async ({ page }) => {
+  await openEntryPoint(page);
+  const expandAll = page.getByRole('button', { name: 'Expand all embedded entities' });
+  const collapseAll = page.getByRole('button', { name: 'Collapse all embedded entities' });
+  const summaryHeader = page.locator('mat-expansion-panel-header', { hasText: 'Embedded summary' });
+  const nestedHeader = page.locator('mat-expansion-panel-header', { hasText: 'Nested detail' });
+
+  await expandAll.click();
+  await expect(summaryHeader).toHaveAttribute('aria-expanded', 'true');
+  await expect(nestedHeader).toHaveAttribute('aria-expanded', 'false');
+
+  await expandAll.last().click();
+  await expect(nestedHeader).toHaveAttribute('aria-expanded', 'true');
+
+  await collapseAll.first().click();
+  await expect(summaryHeader).toHaveAttribute('aria-expanded', 'false');
+  await expect(nestedHeader).toHaveAttribute('aria-expanded', 'true');
+  await expect(collapseAll).toHaveCount(1);
+});
+
+test('expands and collapses all top level embedded entities with + and -', async ({ page }) => {
+  await openEntryPoint(page);
+  const summaryHeader = page.locator('mat-expansion-panel-header', { hasText: 'Embedded summary' });
+  const nestedHeader = page.locator('mat-expansion-panel-header', { hasText: 'Nested detail' });
+
+  await page.keyboard.press('+');
+  await expect(summaryHeader).toHaveAttribute('aria-expanded', 'true');
+  await expect(nestedHeader).toHaveAttribute('aria-expanded', 'false');
+
+  // + needs Shift on a US layout
+  await page.keyboard.press('-');
+  await expect(summaryHeader).toHaveAttribute('aria-expanded', 'false');
+  await page.keyboard.press('Shift++');
+  await expect(summaryHeader).toHaveAttribute('aria-expanded', 'true');
+
+  await page.getByRole('button', { name: 'Expand all embedded entities' }).first().hover();
+  await expect(page.locator('.mat-mdc-tooltip')).toHaveText('Expand all embedded entities (+)');
+});
+
 test('previews JSON, text, and image link content', async ({ page }) => {
   await openEntryPoint(page);
   await page.getByRole('link', { name: 'plain-json' }).click();
@@ -279,12 +395,94 @@ test('downloads non-Siren content', async ({ page }) => {
 
 test('searches nested properties in the tree', async ({ page }) => {
   await openEntryPoint(page);
-  await page.getByRole('switch').check();
   const search = page.getByPlaceholder('Search ...');
   await search.fill('needle-value');
   await expect(page.getByText('searchableProperty:', { exact: true })).toBeVisible();
   await expect(page.getByText('needle-value', { exact: true })).toBeVisible();
   await expect(page.locator('.match-counter')).toHaveText('1/1');
+});
+
+test('expands an embedded entity that contains a search hit', async ({ page }) => {
+  await openEntryPoint(page);
+  await page.getByPlaceholder('Search ...').fill('ready');
+  await expect(page.locator('mark', { hasText: 'ready' })).toBeVisible();
+  await expect(page.locator('.match-counter')).toHaveText('1/1');
+});
+
+test('steps through link relation hits with Enter and Shift+Enter', async ({ page }) => {
+  await openEntryPoint(page);
+  await page.getByRole('button', { name: 'Search options' }).click();
+  await page.getByRole('switch', { name: 'Link relations' }).check();
+  await page.keyboard.press('Escape');
+
+  const search = page.getByPlaceholder('Search ...');
+  await search.fill('plain');
+  await expect(page.locator('.match-counter')).toHaveText('1/2');
+  await search.press('Enter');
+  await expect(page.locator('.match-counter')).toHaveText('2/2');
+  await search.press('Shift+Enter');
+  await expect(page.locator('.match-counter')).toHaveText('1/2');
+  await expect(page.locator('.link-group.search-current')).toContainText('plain-json');
+});
+
+test('remembers search options after a reload', async ({ page }) => {
+  await openEntryPoint(page);
+  await page.getByRole('button', { name: 'Search options' }).click();
+  await page.getByRole('switch', { name: 'Actions' }).check();
+  await page.keyboard.press('Escape');
+
+  await page.reload();
+  await expect(page.getByText('Demo API', { exact: true })).toBeVisible();
+  await page.getByRole('button', { name: 'Search options' }).click();
+  await expect(page.getByRole('switch', { name: 'Actions' })).toBeChecked();
+});
+
+test('opens the raw view 2 levels deep and expands or collapses it with buttons and keys', async ({ page }) => {
+  await openEntryPoint(page);
+  await page.getByRole('radio', { name: 'Raw' }).check();
+  const rawView = page.locator('app-raw-view');
+  // an opened node lists "key: value"; a collapsed one only shows a JSON preview of its content
+  const rootProperty = 'welcome: "Navigate using hypermedia"';
+  const embeddedProperty = 'status: "ready"';
+  await expect(rawView).toContainText(rootProperty);
+  await expect(rawView).not.toContainText(embeddedProperty);
+
+  // a clicked view toggle releases the focus, so the shortcuts work right away
+  await page.keyboard.press('+');
+  await expect(rawView).toContainText(embeddedProperty);
+  await page.keyboard.press('-');
+  await expect(rawView).not.toContainText(rootProperty);
+  await page.getByRole('button', { name: 'Expand 2 levels' }).click();
+  await expect(rawView).toContainText(rootProperty);
+  await expect(rawView).not.toContainText(embeddedProperty);
+  await page.getByRole('button', { name: 'Expand all' }).click();
+  await expect(rawView).toContainText(embeddedProperty);
+  await page.getByRole('button', { name: 'Collapse all' }).hover();
+  await expect(page.locator('.mat-mdc-tooltip')).toHaveText('Collapse all (-)');
+
+  const navigation = page.getByRole('navigation', { name: 'Page navigation' });
+  await expect(navigation.getByRole('button')).toHaveCount(2);
+  await expect(navigation.getByRole('button', { name: 'Back to top' })).toBeAttached();
+  await expect(navigation.getByRole('button', { name: 'To bottom' })).toBeAttached();
+});
+
+test('searches the raw view as plain text', async ({ page }) => {
+  await openEntryPoint(page);
+  await page.getByRole('radio', { name: 'Raw' }).check();
+  await page.getByPlaceholder('Search ...').fill('"class"');
+  await expect(page.locator('app-raw-view mark').first()).toHaveText('"class"');
+});
+
+test('hides the search when configured', async ({ page }) => {
+  await page.route('**/app.config.json', route => route.fulfill({
+    contentType: 'application/json',
+    body: JSON.stringify({
+      showSearch: false,
+      relationIconMapping: {}, httpMethodIconMapping: {}, actionPopupWarningConfigurations: [],
+    }),
+  }));
+  await openEntryPoint(page);
+  await expect(page.getByPlaceholder('Search ...')).toBeHidden();
 });
 
 test('navigates with breadcrumbs and recovers from an API error', async ({ page }) => {
@@ -397,4 +595,167 @@ test('sends credentials to an API backed by a BFF', async ({ page, context }) =>
   const entryPointRequest = page.waitForRequest(`${api}/entrypoint`);
   await openEntryPoint(page);
   expect(await (await entryPointRequest).headerValue('cookie')).toContain('bff-session=session-cookie');
+});
+
+test('keeps a site settings panel open and the focus while editing it', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Settings' }).click();
+  await page.getByRole('tab', { name: 'Sites' }).click();
+  await page.getByRole('button', { name: 'Add site' }).click();
+
+  const site = page.locator('app-site-settings').nth(1);
+  const header = site.locator('mat-expansion-panel-header');
+  await expect(header).toHaveAttribute('aria-expanded', 'true');
+  await site.getByRole('textbox', { name: 'Host' }).fill('api.test');
+  await site.locator('#headersTitle').click();
+  await expect(header).toHaveAttribute('aria-expanded', 'true');
+  await expect(header).toContainText('api.test');
+
+  await site.locator('#addHeaderButton').click();
+  await site.getByRole('textbox', { name: 'Key' }).fill('X-Tenant');
+  await page.keyboard.press('Tab');
+  await expect(site.getByRole('textbox', { name: 'Value' })).toBeFocused();
+  await page.keyboard.type('blue');
+  await site.locator('#headersTitle').click();
+  await expect(header).toHaveAttribute('aria-expanded', 'true');
+  await expect(site.getByRole('textbox', { name: 'Key' })).toHaveValue('X-Tenant');
+  await expect(site.getByRole('textbox', { name: 'Value' })).toHaveValue('blue');
+
+  await site.locator('.deleteHeader').click();
+  await expect(site.getByRole('textbox', { name: 'Key' })).toHaveCount(0);
+});
+
+async function openSiteSettings(page: import('@playwright/test').Page) {
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Settings' }).click();
+  await page.getByRole('tab', { name: 'Sites' }).click();
+}
+
+async function addHeaderSetting(site: import('@playwright/test').Locator, key: string, value: string) {
+  await site.locator('#addHeaderButton').click();
+  await site.getByRole('textbox', { name: 'Key' }).last().fill(key);
+  await site.getByRole('textbox', { name: 'Value' }).last().fill(value);
+  await site.locator('#headersTitle').click();
+}
+
+test('sends global and site specific headers', async ({ page }) => {
+  await openSiteSettings(page);
+  const global = page.locator('app-site-settings').first();
+  await global.locator('mat-expansion-panel-header').click();
+  await addHeaderSetting(global, 'X-Global', 'g1');
+
+  await page.getByRole('button', { name: 'Add site' }).click();
+  const site = page.locator('app-site-settings').nth(1);
+  await expect(site.locator('mat-expansion-panel-header')).toHaveAttribute('aria-expanded', 'true');
+  await site.getByRole('textbox', { name: 'Host' }).fill('API.test');
+  await addHeaderSetting(site, 'X-Site', 's1');
+  await expect(page.locator('app-error-dialog')).toHaveCount(0);
+  await page.keyboard.press('Escape');
+
+  await expect(page.getByText('Settings saved.')).toBeVisible();
+  const request = page.waitForRequest(`${api}/entrypoint`);
+  await openEntryPoint(page);
+  const headers = (await request).headers();
+  expect(headers['x-global']).toBe('g1');
+  expect(headers['x-site']).toBe('s1');
+});
+
+test('accepts only a host for site specific settings', async ({ page }) => {
+  await openSiteSettings(page);
+  await page.getByRole('button', { name: 'Add site' }).click();
+  const site = page.locator('app-site-settings').nth(1);
+  const header = site.locator('mat-expansion-panel-header');
+  await expect(header).toHaveAttribute('aria-expanded', 'true');
+  const host = site.getByRole('textbox', { name: 'Host' });
+
+  await expect(host).toHaveAttribute('placeholder', 'Host or IP, optional port');
+  await host.pressSequentially('https://api.test/entrypoint');
+  // validated while typing
+  await expect(site.locator('mat-error')).toHaveText('Enter the host without scheme: api.test');
+  await site.locator('#headersTitle').click();
+  await expect(header).not.toContainText('api.test');
+
+  await host.fill('api.test/entrypoint');
+  await site.locator('#headersTitle').click();
+  await expect(site.locator('mat-error')).toHaveText('Enter the host without path, query or fragment: api.test');
+
+  await host.fill('api.test:8080');
+  await site.locator('#headersTitle').click();
+  await expect(site.locator('mat-error')).toHaveCount(0);
+  await expect(header).toContainText('api.test:8080');
+
+  // an invalid host is never stored, closing the settings discards it
+  await host.fill('https://other.test');
+  await site.locator('#headersTitle').click();
+  await page.keyboard.press('Escape');
+  await expect(page.getByText('Settings saved.')).toBeVisible();
+  expect(await page.evaluate(() => localStorage.getItem('appSettings'))).not.toContain('other.test');
+  await page.getByRole('button', { name: 'Settings' }).click();
+  await page.getByRole('tab', { name: 'Sites' }).click();
+  await page.locator('app-site-settings').nth(1).locator('mat-expansion-panel-header').click();
+  await expect(page.locator('app-site-settings').nth(1).getByRole('textbox', { name: 'Host' })).toHaveValue('api.test:8080');
+});
+
+test('opens a new site for entering its host and does not add a second one without host', async ({ page }) => {
+  await openSiteSettings(page);
+  await page.getByRole('button', { name: 'Add site' }).click();
+  const newSite = page.locator('app-site-settings').nth(1);
+  await expect(newSite.locator('mat-expansion-panel-header')).toHaveAttribute('aria-expanded', 'true');
+  await expect(newSite.getByRole('textbox', { name: 'Host' })).toBeFocused();
+
+  await newSite.locator('mat-expansion-panel-header').click();
+  await page.getByRole('button', { name: 'Add site' }).click();
+
+  await expect(page.locator('app-site-settings')).toHaveCount(2);
+  await expect(page.locator('app-error-dialog')).toHaveCount(0);
+  const site = page.locator('app-site-settings').nth(1);
+  await expect(site.locator('mat-expansion-panel-header')).toHaveAttribute('aria-expanded', 'true');
+  await expect(site.getByRole('textbox', { name: 'Host' })).toBeFocused();
+});
+
+test('keeps using headers stored before values could be hidden', async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem('appSettings', JSON.stringify({
+    SiteSettings: {
+      GlobalSiteSettings: { SiteUrl: 'Global', Headers: [{ Key: 'X-Global', Value: 'g1' }] },
+      SiteSpecificSettings: [{ SiteUrl: 'api.test', Headers: [{ Key: 'X-Site', Value: 's1' }] }],
+    },
+  })));
+
+  const request = page.waitForRequest(`${api}/entrypoint`);
+  await openEntryPoint(page);
+  const headers = (await request).headers();
+  expect(headers['x-global']).toBe('g1');
+  expect(headers['x-site']).toBe('s1');
+
+  await page.getByRole('button', { name: 'Settings' }).click();
+  await page.getByRole('tab', { name: 'Sites' }).click();
+  const site = page.locator('app-site-settings').nth(1);
+  await site.locator('mat-expansion-panel-header').click();
+  await expect(site.getByRole('button', { name: 'Hide value' })).toHaveAttribute('aria-pressed', 'false');
+  await expect(site.getByRole('textbox', { name: 'Value' })).not.toHaveClass(/maskedValue/);
+});
+
+test('hides a header value, also after renaming the header and reopening the settings', async ({ page }) => {
+  await openSiteSettings(page);
+  const global = page.locator('app-site-settings').first();
+  await global.locator('mat-expansion-panel-header').click();
+  await addHeaderSetting(global, 'X-Secret', 'token');
+  const value = global.getByRole('textbox', { name: 'Value' });
+  await expect(value).not.toHaveClass(/maskedValue/);
+
+  await global.getByRole('button', { name: 'Hide value' }).click();
+  await expect(value).toHaveClass(/maskedValue/);
+  await global.getByRole('textbox', { name: 'Key' }).fill('X-Renamed');
+  await global.locator('#headersTitle').click();
+  await page.keyboard.press('Escape');
+  await expect(page.getByText('Settings saved.')).toBeVisible();
+  expect(await page.evaluate(() => localStorage.getItem('appSettings')))
+    .toContain('{"Key":"X-Renamed","Value":"token","Hidden":true}');
+
+  await page.getByRole('button', { name: 'Settings' }).click();
+  await page.getByRole('tab', { name: 'Sites' }).click();
+  await global.locator('mat-expansion-panel-header').click();
+  await expect(global.getByRole('button', { name: 'Hide value' })).toHaveAttribute('aria-pressed', 'true');
+  await expect(value).toHaveClass(/maskedValue/);
+  await expect(value).toHaveValue('token');
 });
