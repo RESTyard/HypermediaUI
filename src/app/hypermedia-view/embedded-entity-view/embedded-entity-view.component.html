@@ -13,6 +13,7 @@
 
   @for (embeddedEntity of embeddedEntities; track embeddedEntity; let idx = $index) {
     <mat-expansion-panel class="entityExpander"
+                         togglePosition="before"
                          [attr.data-embedded-nav-index]="isTopLevel ? idx : null"
                          [class.embedded-nav-current]="isTopLevel && navigation.currentIndex() === idx"
                          (pointerdown)="selectForNavigation(idx)"
