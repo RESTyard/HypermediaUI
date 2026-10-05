@@ -55,14 +55,14 @@
   @if (isSearchAvailable) {
     <div class="search-box" [class.invalid]="search.queryError()">
       <mat-icon class="search-icon">search</mat-icon>
-      <input type="text"
+      <input #searchInput
+             type="text"
              aria-label="Search"
              placeholder="Search ..."
              [value]="search.inputText()"
              (input)="search.setInputText($any($event.target).value)"
-             (keydown.enter)="search.next()"
-             (keydown.shift.enter)="search.previous()"
-             [matTooltip]="search.queryError() ? 'Invalid regular expression: ' + search.queryError() : ''">
+             (keydown)="onSearchKeydown($event)"
+             [matTooltip]="search.queryError() ? 'Invalid regular expression: ' + search.queryError() : 'Search (/)'">
 
       @if (search.inputText()) {
         <span class="match-counter" [class.no-matches]="search.hits().length === 0">
@@ -78,7 +78,7 @@
               [disabled]="search.hits().length === 0"
               (click)="search.previous()"
               aria-label="Previous hit"
-              matTooltip="Previous hit (Shift+Enter)">
+              matTooltip="Previous hit (Page up)">
         <mat-icon>keyboard_arrow_up</mat-icon>
       </button>
       <button mat-icon-button
@@ -86,7 +86,7 @@
               [disabled]="search.hits().length === 0"
               (click)="search.next()"
               aria-label="Next hit"
-              matTooltip="Next hit (Enter)">
+              matTooltip="Next hit (Page down)">
         <mat-icon>keyboard_arrow_down</mat-icon>
       </button>
       <button mat-icon-button
@@ -99,7 +99,7 @@
     </div>
 
     <mat-menu #searchOptionsMenu="matMenu">
-      <div class="search-options" tabindex="-1" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
+      <div class="search-options" tabindex="-1" (click)="$event.stopPropagation()" (keydown)="$event.key !== 'Escape' && $event.stopPropagation()">
         <span class="search-options-title">Search in</span>
         @for (option of searchScopeOptions; track option.key) {
           <mat-slide-toggle color="primary"

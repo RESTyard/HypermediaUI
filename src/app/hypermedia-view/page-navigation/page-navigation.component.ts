@@ -2,7 +2,7 @@ import { Component, HostListener, Input, inject } from '@angular/core';
 import { EmbeddedNavigationService } from './embedded-navigation.service';
 
 // keys are left to elements that use them themselves, e.g. text fields, toggles and the property tree
-const keyHandlingElements = [
+export const keyHandlingElements = [
   'input', 'textarea', 'select', '[contenteditable]:not([contenteditable="false"])',
   '[role="radio"]', '[role="radiogroup"]', '[role="tree"]', '[role="treeitem"]', '[role="menu"]',
   '[role="menuitem"]', '[role="listbox"]', '[role="option"]', '[role="slider"]', '[role="tab"]',

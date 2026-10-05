@@ -1,4 +1,4 @@
-import {Component, OnInit, inject, OnDestroy} from '@angular/core';
+import {Component, ElementRef, HostListener, OnInit, inject, OnDestroy, viewChild} from '@angular/core';
 import {HypermediaClientService} from '../hypermedia-client.service';
 import {SirenClientObject} from '../siren-parser/siren-client-object';
 import {ActivatedRoute, Router} from '@angular/router';
@@ -17,6 +17,7 @@ import {EntitySearchService} from "../search/entity-search.service";
 import {SearchOptions} from "../search/entity-search";
 import {SettingsService} from "../../settings/services/settings.service";
 import {EmbeddedNavigationService} from "../page-navigation/embedded-navigation.service";
+import {keyHandlingElements} from "../page-navigation/page-navigation.component";
 
 interface SearchOptionDefinition {
   key: keyof SearchOptions;
@@ -39,6 +40,7 @@ export class HypermediaControlComponent implements OnInit, OnDestroy {
   protected search = inject(EntitySearchService);
   private settingsService = inject(SettingsService);
   private embeddedNavigation = inject(EmbeddedNavigationService);
+  private searchInput = viewChild<ElementRef<HTMLInputElement>>('searchInput');
   private store = inject<Store<{
     appSettings: AppSettings;
     appConfig: AppConfig;
@@ -233,6 +235,61 @@ export class HypermediaControlComponent implements OnInit, OnDestroy {
    */
   public releaseToggleFocus(event: MouseEvent) {
     if (event.detail > 0 && document.activeElement instanceof HTMLElement) document.activeElement.blur();
+  }
+
+  /**
+   * Jumping to a hit leaves the search box, so the page navigation keys continue from the hit.
+   * All other keys, e.g. Home and End, keep editing the query.
+   */
+  public onSearchKeydown(event: KeyboardEvent) {
+    if (event.ctrlKey || event.altKey || event.metaKey) return;
+    switch (event.key) {
+      case 'Enter':
+        if (event.shiftKey) this.search.previous(); else this.search.next();
+        break;
+      case 'PageDown':
+        this.search.next();
+        break;
+      case 'PageUp':
+        this.search.previous();
+        break;
+      case 'Escape':
+        this.searchInput()?.nativeElement.blur();
+        event.preventDefault();
+        return;
+      default:
+        return;
+    }
+    event.preventDefault();
+    // stay in the box while there is nothing to jump to, e.g. to fix the query
+    if (this.search.hits().length > 0) this.searchInput()?.nativeElement.blur();
+  }
+
+  @HostListener('document:keydown', ['$event'])
+  public onDocumentKeydown(event: KeyboardEvent) {
+    if (!this.isSearchAvailable) return;
+    if (event.defaultPrevented || event.ctrlKey || event.altKey || event.metaKey) return;
+    if (event.target instanceof Element && event.target.closest(keyHandlingElements)) return;
+    // / needs Shift on some layouts, e.g. German
+    if (event.shiftKey && event.key !== '/') return;
+    switch (event.key) {
+      case '/':
+        this.searchInput()?.nativeElement.focus();
+        this.searchInput()?.nativeElement.select();
+        break;
+      // without an active search the browser scrolls by a page as usual
+      case 'PageDown':
+        if (!this.search.isActive()) return;
+        this.search.next();
+        break;
+      case 'PageUp':
+        if (!this.search.isActive()) return;
+        this.search.previous();
+        break;
+      default:
+        return;
+    }
+    event.preventDefault();
   }
 
   public setShowRaw(showRaw: boolean) {

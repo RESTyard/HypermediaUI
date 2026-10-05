@@ -1,4 +1,5 @@
-import { computed, Injectable, linkedSignal, signal } from '@angular/core';
+import { computed, inject, Injectable, linkedSignal, signal } from '@angular/core';
+import { EmbeddedNavigationService } from '../page-navigation/embedded-navigation.service';
 import { ISirenClientObject } from '../siren-parser/entity-interfaces';
 import { SirenClientObject } from '../siren-parser/siren-client-object';
 import {
@@ -23,6 +24,8 @@ export interface RawSegment extends TextSegment {
 @Injectable({ providedIn: 'root' })
 export class EntitySearchService {
   static readonly debounceMs = 150;
+
+  private readonly navigation = inject(EmbeddedNavigationService);
 
   /** The text as typed; `query` follows it after the debounce. */
   readonly inputText = signal('');
@@ -148,7 +151,7 @@ export class EntitySearchService {
   }
 
   private step(direction: 1 | -1) {
-    // Enter right after typing should go to the first hit of the new query, not past it
+    // a jump right after typing should go to the first hit of the new query, not past it
     if (this.debounceHandle !== undefined) {
       this.commitQuery();
       return;
@@ -167,7 +170,8 @@ export class EntitySearchService {
   }
 
   /**
-   * Scrolls the current hit into view. Expanding its embedded entities renders their content
+   * Scrolls the current hit into view and makes its top level embedded item the current one, so
+   * the page navigation keys continue from there. Expanding its embedded entities renders their content
    * asynchronously (lazy panel content, expand animation), so retry for a few frames.
    */
   private revealCurrent(remainingFrames = 30) {
@@ -178,10 +182,20 @@ export class EntitySearchService {
       const element = document.querySelector(`[data-search-target="${CSS.escape(hit.target)}"]`);
       if (element) {
         element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        this.selectNavigationItem(element);
       } else if (remainingFrames > 0) {
         this.revealCurrent(remainingFrames - 1);
       }
     });
+  }
+
+  private selectNavigationItem(element: Element) {
+    const item = element.closest(`[${EmbeddedNavigationService.itemAttribute}]`);
+    if (item) {
+      this.navigation.select(Number(item.getAttribute(EmbeddedNavigationService.itemAttribute)));
+    } else {
+      this.navigation.reset();
+    }
   }
 }
 

@@ -409,20 +409,56 @@ test('expands an embedded entity that contains a search hit', async ({ page }) =
   await expect(page.locator('.match-counter')).toHaveText('1/1');
 });
 
-test('steps through link relation hits with Enter and Shift+Enter', async ({ page }) => {
+test('steps through link relation hits with Page down and Page up', async ({ page }) => {
   await openEntryPoint(page);
   await page.getByRole('button', { name: 'Search options' }).click();
   await page.getByRole('switch', { name: 'Link relations' }).check();
   await page.keyboard.press('Escape');
+  await expect(page.getByRole('switch', { name: 'Link relations' })).toBeHidden();
 
   const search = page.getByPlaceholder('Search ...');
   await search.fill('plain');
   await expect(page.locator('.match-counter')).toHaveText('1/2');
-  await search.press('Enter');
+  await search.press('PageDown');
   await expect(page.locator('.match-counter')).toHaveText('2/2');
-  await search.press('Shift+Enter');
+  await expect(search).not.toBeFocused();
+  // outside the search box too
+  await page.keyboard.press('PageUp');
   await expect(page.locator('.match-counter')).toHaveText('1/2');
   await expect(page.locator('.link-group.search-current')).toContainText('plain-json');
+});
+
+test('continues the page navigation from the embedded entity of a search hit', async ({ page }) => {
+  await openEntryPoint(page);
+  const summary = page.locator('mat-expansion-panel', { hasText: 'Embedded summary' });
+  const linkedCustomer = page.locator('mat-card', { hasText: 'Linked customer' });
+  const search = page.getByPlaceholder('Search ...');
+
+  await page.keyboard.press('/');
+  await expect(search).toBeFocused();
+  await page.keyboard.type('ready');
+  // keys edit the query while in the search box
+  await page.keyboard.press('Home');
+  await page.keyboard.type('is ');
+  await expect(search).toHaveValue('is ready');
+  await page.keyboard.press('ArrowDown');
+  await expect(search).toBeFocused();
+
+  await page.keyboard.press('Control+a');
+  await page.keyboard.type('ready');
+  await page.keyboard.press('Enter');
+  await expect(search).not.toBeFocused();
+  await expect(summary).toHaveClass(/embedded-nav-current/);
+  await page.keyboard.press('ArrowDown');
+  await expect(linkedCustomer).toHaveClass(/embedded-nav-current/);
+
+  await search.focus();
+  await page.keyboard.press('Escape');
+  await expect(search).not.toBeFocused();
+  await expect(search).toHaveValue('ready');
+
+  await page.getByRole('button', { name: 'Next hit' }).hover();
+  await expect(page.locator('.mat-mdc-tooltip')).toHaveText('Next hit (Page down)');
 });
 
 test('remembers search options after a reload', async ({ page }) => {
