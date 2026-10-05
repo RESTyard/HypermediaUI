@@ -2,6 +2,7 @@
 import {AbstractControl} from '@angular/forms';
 import {FormlyExtension, FormlyFieldConfig} from '@ngx-formly/core';
 import {FormlyJsonschema} from '@ngx-formly/core/json-schema';
+import {JSONSchema7} from 'json-schema';
 
 // fix forms with arrays do not allow empty arrays to be submitted (which is not null)
 export const allowEmptyArrayExtension: FormlyExtension = {
@@ -36,9 +37,14 @@ export function createActionFormlyFields(formlyJsonschema: FormlyJsonschema, jso
         if (mappedField.key && mappedField.props) {
           mappedField.props.label = mappedField.key + '';
         }
+        const types = schemaTypes(mapSource);
+        const allowsNull = isUntyped(mapSource) || isNullable(mapSource) || hasNullableBranch(mapSource);
         mappedField.validators ??= {};
-        mappedField.validators['required'] = (control: AbstractControl) => (types.includes('null') || (control.value !== null && control.value !== undefined));
-        const types = mapSource.type === undefined ? [] : mapSource.type instanceof Array ? mapSource.type : [mapSource.type];
+        mappedField.validators['required'] = (control: AbstractControl) => (allowsNull || (control.value !== null && control.value !== undefined));
+        // shows the asterisk, formly only sets it for properties in the schema's required list
+        if (!allowsNull && mappedField.key !== undefined && mappedField.props) {
+          mappedField.props.required = true;
+        }
         if (types.includes('string') && mapSource.format === 'date') {
           mappedField.type = 'date';
           mappedField.parsers = [
@@ -49,6 +55,24 @@ export function createActionFormlyFields(formlyJsonschema: FormlyJsonschema, jso
       },
     }),
   ];
+}
+
+function schemaTypes(schema: JSONSchema7): string[] {
+  return schema.type === undefined ? [] : schema.type instanceof Array ? schema.type : [schema.type];
+}
+
+function isNullable(schema: JSONSchema7): boolean {
+  return schemaTypes(schema).includes('null') || !!schema.enum?.includes(null);
+}
+
+// the simplifier types anyOf wrappers as object, so their own type does not tell
+function hasNullableBranch(schema: JSONSchema7): boolean {
+  return [...(schema.oneOf ?? []), ...(schema.anyOf ?? [])].some(branch => typeof branch === 'object' && isNullable(branch));
+}
+
+// no type info, e.g. {}
+function isUntyped(schema: JSONSchema7): boolean {
+  return schema.type === undefined && schema.enum === undefined && schema.const === undefined;
 }
 
 function formatDate(date: Date) {
