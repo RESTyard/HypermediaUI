@@ -4,7 +4,7 @@ import {FieldArrayType, FormlyFieldConfig} from '@ngx-formly/core';
 @Component({
     selector: 'formly-array-type',
     template: ` <div>
-      <mat-card style="margin: 10px 0 0 0" appearance="raised">
+      <mat-card style="margin: 0 0 20px 0" appearance="raised">
         <div class="header-container">
           <mat-card-header class="header-content">
             @if (props.label) {

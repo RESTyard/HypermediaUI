@@ -174,7 +174,7 @@ button[mat-icon-button] {
   flex: 1;
 }
 
-::ng-deep .mat-mdc-checkbox {
+:host ::ng-deep .mat-mdc-checkbox {
   transform: scale(0.8);
 }
 
