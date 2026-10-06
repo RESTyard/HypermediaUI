@@ -1,10 +1,10 @@
 import {TestBed} from '@angular/core/testing';
-import {FormGroup} from '@angular/forms';
+import {FormArray, FormControl, FormGroup, Validators} from '@angular/forms';
 import {FormlyFieldConfig, FormlyFormBuilder, FormlyModule} from '@ngx-formly/core';
 import {FormlyJsonschema} from '@ngx-formly/core/json-schema';
 import {FormlyMaterialModule} from '@ngx-formly/material';
 import {JSONSchema7} from 'json-schema';
-import {createActionFormlyFields} from './formly-extensions';
+import {createActionFormlyFields, describeInvalidControls} from './formly-extensions';
 import {SchemaSimplifier} from './siren-parser/schema-simplifier';
 
 describe('createActionFormlyFields', () => {
@@ -81,5 +81,19 @@ describe('createActionFormlyFields', () => {
     it(`accepts a value for a ${name}`, () => {
       expect(buildForm(property, {value}).form.valid).toBeTrue();
     });
+  });
+});
+
+describe('describeInvalidControls', () => {
+  it('lists the path and failed validators of each invalid control', () => {
+    const form = new FormGroup({
+      name: new FormControl('set', Validators.required),
+      state: new FormControl(null, [Validators.required, Validators.minLength(2)]),
+      paging: new FormGroup({size: new FormControl(null, Validators.required)}),
+      tags: new FormArray([new FormControl('ok'), new FormControl(null, Validators.required)]),
+      ignored: new FormControl({value: null, disabled: true}, Validators.required),
+    });
+
+    expect(describeInvalidControls(form)).toEqual(['state (required)', 'paging.size (required)', 'tags.1 (required)']);
   });
 });

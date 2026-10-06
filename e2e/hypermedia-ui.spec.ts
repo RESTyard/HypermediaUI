@@ -59,6 +59,13 @@ const customer = {
       fields: [{ name: 'address', type: 'application/json', class: [`${api}/schemas/address`] }],
     },
     {
+      name: 'moveTo', title: 'Move to', method: 'PUT', href: `${api}/customers/42/move`, type: 'application/json',
+      fields: [{
+        name: 'address', type: 'application/json', class: [`${api}/schemas/address`],
+        value: { street: '1 Default Lane', city: 'Paris', labels: [] },
+      }],
+    },
+    {
       name: 'uploadAvatar', title: 'Upload avatar', method: 'POST', href: `${api}/customers/42/avatar`, type: 'multipart/form-data',
       fields: [{ name: 'file', type: 'file', accept: 'text/plain' }],
     },
@@ -82,7 +89,10 @@ async function installApi(page: import('@playwright/test').Page) {
         case '/schemas/address': return route.fulfill({
           contentType: 'application/json',
           body: JSON.stringify({
-            type: 'object', required: ['street'], properties: { street: { type: 'string' }, city: { type: 'string' } },
+            type: 'object', required: ['street', 'labels'], properties: {
+              street: { type: 'string' }, city: { type: 'string' },
+              tags: { type: ['array', 'null'], items: { type: 'string' } }, labels: { type: 'array', items: { type: 'string' } },
+            },
           }),
         });
         case '/documents/data': return route.fulfill({ contentType: 'application/json', body: JSON.stringify({ document: 'ordinary JSON' }) });
@@ -138,7 +148,11 @@ async function installApi(page: import('@playwright/test').Page) {
     }
     if (url.pathname === '/customers/42/address') {
       expect(request.method()).toBe('PUT');
-      expect(request.postDataJSON()).toEqual([{ address: { street: '12 Analytical Engine Way', city: 'London' } }]);
+      expect(request.postDataJSON()).toEqual([{ address: { street: '12 Analytical Engine Way', city: 'London', tags: null, labels: [] } }]);
+      return json({}, 204);
+    }
+    if (url.pathname === '/customers/42/move') {
+      expect(request.postDataJSON()).toEqual([{ address: { street: '1 Default Lane', city: 'Paris', tags: null, labels: [] } }]);
       return json({}, 204);
     }
     if (url.pathname === '/customers/42/avatar') {
@@ -184,6 +198,36 @@ test('executes an action with parameters', async ({ page }) => {
   await page.locator('button', { hasText: 'Change address' }).click();
   await page.getByLabel('street').fill('12 Analytical Engine Way');
   await page.getByLabel('city').fill('London');
+
+  // a nullable array starts as null, a non-nullable one without default value is missing
+  const tags = page.locator('formly-array-type', { hasText: 'tags' });
+  const labels = page.locator('formly-array-type', { hasText: 'labels' });
+  await expect(tags.locator('legend')).toHaveText('tags');
+  await expect(tags).toContainText('null');
+  await expect(labels.locator('legend')).toHaveText('labels *');
+  await expect(labels).toContainText('not set');
+  await expect(page.getByRole('button', { name: 'Submit' })).toBeDisabled();
+
+  // removing the last item leaves an empty array
+  await labels.locator('.add-button').click();
+  await labels.locator('.delete-button').click();
+  await expect(labels).toContainText('empty');
+
+  // a nullable array can be set back to null
+  await tags.locator('.add-button', { hasText: 'add' }).click();
+  await tags.locator('.add-button', { hasText: 'backspace' }).click();
+  await expect(tags).toContainText('null');
+
+  await page.getByRole('button', { name: 'Submit' }).click();
+  await expect(page.locator('app-parameter-action .success')).toBeVisible();
+});
+
+test('takes arrays from the default values', async ({ page }) => {
+  await openEntryPoint(page);
+  await page.getByRole('link', { name: 'customer' }).click();
+
+  await page.locator('button', { hasText: 'Move to' }).click();
+  await expect(page.locator('formly-array-type', { hasText: 'labels' })).toContainText('empty');
   await page.getByRole('button', { name: 'Submit' }).click();
   await expect(page.locator('app-parameter-action .success')).toBeVisible();
 });

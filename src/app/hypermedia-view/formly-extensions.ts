@@ -1,31 +1,20 @@
 
-import {AbstractControl} from '@angular/forms';
+import {AbstractControl, FormArray, FormGroup} from '@angular/forms';
 import {FormlyExtension, FormlyFieldConfig} from '@ngx-formly/core';
 import {FormlyJsonschema} from '@ngx-formly/core/json-schema';
 import {JSONSchema7} from 'json-schema';
 
 // fix forms with arrays do not allow empty arrays to be submitted (which is not null)
 export const allowEmptyArrayExtension: FormlyExtension = {
-  postPopulate(field: FormlyFieldConfig) {
-    const ctrl = field.formControl;
-
-    if (field.type === 'array' && ctrl) {
-      // Because the model is initially empty ([]) and the schema says it's required,
-      // the FormControl is born with an error.
-      // in that case remove to allow input
-      if (ctrl.hasError('required')) {
-        ctrl.clearValidators();
-
-        // Update UI so the label/asterisk updates
-        if (field.props) {
-          field.props.required = false;
-        }
-
-        // Refresh validity state
-        ctrl.updateValueAndValidity({emitEvent: false});
-
-        console.log(`Successfully bypassed 'required' for ${field.key} to allow empty arrays`);
-      }
+  // before formly evaluates expressions and adds validators, so the form is valid from the start
+  prePopulate(field: FormlyFieldConfig) {
+    if (field.type !== 'array') {
+      return;
+    }
+    // formly derives props.required from the schema's required list, and its required validator rejects []
+    delete field.expressions?.['props.required'];
+    if (field.props) {
+      field.props.required = false;
     }
   }
 };
@@ -39,10 +28,22 @@ export function createActionFormlyFields(formlyJsonschema: FormlyJsonschema, jso
         }
         const types = schemaTypes(mapSource);
         const allowsNull = isUntyped(mapSource) || isNullable(mapSource) || hasNullableBranch(mapSource);
+        const isArray = mappedField.type === 'array';
         mappedField.validators ??= {};
-        mappedField.validators['required'] = (control: AbstractControl) => (allowsNull || (control.value !== null && control.value !== undefined));
+        // a FormArray's value is always an array, only the model tells an unset array from an empty one
+        mappedField.validators['required'] = (control: AbstractControl, field: FormlyFieldConfig) =>
+          allowsNull || isSet(isArray ? field.model : control.value);
+        if (isArray && mappedField.props) {
+          // the array type shows the asterisk and null state itself, see ArrayTypeComponent
+          mappedField.props['nullable'] = allowsNull;
+        }
+        if (isArray && mapSource.default === undefined) {
+          // formly defaults arrays in the required list to [], but without a default value from the server they are not set
+          delete mappedField.defaultValue;
+        }
         // shows the asterisk, formly only sets it for properties in the schema's required list
-        if (!allowsNull && mappedField.key !== undefined && mappedField.props) {
+        // not for arrays: required would reject an empty array, which is a valid value
+        if (!allowsNull && !isArray && mappedField.key !== undefined && mappedField.props) {
           mappedField.props.required = true;
         }
         if (types.includes('string') && mapSource.format === 'date') {
@@ -55,6 +56,51 @@ export function createActionFormlyFields(formlyJsonschema: FormlyJsonschema, jso
       },
     }),
   ];
+}
+
+// the form value, except that arrays the user never set are null instead of the FormArray's empty array
+export function actionParameterValue(form: FormGroup, fields: FormlyFieldConfig[]): Record<string, unknown> {
+  const value = structuredClone(form.value);
+  replaceUnsetArrays(fields, value);
+  return value;
+}
+
+function replaceUnsetArrays(fields: FormlyFieldConfig[] | undefined, value: unknown) {
+  if (value === null || typeof value !== 'object') {
+    return;
+  }
+  const values = value as Record<string, unknown>;
+  for (const field of fields ?? []) {
+    if (field.key === undefined || field.key === null) {
+      // e.g. the root object or a oneOf wrapper, which share the value of their parent
+      replaceUnsetArrays(field.fieldGroup, value);
+      continue;
+    }
+    const key = String(field.key);
+    if (!(key in values)) {
+      continue;
+    }
+    if (field.type === 'array' && !isSet(field.model)) {
+      values[key] = null;
+    } else {
+      replaceUnsetArrays(field.fieldGroup, values[key]);
+    }
+  }
+}
+
+function isSet(value: unknown): boolean {
+  return value !== null && value !== undefined;
+}
+
+// e.g. ["DeploymentState (enum)", "Paging.PageSize (required)"], to tell the user why a form cannot be submitted
+export function describeInvalidControls(control: AbstractControl, path = ''): string[] {
+  const own = control.errors ? [`${path || 'form'} (${Object.keys(control.errors).join(', ')})`] : [];
+  const children = control instanceof FormGroup || control instanceof FormArray
+    ? Object.entries<AbstractControl>(control.controls)
+      .filter(([, child]) => child.enabled)
+      .flatMap(([key, child]) => describeInvalidControls(child, path ? `${path}.${key}` : key))
+    : [];
+  return [...own, ...children];
 }
 
 function schemaTypes(schema: JSONSchema7): string[] {

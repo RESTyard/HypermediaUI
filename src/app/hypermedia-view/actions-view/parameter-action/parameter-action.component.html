@@ -24,7 +24,7 @@
         <formly-form [fields]="formlyFields" [form]="form" [model]="model"></formly-form>
       </div>
       <div class="button-row">
-        <span matTooltip="Please complete all required fields." [matTooltipDisabled]="this.canSubmit()">
+        <span [matTooltip]="this.submitBlockedReason()" [matTooltipDisabled]="this.canSubmit()">
           <button mat-flat-button type="submit" class="submit-button" color="primary" [disabled]="!this.canSubmit()">
             <mat-icon>send</mat-icon>
             Submit
