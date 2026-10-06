@@ -167,6 +167,11 @@ The following media types are supported for integrated preview:
   - Configuration: `text/toml`, `text/yaml`
   - Binary/Generic: `application/octet-stream` (can be manually rendered as text with syntax highlighting options).
 
+## Limitations
+
+- **Nullable objects in action parameters:** a nullable object can not be left unset.
+  It is always sent as an object, never as `null`, and its required properties must be filled before the action can be submitted.
+
 ## 💚 Many thanks to our dear sponsors
 
 <div style="display: flex; justify-content: space-around; align-items: flex-start;">
