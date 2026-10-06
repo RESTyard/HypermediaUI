@@ -1,6 +1,6 @@
 import { Component, Input, OnInit, inject } from '@angular/core';
 import {HypermediaAction} from '../../siren-parser/hypermedia-action';
-import {NgxDropzoneChangeEvent} from 'ngx-dropzone';
+import {FileInputValue} from '@ngx-dropzone/cdk';
 import {ActionResults, HypermediaClientService} from '../../hypermedia-client.service';
 import {ProblemDetailsError} from '../../../error-dialog/problem-details-error';
 import {MatSnackBar} from '@angular/material/snack-bar';
@@ -16,6 +16,7 @@ import { FormGroup } from '@angular/forms';
 import { FormlyFieldConfig } from '@ngx-formly/core';
 import { FormlyJsonschema } from '@ngx-formly/core/json-schema';
 import {createActionFormlyFields} from '../../formly-extensions';
+import { getIconForMimeType } from '../../mime-type-icon-mapping';
 
 @Component({
     selector: 'app-file-upload-action',
@@ -76,29 +77,56 @@ export class FileUploadActionComponent implements OnInit {
     });
   }
 
-  onSelect($event: NgxDropzoneChangeEvent) {
-    this.files.push(...$event.addedFiles);
+  private formatDate(date: Date) {
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1;
+    const day = date.getDate();
+    const padLeft = (num: number) => `${num < 10 ? '0' + num : num}`;
+    return `${year}-${padLeft(month)}-${padLeft(day)}`;
+  }
 
-    // show toast message with size violations
-    if($event.rejectedFiles.length > 0){
-      let rejectedFilesMessage = "";
+  onSelect(value: FileInputValue) {
+    const selectedFiles = value === null ? [] : Array.isArray(value) ? value : [value];
+    const acceptedFiles: File[] = [];
+    const rejectedFilesMessage: string[] = [];
 
-      $event.rejectedFiles.forEach((rejectedFile) => {
-        if(rejectedFile.reason == 'size') {
-          rejectedFilesMessage += `${rejectedFile.name} too big (${this.fileSizePipe.transform(rejectedFile.size)} > ${this.fileSizePipe.transform(this.action.FileUploadConfiguration.MaxFileSizeBytes)})\n`;
-        } else if (rejectedFile.reason == 'type'){
-          rejectedFilesMessage += `${rejectedFile.name} has wrong type. Acceptable: ${this.action.FileUploadConfiguration.getAcceptString()}\n`
-        } else if (rejectedFile.reason == 'no_multiple') {
-          rejectedFilesMessage += "Only one file is allowed\n"
-        } else {
-          rejectedFilesMessage += `${rejectedFile.name} rejected for unknown reason\n`
-        }
-      });
+    selectedFiles.forEach((file) => {
+      if (!this.acceptsFile(file)) {
+        rejectedFilesMessage.push(`${file.name} has wrong type. Acceptable: ${this.action.FileUploadConfiguration.getAcceptString()}`);
+      } else if (this.action.FileUploadConfiguration.MaxFileSizeBytes > -1 && file.size > this.action.FileUploadConfiguration.MaxFileSizeBytes) {
+        rejectedFilesMessage.push(`${file.name} too big (${this.fileSizePipe.transform(file.size)} > ${this.fileSizePipe.transform(this.action.FileUploadConfiguration.MaxFileSizeBytes)})`);
+      } else if (!this.action.FileUploadConfiguration.AllowMultiple && (this.files.length > 0 || acceptedFiles.length > 0)) {
+        rejectedFilesMessage.push('Only one file is allowed');
+      } else {
+        acceptedFiles.push(file);
+      }
+    });
 
-      this.snackBar.open(rejectedFilesMessage, undefined, {
+    this.files.push(...acceptedFiles);
+    if (rejectedFilesMessage.length > 0) {
+      this.snackBar.open(rejectedFilesMessage.join('\n'), undefined, {
         panelClass: ['error-snackbar']
       });
     }
+  }
+
+  private acceptsFile(file: File): boolean {
+    const accept = this.action.FileUploadConfiguration.Accept;
+    if (accept.length === 0 || accept.includes('*')) {
+      return true;
+    }
+
+    const lowerCaseName = file.name.toLowerCase();
+    return accept.some((entry) => {
+      const acceptedType = entry.trim().toLowerCase();
+      if (acceptedType.startsWith('.')) {
+        return lowerCaseName.endsWith(acceptedType);
+      }
+      if (acceptedType.endsWith('/*')) {
+        return file.type.toLowerCase().startsWith(acceptedType.slice(0, -1));
+      }
+      return file.type.toLowerCase() === acceptedType;
+    });
   }
 
   hasFiles(): boolean {
@@ -186,5 +214,9 @@ export class FileUploadActionComponent implements OnInit {
 
   getIconForMethod(method: string): string | undefined {
     return getIconForHttpMethod(method);
+  }
+
+  getIconForFile(file: File): string {
+    return getIconForMimeType(file.type);
   }
 }

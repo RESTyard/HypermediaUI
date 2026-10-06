@@ -45,7 +45,7 @@ import {MatMenuModule} from '@angular/material/menu';
 import {MatDividerModule} from '@angular/material/divider';
 import {ErrorDialogModule} from '../error-dialog/error-dialog.module';
 import {FileUploadActionComponent} from './actions-view/file-upload-action/file-upload-action.component';
-import {NgxDropzoneModule} from 'ngx-dropzone';
+import {DropzoneComponent, FileInputDirective} from '@ngx-dropzone/cdk';
 import {MatStepperModule} from '@angular/material/stepper';
 import {FormlyFieldConfig, FormlyModule} from '@ngx-formly/core';
 import {FormlyMaterialModule} from '@ngx-formly/material';
@@ -168,7 +168,8 @@ import {MatSlideToggleModule} from '@angular/material/slide-toggle';
     ClipboardModule,
     FormsModule,
     SettingsModule,
-    NgxDropzoneModule,
+    DropzoneComponent,
+    FileInputDirective,
     MatStepperModule,
     MatButtonToggleModule,
     MatTree,

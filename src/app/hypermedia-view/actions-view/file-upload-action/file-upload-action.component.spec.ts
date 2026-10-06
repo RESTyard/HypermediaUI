@@ -14,6 +14,8 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { AppConfigService } from 'src/app.config.service';
 import {importStore} from "../../../store/store-module";
+import { DropzoneComponent, FileInputDirective } from '@ngx-dropzone/cdk';
+import { FormlyJsonschema } from '@ngx-formly/core/json-schema';
 
 describe('FileUploadActionComponent', () => {
   let component: FileUploadActionComponent;
@@ -34,6 +36,8 @@ describe('FileUploadActionComponent', () => {
         MatIcon,
         MatTooltip,
         MatButtonModule,
+        DropzoneComponent,
+        FileInputDirective,
       ],
       providers: [
         provideHttpClient(),
@@ -42,6 +46,7 @@ describe('FileUploadActionComponent', () => {
         { provide: MatDialog, useValue: {} },
         { provide: MatSnackBar, useValue: { open: () => {} } },
         { provide: AppConfigService, useValue: { actionPopupWarningConfigurations: [] } },
+        { provide: FormlyJsonschema, useValue: { toFieldConfig: () => ({}) } },
       ],
     })
     .compileComponents();
@@ -54,5 +59,25 @@ describe('FileUploadActionComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('keeps valid selected files and rejects files over the configured size', () => {
+    component.action.FileUploadConfiguration.MaxFileSizeBytes = 4;
+    const snackBar = TestBed.inject(MatSnackBar);
+    spyOn(snackBar, 'open');
+
+    component.onSelect([
+      new File(['ok'], 'valid.txt', {type: 'text/plain'}),
+      new File(['large'], 'large.txt', {type: 'text/plain'}),
+    ]);
+
+    expect(component.files.map(file => file.name)).toEqual(['valid.txt']);
+    expect(snackBar.open).toHaveBeenCalled();
+  });
+
+  it('uses an icon appropriate for the selected file type', () => {
+    expect(component.getIconForFile(new File(['image'], 'photo.png', {type: 'image/png'}))).toBe('image');
+    expect(component.getIconForFile(new File(['pdf'], 'document.pdf', {type: 'application/pdf'}))).toBe('assignment');
+    expect(component.getIconForFile(new File(['unknown'], 'file.unknown', {type: 'application/unknown'}))).toBe('insert_drive_file');
   });
 });
