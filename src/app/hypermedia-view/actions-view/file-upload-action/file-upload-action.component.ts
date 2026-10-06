@@ -15,7 +15,7 @@ import {selectEffectiveGeneralSettings} from "../../../store/selectors";
 import { FormGroup } from '@angular/forms';
 import { FormlyFieldConfig } from '@ngx-formly/core';
 import { FormlyJsonschema } from '@ngx-formly/core/json-schema';
-import {createActionFormlyFields} from '../../formly-extensions';
+import {actionParameterValue, createActionFormlyFields, describeInvalidControls} from '../../formly-extensions';
 
 @Component({
     selector: 'app-file-upload-action',
@@ -112,6 +112,11 @@ export class FileUploadActionComponent implements OnInit {
 
   canSubmit = () => this.hasFiles() && this.form.valid;
 
+  submitBlockedReason = () => [
+    ...(this.hasFiles() ? [] : ['Please select a file.']),
+    ...(this.form.valid ? [] : [`Please fix: ${describeInvalidControls(this.form).join(', ')}`]),
+  ].join(' ');
+
   onSubmit() {
     if (!this.canSubmit()) {
       return;
@@ -148,7 +153,7 @@ export class FileUploadActionComponent implements OnInit {
   private doSubmit() {
     this.action.files = this.files;
     if (this.action.waheActionParameterName) {
-      this.action.parameters = this.form.value;
+      this.action.parameters = actionParameterValue(this.form, this.formlyFields);
     }
     this.actionResult= ActionResults.pending;
     this.executed = true;

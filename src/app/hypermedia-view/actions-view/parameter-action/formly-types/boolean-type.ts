@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ViewEncapsulation} from '@angular/core';
 import { FormlyFieldCheckbox } from '@ngx-formly/material/checkbox';
 
 @Component({
@@ -13,6 +13,20 @@ import { FormlyFieldCheckbox } from '@ngx-formly/material/checkbox';
       {{ props.label }}
     </mat-checkbox>
   `,
+    // the form field around the checkbox is outside this component
+    styles: `
+      /* beats the 16px of .mdc-text-field--no-label .mat-mdc-form-field-infix */
+      .mat-mdc-form-field .mat-mdc-text-field-wrapper .mat-mdc-form-field-infix:has(> boolean-type) {
+        padding-top: 8px;
+        padding-bottom: 8px;
+      }
+
+      /* aligns the box with the text of other fields, the box's touch target pads it */
+      boolean-type .mat-mdc-checkbox {
+        margin-left: calc((var(--mat-checkbox-state-layer-size, 40px) - 18px) / -2);
+      }
+    `,
+    encapsulation: ViewEncapsulation.None,
     standalone: false
 })
 export class BooleanTypeComponent extends FormlyFieldCheckbox implements OnInit {
