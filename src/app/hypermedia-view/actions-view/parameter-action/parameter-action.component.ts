@@ -15,7 +15,7 @@ import {AppConfig} from 'src/app.config.service';
 import {Store} from "@ngrx/store";
 import {AppSettings, GeneralSettings} from "../../../settings/app-settings";
 import {selectEffectiveGeneralSettings} from "../../../store/selectors";
-import {createActionFormlyFields} from '../../formly-extensions';
+import {actionParameterValue, createActionFormlyFields, describeInvalidControls} from '../../formly-extensions';
 
 @Component({
     selector: 'app-parameter-action',
@@ -75,6 +75,8 @@ export class ParameterActionComponent implements OnInit {
 
   canSubmit = () => this.form.valid;
 
+  submitBlockedReason = () => `Please fix: ${describeInvalidControls(this.form).join(', ')}`;
+
   public onActionSubmitted() {
     if (!this.canSubmit()) {
       console.log('not valid');
@@ -89,7 +91,7 @@ export class ParameterActionComponent implements OnInit {
   }
 
   private doActionSubmitted = () => {
-    this.action.parameters = this.form.value;
+    this.action.parameters = actionParameterValue(this.form, this.formlyFields);
     this.actionResult = ActionResults.pending;
     this.executed = true;
 

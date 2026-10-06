@@ -9,11 +9,17 @@ import {FieldArrayType, FormlyFieldConfig} from '@ngx-formly/core';
           <mat-card-header class="header-content">
             @if (props.label) {
               <legend class="title">
-                {{ props.label }}
+                {{ props.label }}@if (!props['nullable']) {<span> *</span>}
               </legend>
+            }
+            @if (!field.fieldGroup?.length) {
+              <span class="state">{{ isSet() ? 'empty' : props['nullable'] ? 'null' : 'not set' }}</span>
             }
             <div style="margin-bottom: 3px; margin-left: 0px;">
               <mat-icon class="add-button" (click)="add()">add</mat-icon>
+              @if (props['nullable'] && isSet()) {
+                <mat-icon class="add-button" matTooltip="Set to null" (click)="unset()">backspace</mat-icon>
+              }
             </div>
           </mat-card-header>
           <mat-card-title class="description" style="margin-left: 18px;">
@@ -52,6 +58,21 @@ import {FieldArrayType, FormlyFieldConfig} from '@ngx-formly/core';
     standalone: false
 })
 export class ArrayTypeComponent extends FieldArrayType {
+  // an unset array is sent as null, an empty one as []
+  isSet(): boolean {
+    return this.model !== null && this.model !== undefined;
+  }
+
+  unset() {
+    for (let i = this.field.fieldGroup!.length - 1; i >= 0; i--) {
+      this.remove(i);
+    }
+    const parentModel = this.field.parent!.model as Record<string, unknown>;
+    parentModel[String(this.key)] = null;
+    this.formControl.markAsDirty();
+    this.formControl.updateValueAndValidity();
+  }
+
   getLabel(field: FormlyFieldConfig | undefined): string {
     if (field?.parent?.type === 'array' && !isNaN(Number(field?.parent?.key))) {
       return `[${field?.parent?.key}, ${field.key}]`;
