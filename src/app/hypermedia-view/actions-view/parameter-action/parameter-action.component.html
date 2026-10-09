@@ -8,7 +8,7 @@
           } @else {
             <mat-icon class="action-icon">play_circle_outline</mat-icon>
           }
-          <span class="action-name">{{action.title || action.name}}</span>
+          <span class="action-name"><app-search-highlight [text]="action.title || action.name" [target]="searchTarget" field="title"></app-search-highlight></span>
           @for (config of getActionConfigs(); track config.actionClass) {
             <mat-icon iconPositionEnd class="action-icon action-class-icon trailing-icon" [matTooltip]="config.title">{{config.icon}}</mat-icon>
           }

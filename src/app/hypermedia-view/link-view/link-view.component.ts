@@ -11,6 +11,8 @@ import {Store} from "@ngrx/store";
 import {AppSettings, GeneralSettings} from "../../settings/app-settings";
 import {AppConfig} from "../../../app.config.service";
 import {selectEffectiveGeneralSettings} from "../../store/selectors";
+import {linkTarget, rootEntityKey} from "../search/entity-search";
+import {EntitySearchService} from "../search/entity-search.service";
 
 @Component({
     selector: 'app-link-view',
@@ -26,7 +28,11 @@ export class LinkViewComponent {
     appConfig: AppConfig;
   }>>(Store);
 
+  protected search = inject(EntitySearchService);
+
   @Input() links: HypermediaLink[] = [];
+  @Input() entityKey: string = rootEntityKey;
+  protected readonly linkTarget = linkTarget;
   protected readonly getIconForMimeType = getIconForMimeType;
   protected readonly MediaTypes = MediaTypes;
 

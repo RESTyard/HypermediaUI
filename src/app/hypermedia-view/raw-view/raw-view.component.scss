@@ -11,3 +11,21 @@
 .container {
   padding: defaults.$containerSpacing;
 }
+
+.rawSearchText {
+  font-family: monospace;
+  font-size: 13px;
+  white-space: pre-wrap;
+  word-break: break-word;
+  margin: 0;
+}
+
+.search-mark {
+  background-color: #fff176;
+  color: inherit;
+  border-radius: 2px;
+
+  &.current {
+    background-color: #ff9800;
+  }
+}

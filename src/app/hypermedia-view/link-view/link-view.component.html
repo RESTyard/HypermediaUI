@@ -1,6 +1,9 @@
 <div class="container">
-  @for (link of links; track link) {
-    <span class="link-group">
+  @for (link of links; track link; let idx = $index) {
+    <span class="link-group"
+          [attr.data-search-target]="linkTarget(entityKey, idx)"
+          [class.search-hit]="search.isHitTarget(linkTarget(entityKey, idx))"
+          [class.search-current]="search.isCurrentTarget(linkTarget(entityKey, idx))">
       <a mat-flat-button class="main-link-button"
          [class.download-link]="!isSirenLink(link)"
          [href]="getBrowserUrl(link)"
@@ -14,7 +17,7 @@
           <mat-icon class="link-icon">link</mat-icon>
         }
         <span class="link-text">
-          {{getRelationDisplayText(link.relations).join(', ')}}
+          <app-search-highlight [text]="getRelationDisplayText(link.relations).join(', ')" [target]="linkTarget(entityKey, idx)" field="rel"></app-search-highlight>
         </span>
       </a>
       @if (this.generalSettings.showLinkDropdown) {

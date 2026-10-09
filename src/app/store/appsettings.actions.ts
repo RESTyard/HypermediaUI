@@ -17,17 +17,31 @@ export const updateSiteUrl = createAction(
     '[AppSettings]->[SiteSettings] UpdateSiteUrl',
     props<{ previousSiteUrl: string, newSiteUrl: string }>());
 
+/**
+ * Which settings a header action changes. Global headers go to every outgoing request,
+ * so they must be addressed explicitly rather than by a missing site url.
+ */
+export type HeaderTarget = { kind: 'global' } | { kind: 'site', siteUrl: string };
+
+export const globalHeaderTarget: HeaderTarget = { kind: 'global' };
+
+export const siteHeaderTarget = (siteUrl: string): HeaderTarget => ({ kind: 'site', siteUrl });
+
 export const updateHeader = createAction(
     '[AppSettings]->[SiteSettings] UpdateHeader',
-    props<{ siteUrl: string, previousKey: string, newKey: string, newValue: string}>());
+    props<{ target: HeaderTarget, previousKey: string, newKey: string, newValue: string}>());
 
 export const addHeader = createAction(
     '[AppSettings]->[SiteSettings] AddHeader',
-    props<{ siteUrl: string, key: string, value: string }>());
+    props<{ target: HeaderTarget, key: string, value: string, hidden: boolean }>());
+
+export const setHeaderHidden = createAction(
+    '[AppSettings]->[SiteSettings] SetHeaderHidden',
+    props<{ target: HeaderTarget, key: string, hidden: boolean }>());
 
 export const removeHeader = createAction(
     '[AppSettings]->[SiteSettings] RemoveHeader',
-    props<{ siteUrl: string, key: string }>());
+    props<{ target: HeaderTarget, key: string }>());
 
 export const addSite = createAction(
     '[AppSettings]->[SiteSettings] AddSite',

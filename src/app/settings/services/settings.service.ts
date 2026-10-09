@@ -10,7 +10,7 @@ import {ProblemDetailsError} from 'src/app/error-dialog/problem-details-error';
 import {Store} from '@ngrx/store';
 import {Map} from 'immutable';
 import {updateAppSettings} from 'src/app/store/appsettings.actions';
-import {AppSettings, GeneralSettings, SiteSetting, SiteSettings} from '../app-settings';
+import {AppSettings, GeneralSettings, HeaderSetting, SiteSetting, SiteSettings} from '../app-settings';
 
 @Injectable()
 export class SettingsService {
@@ -68,6 +68,8 @@ export class SettingsService {
       useEmbeddingPropertyForActionParameters: storageModel.useEmbeddingPropertyForActionParameters,
       showHostInformation: storageModel.showHostInformation,
       showPropertyTreeControls: storageModel.showPropertyTreeControls,
+      showSearch: storageModel.showSearch,
+      searchOptions: storageModel.searchOptions,
       actionExecutionTimeoutMs: storageModel.actionExecutionTimeoutMs,
     });
   }
@@ -82,7 +84,7 @@ export class SettingsService {
   private mapSiteSettingFromStorageModel(storageModel: SiteSettingStorageModel): SiteSetting {
     return new SiteSetting({
       siteUrl: storageModel.SiteUrl,
-      headers: Map(storageModel.Headers.map(h => [h.Key, h.Value] as const)),
+      headers: Map(storageModel.Headers.map(h => [h.Key, new HeaderSetting({ value: h.Value, hidden: h.Hidden ?? false })] as const)),
     });
   }
 
@@ -107,6 +109,8 @@ export class SettingsService {
       useEmbeddingPropertyForActionParameters: appModel.useEmbeddingPropertyForActionParameters,
       showHostInformation: appModel.showHostInformation,
       showPropertyTreeControls: appModel.showPropertyTreeControls,
+      showSearch: appModel.showSearch,
+      searchOptions: appModel.searchOptions,
       actionExecutionTimeoutMs: appModel.actionExecutionTimeoutMs,
     };
   }
@@ -121,7 +125,7 @@ export class SettingsService {
   private mapSiteSettingToStorageModel(appModel: SiteSetting): SiteSettingStorageModel {
     return new SiteSettingStorageModel(
       appModel.siteUrl,
-      Array.from(appModel.headers.entries()).map(e => new HeaderSettingStorageModel(e[0], e[1])),
+      Array.from(appModel.headers.entries()).map(([key, header]) => new HeaderSettingStorageModel(key, header.value, header.hidden)),
     );
   }
 
@@ -134,7 +138,7 @@ export class SettingsService {
   }
 
   getHeadersForSite(requestSiteHost: string): HeaderSettingStorageModel[] {
-    const specificSettings = this.CurrentSettings.SiteSettings.SiteSpecificSettings.filter(site => site.SiteUrl.trim() != '' && site.SiteUrl === requestSiteHost);
+    const specificSettings = this.CurrentSettings.SiteSettings.SiteSpecificSettings.filter(site => site.SiteUrl.trim() != '' && site.SiteUrl.trim().toLowerCase() === requestSiteHost);
     // we should only find one site
     if (specificSettings.length > 1) {
       throw new ProblemDetailsError({

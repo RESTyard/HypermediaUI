@@ -106,6 +106,12 @@ when set to ``true`` removes the following UI elements for a leaner experience:
 - Titles on embedded entities (since they are already shown in the entity list header)
 - Action names (since the title already defines which action is which)
 
+### ``showSearch``
+
+default: ``true``
+
+when set to ``false`` removes the search box from the toolbar above the entity view, regardless of the user's general settings.
+
 ### ``autoFollowActionLocationOnSuccess``
 
 default: ``false``
@@ -160,6 +166,11 @@ The following media types are supported for integrated preview:
   - Markup: `application/xml`, `text/xml`, `text/html`
   - Configuration: `text/toml`, `text/yaml`
   - Binary/Generic: `application/octet-stream` (can be manually rendered as text with syntax highlighting options).
+
+## Limitations
+
+- **Nullable objects in action parameters:** a nullable object can not be left unset.
+  It is always sent as an object, never as `null`, and its required properties must be filled before the action can be submitted.
 
 ## 💚 Many thanks to our dear sponsors
 

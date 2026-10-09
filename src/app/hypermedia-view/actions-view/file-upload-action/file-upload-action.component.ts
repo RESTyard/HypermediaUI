@@ -36,6 +36,7 @@ export class FileUploadActionComponent implements OnInit {
 
   @Input()
   action!: HypermediaAction;
+  @Input() searchTarget: string = '';
   files: File[] = [];
   formlyFields: FormlyFieldConfig[] = [];
   form = new FormGroup({});

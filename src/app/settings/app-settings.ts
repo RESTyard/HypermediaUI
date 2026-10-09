@@ -1,4 +1,5 @@
 import { Record, Map } from 'immutable'
+import { defaultSearchOptions, SearchOptions } from '../hypermedia-view/search/entity-search';
 
 export class Test extends Record({num: 1, other: false}) {}
 
@@ -15,12 +16,20 @@ export class GeneralSettings extends Record({
     useEmbeddingPropertyForActionParameters: true,
     showHostInformation: true,
     showPropertyTreeControls: true,
+    showSearch: true,
+    searchOptions: defaultSearchOptions as SearchOptions,
     actionExecutionTimeoutMs: 60000
+}) {}
+
+/** hidden masks the value in the settings, e.g. while screen sharing; it is no protection of the stored value */
+export class HeaderSetting extends Record({
+    value: "",
+    hidden: false,
 }) {}
 
 export class SiteSetting extends Record({
     siteUrl: "",
-    headers: Map<string, string>(),
+    headers: Map<string, HeaderSetting>(),
 }) {}
 
 export class SiteSettings extends Record({

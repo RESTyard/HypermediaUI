@@ -64,3 +64,19 @@
   flex-direction: row;
   align-items: center;
 }
+
+.maskedValue {
+  -webkit-text-security: disc;
+}
+
+// lifted like the delete icon, to the middle of the input above the form field's hint space
+.hideHeaderToggle {
+  display: inline-flex;
+  margin-left: defaults.$spacing;
+  margin-bottom: 2*defaults.$spacing;
+  padding: 0;
+  border: none;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+}

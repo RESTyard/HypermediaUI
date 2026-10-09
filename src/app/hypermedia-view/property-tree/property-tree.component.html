@@ -1,31 +1,13 @@
 
-@if (showHeader && propertyContainer && propertyContainer.length > 0) {
+@if (showHeader && hasExpandableItems) {
   <div class="tree-header-toolbar">
     <div class="controls-container">
-      @if (hasExpandableItems) {
-        <button mat-button (click)="expandAll()">
-          <mat-icon>unfold_more</mat-icon> EXPAND
-        </button>
-        <button mat-button (click)="collapseAll()">
-          <mat-icon>unfold_less</mat-icon> COLLAPSE
-        </button>
-      }
-
-      <div class="search-box">
-        <mat-icon class="search-icon">search</mat-icon>
-        <input type="text"
-               [value]="searchQuery"
-               (input)="applyFilter($event)"
-               (keydown.enter)="handleSearchEnter($event)"
-               placeholder="Search ...">
-
-        @if (searchQuery) {
-          <span class="match-counter" [class.no-matches]="matchCount === 0">
-            {{ matchCount > 0 ? (currentMatchIndex + 1) + '/' + matchCount : '0' }}
-          </span>
-          <mat-icon class="clear-icon" (click)="clearSearch()">close</mat-icon>
-        }
-      </div>
+      <button mat-icon-button (click)="expandAll()" matTooltip="Expand all properties" aria-label="Expand all properties">
+        <mat-icon>unfold_more</mat-icon>
+      </button>
+      <button mat-icon-button (click)="collapseAll()" matTooltip="Collapse all properties" aria-label="Collapse all properties">
+        <mat-icon>unfold_less</mat-icon>
+      </button>
     </div>
   </div>
 }
@@ -34,18 +16,20 @@
 
   <mat-tree-node *matTreeNodeDef="let node"
                  class="property-row"
-                 [class.is-direct-match]="directMatches.has(node)"
-                 [class.is-ancestor-match]="ancestorMatches.has(node)">
+                 [attr.data-search-target]="node.searchTarget"
+                 [class.is-direct-match]="search.isHitTarget(node.searchTarget)"
+                 [class.is-current-match]="search.isCurrentTarget(node.searchTarget)"
+                 [class.is-ancestor-match]="ancestorMatches().has(node)">
 
     <div class="label-cell" [style.padding-left.px]="node.level * 24">
       <span class="spacer"></span>
-      <span class="prop-name">{{node.name}}:</span>
+      <span class="prop-name"><app-search-highlight [text]="node.name" [target]="node.searchTarget" field="name"></app-search-highlight>:</span>
     </div>
 
     <div class="value-cell" [class.align-right]="node.type === propertyTypes.number">
       @switch (node.type) {
-        @case (propertyTypes.string) { <span class="v-str">{{node.value}}</span> }
-        @case (propertyTypes.number) { <span class="v-num">{{node.value}}</span> }
+        @case (propertyTypes.string) { <span class="v-str"><app-search-highlight [text]="node.value" [target]="node.searchTarget" field="value"></app-search-highlight></span> }
+        @case (propertyTypes.number) { <span class="v-num"><app-search-highlight [text]="node.value" [target]="node.searchTarget" field="value"></app-search-highlight></span> }
         @case (propertyTypes.boolean) { <mat-checkbox [checked]="node.value" disabled></mat-checkbox> }
         @case (propertyTypes.nullvalue) { <span class="v-null">null</span> }
       }
@@ -54,8 +38,10 @@
 
   <mat-tree-node *matTreeNodeDef="let node; when: hasChild"
                  class="property-row"
-                 [class.is-direct-match]="directMatches.has(node)"
-                 [class.is-ancestor-match]="ancestorMatches.has(node)">
+                 [attr.data-search-target]="node.searchTarget"
+                 [class.is-direct-match]="search.isHitTarget(node.searchTarget)"
+                 [class.is-current-match]="search.isCurrentTarget(node.searchTarget)"
+                 [class.is-ancestor-match]="ancestorMatches().has(node)">
 
     <div class="label-cell" [style.padding-left.px]="node.level * 24" (click)="treeControl.toggle(node)">
       <button mat-icon-button matTreeNodeToggle (click)="$event.stopPropagation()">
@@ -63,7 +49,7 @@
           {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
         </mat-icon>
       </button>
-      <span class="prop-name">{{node.name}}:</span>
+      <span class="prop-name"><app-search-highlight [text]="node.name" [target]="node.searchTarget" field="name"></app-search-highlight>:</span>
     </div>
 
     <div class="value-cell">

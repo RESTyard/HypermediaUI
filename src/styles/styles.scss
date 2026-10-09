@@ -15,3 +15,14 @@ body{
   max-width: none !important;
   width: 800px;
 }
+
+// Entity search: elements that contain a hit, and the hit navigated to
+.search-hit {
+  outline: 2px solid #fff176;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.search-current {
+  outline-color: #ff9800;
+}

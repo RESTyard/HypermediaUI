@@ -34,6 +34,7 @@ export class ParameterActionComponent implements OnInit {
 
   @Input()
   action!: HypermediaAction;
+  @Input() searchTarget: string = '';
 
   ActionResultsEnum = ActionResults;
 
